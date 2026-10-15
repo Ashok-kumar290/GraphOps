@@ -19,7 +19,7 @@ model provider. There is no silent fallback to the scripted baseline.
 2. Open **System & backups**. Readiness checks connections and model availability.
    **Verify model + MCP** also performs an actual inference request and a fresh
    MCP round trip. An available model is not shown as verified inference.
-3. In Workspace, select a scenario and **Agent - LLM**, then Run agent. Default
+3. In Agent tasks, select a scenario and **Agent - LLM**, then Run agent. Default
    operation investigates, saves a graph handoff, starts a fresh resolver and
    measures recovery. **Pause at handoff** lets you resume manually.
 4. Inspect tool evidence, HTTP measurements and the graph. Download the report
@@ -65,13 +65,14 @@ graph nodes, relationships, company source text, incidents, events, memory,
 plans and the controlled services' state. Provider keys are excluded. Store the
 file as company data. Backups are limited to 25,000 nodes and 50,000 relationships.
 
-Restore only into a new workspace. Stop the web app before using CLI commands
-that own the same lab ports. In an independent checkout with its own environment:
+The CLI connects to the running app by default; keep it running for commands and
+monitoring. Restore only into a new workspace. Standalone commands own lab ports
+and require a separate port range or a stopped web app. In an independent checkout:
 
 ```powershell
 .\.venv\Scripts\python.exe -m graphops.cli backup .\workspace-backup.json
 .\.venv\Scripts\python.exe -m graphops.cli --workspace restored-demo --port 9065 restore .\workspace-backup.json
-.\.venv\Scripts\python.exe -m graphops.cli --workspace restored-demo --port 9065 status
+.\.venv\Scripts\python.exe -m graphops.cli --standalone --workspace restored-demo --port 9065 status
 ```
 
 Restore refuses an existing workspace or data directory. Endpoint ports are
@@ -91,6 +92,11 @@ with `Content-Type: application/json` and `X-GraphOps: 1`.
 | POST `/access`, `/logout` | Shared token login and cookie logout |
 | GET `/workspace?task=ID` | Selected checkpoint, current company, graph and memory |
 | GET `/events` | Server-sent progress events |
+| GET `/monitor?task=ID` | All module states, selected job, services and owned process metrics |
+| GET `/run-events?task=ID&after=EVENT_ID&limit=200` | Page all durable run events in insertion order |
+| GET `/graph?service=NAME` | Graph diagram and sourced dependency paths |
+| GET `/company-context?service=NAME` | Current company context and source revisions |
+| GET `/memory?service=NAME` | Current memory packet with applicability labels |
 | GET `/readiness` | Graph, lab, model availability and last actual diagnostic |
 | POST `/diagnostics` | Actual model and MCP verification job |
 | POST `/incidents` | Start scenario; `pause_after_handoff` defaults false |

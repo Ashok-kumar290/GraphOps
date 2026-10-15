@@ -45,3 +45,10 @@ The participant had earlier proposed a memory navigator/cache approach and a
 division of language responsibilities. Those ideas belong in the design history;
 their timing must remain accurate. Participant code review, hands-on verification
 and teammate contributions are still to be recorded by the people doing them.
+
+The participant then requested a CLI connected to all modules with progress and
+process monitoring. Codex implemented the connected HTTP client, operational
+monitor, durable event pagination/replay, module commands and six-module CLI
+demonstration. Recorded checks include real inference and actual CLI commands
+against the running app; automated verification does not attest participant
+understanding or replace their own recorded contribution/review.

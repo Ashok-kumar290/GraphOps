@@ -47,11 +47,11 @@
       "name": "live_model_and_mcp_verification",
       "passed": true,
       "diagnostics": {
-        "checked_at": "2026-10-15T08:13:17.801978+00:00",
-        "task": "INC-AC98DA1F",
+        "checked_at": "2026-10-15T09:23:19.497345+00:00",
+        "task": "INC-CFF7A731",
         "mcp": {
           "success": true,
-          "session": "a5f6b708-5a64-4973-9d33-e8eccb98e97a"
+          "session": "e58e1919-d609-4266-8a96-693e93ccabca"
         },
         "model": {
           "success": true,
@@ -80,13 +80,13 @@
     {
       "name": "company_answer_from_current_owned_sources",
       "passed": true,
-      "summary": "The owner of the **payments** service is **Payments Response**, as indicated in the ownership document with the source `owned:ownership/payments` and revision `3fd9d127`.\n\nThe current refund review window is **96 hours**, as stated in the synthetic refund policy document with the source `owned:document/owned-93c1af12189a6b3068c7` and revision `23793cbf64c18553`.",
+      "summary": "The owner of the payments service is **Payments Response**, as indicated in the ownership document with the source **owned:event/ownership-update**.\n\nThe current refund review window is **96 hours**, as stated in the synthetic refund policy document with the source **owned:document/owned-93c1af12189a6b3068c7**.",
       "citation_check": "known_source_locations"
     },
     {
       "name": "automatic_config",
       "passed": true,
-      "seconds": 9.28
+      "seconds": 9.264
     },
     {
       "name": "report_config",
@@ -95,7 +95,7 @@
     {
       "name": "automatic_worker",
       "passed": true,
-      "seconds": 9.287
+      "seconds": 8.236
     },
     {
       "name": "report_worker",
@@ -150,9 +150,73 @@
       "passed": true
     },
     {
+      "name": "cli_live_monitor_process_metrics",
+      "passed": true
+    },
+    {
+      "name": "cli_all_module_statuses",
+      "passed": true
+    },
+    {
+      "name": "cli_company_ownership",
+      "passed": true
+    },
+    {
+      "name": "cli_source_import_revision_and_search",
+      "passed": true
+    },
+    {
+      "name": "cli_actual_graph_paths",
+      "passed": true
+    },
+    {
+      "name": "cli_company_answer_current_source",
+      "passed": true
+    },
+    {
+      "name": "cli_six_module_live_demo",
+      "passed": true,
+      "task": "INC-601CB9B7",
+      "seconds": 13.608
+    },
+    {
+      "name": "cli_live_steps_sessions_and_memory",
+      "passed": true
+    },
+    {
+      "name": "cli_event_cursor_and_reconnect",
+      "passed": true
+    },
+    {
+      "name": "cli_memory_navigation",
+      "passed": true
+    },
+    {
+      "name": "cli_history_and_report",
+      "passed": true
+    },
+    {
+      "name": "cli_complete_backup",
+      "passed": true
+    },
+    {
+      "name": "cli_detach_stop_and_resume",
+      "passed": true
+    },
+    {
+      "name": "cli_live_model_and_mcp_diagnostics",
+      "passed": true
+    },
+    {
+      "name": "cli_monitor_duration_and_json_lines",
+      "passed": true,
+      "commands": 24
+    },
+    {
       "name": "logout_locks_workspace",
       "passed": true
     }
   ],
-  "success": true
+  "success": true,
+  "connected_cli_commands": 24
 }

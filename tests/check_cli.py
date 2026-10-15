@@ -16,7 +16,7 @@ def main():
     report={'mode':'scripted','separate_processes':True,'success':False}
     try:
         def run(*args):
-            result=subprocess.run([sys.executable,'-m','graphops.cli',*args],cwd=settings.ROOT,env=env,capture_output=True,text=True,timeout=90)
+            result=subprocess.run([sys.executable,'-m','graphops.cli','--standalone',*args],cwd=settings.ROOT,env=env,capture_output=True,text=True,timeout=90)
             if result.returncode:raise RuntimeError(result.stderr[-1000:])
             return result
         run('investigate','--scenario','config','--mode','scripted')

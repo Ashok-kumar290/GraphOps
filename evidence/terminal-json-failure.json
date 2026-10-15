@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "stage": "First connected CLI package acceptance",
+  "checks_completed": 39,
+  "observed": "The live six-module demo passed, but auxiliary JSON records lacked a type field; the consumer raised KeyError.",
+  "fix": "Emit typed source, graph and memory records during demo progress and make the consumer tolerate additional record types.",
+  "final_status": "Consult current product.json for the rerun."
+}

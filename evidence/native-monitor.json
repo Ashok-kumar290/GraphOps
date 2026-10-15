@@ -1,0 +1,159 @@
+{
+  "success": true,
+  "platform": "Windows",
+  "schema": "graphops.monitor.v1",
+  "workspace": "team-demo",
+  "observed_at": "2026-10-15T10:12:22.589100+00:00",
+  "modules": [
+    {
+      "name": "Company knowledge",
+      "status": "ready",
+      "detail": "11 current source documents"
+    },
+    {
+      "name": "Graph",
+      "status": "ready",
+      "detail": "22 entities / 28 relationships"
+    },
+    {
+      "name": "Agent",
+      "status": "idle",
+      "detail": "2 sessions in selected run; 20 tool results in recent window"
+    },
+    {
+      "name": "Actions",
+      "status": "resolved",
+      "detail": "restart_worker"
+    },
+    {
+      "name": "Memory",
+      "status": "ready",
+      "detail": "0 active / 21 historical / 0 unverified"
+    },
+    {
+      "name": "Workspace",
+      "status": "idle",
+      "detail": "One shared workspace; one active job"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Node HTTP API",
+      "pid": 20324,
+      "running": true,
+      "rss_bytes": 71979008,
+      "cpu_seconds": 0.312,
+      "uptime_seconds": 2816.3765927,
+      "metrics_available": true
+    },
+    {
+      "name": "Python agent worker",
+      "pid": 16508,
+      "running": true,
+      "rss_bytes": 85938176,
+      "cpu_seconds": 2.156,
+      "uptime_seconds": 2807.2,
+      "metrics_available": true
+    },
+    {
+      "name": "Go service simulator",
+      "pid": 1984,
+      "running": true,
+      "rss_bytes": 14860288,
+      "cpu_seconds": 0.312,
+      "uptime_seconds": 2804.3,
+      "metrics_available": true
+    }
+  ],
+  "health": [
+    {
+      "dependency": "orders",
+      "dependency_healthy": true,
+      "error": "",
+      "healthy": true,
+      "observed_at": 1792059142.694,
+      "revision": "healthy-v1",
+      "service": "gateway",
+      "http_status": 200,
+      "source": "http://127.0.0.1:8865/health"
+    },
+    {
+      "dependency": "payments",
+      "dependency_healthy": true,
+      "error": "",
+      "healthy": true,
+      "observed_at": 1792059142.71,
+      "revision": "healthy-v1",
+      "service": "orders",
+      "http_status": 200,
+      "source": "http://127.0.0.1:8866/health"
+    },
+    {
+      "error": "",
+      "healthy": true,
+      "observed_at": 1792059142.696,
+      "revision": "healthy-v1",
+      "service": "payments",
+      "http_status": 200,
+      "source": "http://127.0.0.1:8867/health"
+    },
+    {
+      "error": "unrelated",
+      "healthy": false,
+      "observed_at": 1792059142.699,
+      "revision": "unrelated-fault-v1",
+      "service": "analytics",
+      "http_status": 503,
+      "source": "http://127.0.0.1:8868/health"
+    }
+  ],
+  "readiness": {
+    "checked_at": "2026-10-15T10:12:22.688918+00:00",
+    "model": {
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "configured": true
+    },
+    "components": {
+      "graph": {
+        "status": "online",
+        "message": "FalkorDB queries succeed"
+      },
+      "lab": {
+        "status": "online",
+        "message": "Controlled service controller responds"
+      },
+      "model": {
+        "status": "verified",
+        "message": "Live inference checked"
+      },
+      "mcp": {
+        "status": "verified",
+        "message": "MCP roundtrip checked"
+      }
+    },
+    "last_diagnostics": {
+      "checked_at": "2026-10-15T10:11:06.451211+00:00",
+      "task": "INC-8B9E370C",
+      "mcp": {
+        "success": true,
+        "session": "316510c9-1ae8-4f81-b51a-298cd5c512a7"
+      },
+      "model": {
+        "success": true,
+        "provider": "ollama",
+        "model": "qwen3:8b"
+      },
+      "success": true
+    },
+    "ready_to_run": true
+  },
+  "mcp_process_status": {
+    "last_reported_pid": 17016,
+    "observed_at": "2026-10-15T10:09:35.554124+00:00",
+    "session": "5ab68a9e-7841-450b-adca-3169bb10a5dd",
+    "role": "resolver",
+    "status": "last observed; not a process heartbeat"
+  },
+  "browser_visual_review": false
+}

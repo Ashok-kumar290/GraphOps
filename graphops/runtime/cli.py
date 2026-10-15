@@ -10,6 +10,8 @@ from dotenv import dotenv_values
 from graphops import settings
 from graphops.core.synthetic import SERVICES
 from graphops.models.router import configuration, preflight
+from graphops.runtime.terminal import build_parser, run_connected
+from graphops.runtime.terminal_display import clean
 
 
 def progress(message):
@@ -20,23 +22,8 @@ def progress(message):
         print(f"[{message['tool']}] evidence={message['evidence_id']}",flush=True)
 
 
-async def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--workspace',default=settings.SCOPE)
-    parser.add_argument('--port',type=int,default=settings.LAB_PORT)
-    commands=parser.add_subparsers(dest='command',required=True)
-    for name in ('run','investigate'):
-        investigate=commands.add_parser(name);investigate.add_argument('--scenario',choices=['config','worker'],default='config');investigate.add_argument('--mode',choices=['llm','scripted'],default='llm')
-    resume=commands.add_parser('resume');resume.add_argument('task')
-    commands.add_parser('status')
-    commands.add_parser('doctor')
-    backup=commands.add_parser('backup');backup.add_argument('path')
-    restore=commands.add_parser('restore');restore.add_argument('path')
-    configure=commands.add_parser('configure');configure.add_argument('--provider',choices=['ollama','groq','openrouter'],default='ollama');configure.add_argument('--model');configure.add_argument('--network',action='store_true')
-    memory=commands.add_parser('memory');memory.add_argument('service',choices=SERVICES)
-    company=commands.add_parser('ask');company.add_argument('question');company.add_argument('--mode',choices=['llm','scripted'],default='llm')
-    company.add_argument('--service',choices=SERVICES,default='payments')
-    args=parser.parse_args()
+async def main(argv=None):
+    args=build_parser().parse_args(argv)
     if args.command=='configure':
         path=settings.ROOT/'.env';values={k:v for k,v in dotenv_values(path).items() if v is not None} if path.exists() else {}
         defaults={'ollama':'qwen3:8b','groq':'qwen/qwen3.8-27b','openrouter':'nvidia/nemotron-3-super-120b-a12b:free'}
@@ -56,12 +43,21 @@ async def main():
         temporary.replace(path)
         print('Configuration saved locally. Restart the app to apply it.');return
     if args.command=='restore':
+        if not args.workspace:raise ValueError('Restore requires --workspace NEW_NAME')
         from graphops.workspace.backup import restore_workspace,load_backup
         print(json.dumps(restore_workspace(load_backup(args.path),args.workspace,args.port),indent=2));return
+    if not args.standalone:
+        code=run_connected(args)
+        if code:raise SystemExit(code)
+        return
+    if args.command not in {'run','investigate','resume','ask','doctor','status','memory','backup'}:
+        raise ValueError('Use connected mode for this command. Start the app with start.ps1.')
+    args.workspace=args.workspace or settings.SCOPE
     # Import after parsing so --help works without a database or running services.
     from graphops.runtime.worker import Worker
     if args.command in {'run','investigate','ask'} and args.mode=='llm':preflight()
-    worker=Worker(scope=args.workspace,port=args.port,emit=progress)
+    emit=(lambda message: print(json.dumps({'type':'progress',**message},ensure_ascii=True),flush=True)) if args.json else progress
+    worker=Worker(scope=args.workspace,port=args.port,emit=emit)
     try:
         if args.command=='status':
             snapshot=worker.snapshot()
@@ -77,18 +73,21 @@ async def main():
         reply=await worker.dispatch({'run':'start','investigate':'start','resume':'resume','ask':'question','doctor':'diagnose'}[args.command],body)
         await worker.active
         task=worker.store.runs.get(reply['task'])
-        print(json.dumps(task,indent=2))
+        print(json.dumps(task,indent=None if args.json else 2))
         if task.get('last_error'):raise RuntimeError(task['last_error'])
         if args.command=='doctor':
-            print(json.dumps(worker.last_diagnostics,indent=2))
+            print(json.dumps(worker.last_diagnostics,indent=None if args.json else 2))
             if not worker.last_diagnostics or not worker.last_diagnostics['success']:raise RuntimeError('System checks did not pass')
-        if task['status']=='handoff':print(f"Next: python -m graphops.cli resume {task['id']}")
+        if task['status']=='handoff' and not args.json:print(f"Next: python -m graphops.cli --standalone resume {task['id']}")
     finally:await worker.close()
 
 
 if __name__=='__main__':
     try:asyncio.run(main())
+    except KeyboardInterrupt:
+        print('Detached from terminal. Connected server jobs continue; use watch TASK_ID to reconnect.',file=sys.stderr)
+        raise SystemExit(130)
     except Exception as exc:
         while isinstance(exc,BaseExceptionGroup) and exc.exceptions:exc=exc.exceptions[0]
-        print(str(exc)[:900] if isinstance(exc,(RuntimeError,ValueError)) else type(exc).__name__,file=sys.stderr)
+        print(clean(str(exc)[:900]) if isinstance(exc,(RuntimeError,ValueError,OSError)) else type(exc).__name__,file=sys.stderr)
         raise SystemExit(1)

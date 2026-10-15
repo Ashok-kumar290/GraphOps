@@ -104,6 +104,7 @@ class Agent:
                     for _ in range(8):
                         if self.should_stop():raise StopRequested('Stopped at a checkpoint. Resume this incident to continue.')
                         inference_start = time.perf_counter(); requests += 1
+                        self.publish(task_id, session, role, 'model_request_started', {'request':requests})
                         self.emit({"type": "progress", "task": task_id, "stage": "model", "role": role})
                         try:
                             content = await asyncio.to_thread(model.generate, system, contents, declarations)

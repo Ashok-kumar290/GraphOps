@@ -18,6 +18,7 @@ from graphops.core.identity import uid, now
 from graphops.company.service import import_source, update_company, ConflictError
 from graphops.workspace.backup import export_workspace
 from graphops.workspace.queries import WorkspaceQueries
+from graphops.workspace.monitoring import monitor_workspace
 
 
 def output(value):
@@ -109,6 +110,17 @@ class Worker:
 
     async def dispatch(self, command, body):
         if not isinstance(body,dict):raise ValueError('Request must contain a JSON object')
+        if command=='monitor':return monitor_workspace(self,body.get('task'))
+        if command=='run_events':return self.store.runs.events_after(body.get('task'),body.get('after',''),body.get('limit',200))
+        if command=='graph':return {'diagram':self.store.topology.diagram(),'topology':self.store.topology.paths(body.get('service','gateway'))}
+        if command=='company_context':
+            service=body.get('service','payments')
+            if service not in SERVICES:raise ValueError('Select an authorized service')
+            return self.store.company.context(service)
+        if command=='memory':
+            service=body.get('service','payments')
+            if service not in SERVICES:raise ValueError('Select an authorized service')
+            return self.snapshot()['memory'].get(service,{'active':[],'historical':[],'unverified':[],'conflicts':[]})
         if command == "snapshot": return self.snapshot(body.get("task"))
         if command=='readiness':return await asyncio.to_thread(self.readiness)
         if command=='search':return self.store.company.search(body.get('query',''),body.get('service') or None)

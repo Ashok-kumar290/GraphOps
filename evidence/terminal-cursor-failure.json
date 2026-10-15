@@ -1,0 +1,7 @@
+{
+  "success": false,
+  "stage": "Initial event pagination check",
+  "observed": "First page returned zero events when 505 were stored.",
+  "fix": "Remove the negative-ID sentinel predicate on the initial page; apply the insertion-order boundary only when a real cursor exists.",
+  "verification": "The cursor suite was rerun; consult the current backend report for final status."
+}

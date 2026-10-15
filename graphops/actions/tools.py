@@ -68,6 +68,9 @@ class RecoveryTools:
                 {"action": plan["action"], "runbook_revision": book["revision"], "precondition": plan["expected_revision"]})
             self.context.store.memory.save(self.context.task_id, plan["target"], "semantic", after["revision"], after["source"],
                 {"claim": "health", "value": "healthy", "evidence": [after["evidence_id"]]})
+            self.context.store.runs.append_event(self.context.task_id,self.context.session,self.context.role,'memory_saved',
+                {'service':plan['target'],'kinds':['episodic','procedural','semantic'],'source':after['source'],
+                 'evidence':[after['evidence_id'],incident['evidence_id']]})
         self.context.store.runs.update(self.context.task_id, {"status": "resolved" if success else "blocked", "outcome": outcome})
         return self.context.record("execute_recovery", {"plan_id": plan_id}, outcome)
 

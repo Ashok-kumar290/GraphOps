@@ -97,9 +97,11 @@ def main():
             restored='restored-'+uuid.uuid4().hex[:10]
             restore_script="import json,sys;from graphops.workspace.backup import restore_workspace;print(json.dumps(restore_workspace(json.load(sys.stdin),sys.argv[1],9000)))"
             result=docker('exec','-T','app','python','-c',restore_script,restored,input=json.dumps(backup));restored_result=json.loads(result.stdout.strip())
-            result=docker('exec','-T','app','python','-m','graphops.cli','--workspace',restored,'--port','9000','status',input='');restored_state=json.loads(result.stdout)
+            result=docker('exec','-T','app','python','-m','graphops.cli','--standalone','--workspace',restored,'--port','9000','status',input='');restored_state=json.loads(result.stdout)
             check('backup_restores_into_new_workspace',restored_result['nodes']==len(backup['nodes']) and next(h['http_status'] for h in restored_state['health'] if h['service']=='gateway')==200)
             history=client.get('/api/history',params={'q':'refund'}).json();check('history_and_change_log',bool(history['tasks']) and len(history['audits'])>=4)
+            from tests.check_connected_cli import exercise_connected_cli
+            report['connected_cli_commands']=exercise_connected_cli('http://127.0.0.1:8082',env,check)
             post('/api/logout',{});check('logout_locks_workspace',client.get('/api/workspace').status_code==401)
             report['success']=all(check['passed'] for check in report['checks'])
         except Exception as exc:report['error']=str(exc)[:700] if isinstance(exc,RuntimeError) else type(exc).__name__

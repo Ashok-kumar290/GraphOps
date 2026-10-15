@@ -6,6 +6,25 @@ from datetime import datetime
 
 
 class RunRepository(Repository):
+    def events_after(self, task_id, after='', limit=200):
+        """Page append events using their database insertion order; no 500-event window."""
+        if not isinstance(task_id,str) or not self.get(task_id):
+            raise ValueError('Run not found')
+        if not isinstance(after,str) or len(after)>80 or not isinstance(limit,int) or not 1<=limit<=200:
+            raise ValueError('Invalid event cursor or limit')
+        offset=-1
+        if after:
+            cursor=self.read('MATCH (:Incident {id:$task})-[:HAS_EVENT]->(e:Event {id:$after}) RETURN id(e)',task=task_id,after=after)
+            if not cursor:raise ValueError('Event cursor does not belong to this run')
+            offset=cursor[0][0]
+        condition='WHERE id(e)>$offset' if after else ''
+        rows=self.read(f'''MATCH (:Incident {{id:$task}})-[:HAS_EVENT]->(e:Event)<-[:EMITTED]-(s:Session)
+            {condition} RETURN e.id,s.id,e.role,e.kind,e.time,e.payload,id(e)
+            ORDER BY id(e) LIMIT $limit''',task=task_id,offset=offset,limit=limit+1)
+        page=rows[:limit]
+        events=[{'id':r[0],'session':r[1],'role':r[2],'kind':r[3],'time':r[4],'data':json.loads(r[5])} for r in page]
+        return {'task':task_id,'events':events,'cursor':events[-1]['id'] if events else after,'has_more':len(rows)>limit}
+
     def create(self, scenario, goal, mode):
         task = {"id": "INC-"+uid()[:8].upper(), "title": goal, "service": "gateway", "status": "new",
                 "created_at": now(), "scenario": scenario, "mode": mode, "target": None, "job": "idle"}

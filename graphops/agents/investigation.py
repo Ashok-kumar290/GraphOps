@@ -4,6 +4,7 @@ from graphops.core.synthetic import SERVICES
 
 from graphops.core.identity import age, now
 from concurrent.futures import ThreadPoolExecutor
+import os
 
 class InvestigationTools:
     def __init__(self, context):
@@ -16,7 +17,8 @@ class InvestigationTools:
         events = [{"id": e["id"], "role": e["role"], "kind": e["kind"],
                    "tool": e["data"].get("tool"), "time": e["time"]}
                   for e in self.context.store.runs.events(self.context.task_id)[-8:]]
-        return self.context.record("checkpoint", {}, {"task": public_task, "recent_events": events})
+        return self.context.record("checkpoint", {}, {"task": public_task, "recent_events": events,
+            "runtime": {"mcp_pid":os.getpid(), "parent_pid":os.getppid()}})
 
 
     def inspect_incident(self) -> dict:

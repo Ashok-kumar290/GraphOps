@@ -129,3 +129,22 @@ workspace. Restored semantic health facts require new verification.
 
 Production multi-user operation needs an identity and authorization design,
 durable queues, operational metrics and production disaster-recovery exercises.
+
+## Connected terminal and monitoring
+
+The CLI connects to the same authenticated HTTP API as React by default. It does
+not launch another worker or lab unless standalone mode is explicitly selected.
+Task mutations are submitted once; the terminal then follows saved graph events
+through a paginated insertion-order cursor. A watch can replay an old run, detach
+and reconnect. A network timeout does not automatically resubmit an action.
+
+The monitor combines module/job state, readiness and owned process measurements.
+Node supplies its own PID/RSS/CPU time; Python samples its known worker and Go
+process IDs on Windows/Linux. MCP checkpoints report a PID labeled as a past
+observation, not a heartbeat. No process command lines or environments are read.
+CPU seconds are accumulated process time. Graph/model availability and verified
+inference remain distinct observations.
+
+Process monitoring can report degraded state when the graph/worker is unavailable.
+Company retrieval, connected decision checks, actions and shared memory still
+require FalkorDB. See [CLI.md](CLI.md) for commands and output semantics.

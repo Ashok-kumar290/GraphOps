@@ -1,0 +1,29 @@
+{
+  "type": "demo_complete",
+  "success": true,
+  "task": "INC-836D400C",
+  "question_task": "INC-E98CCCFA",
+  "modules": [
+    "Company knowledge",
+    "Graph",
+    "Agent",
+    "Actions",
+    "Memory",
+    "Workspace"
+  ],
+  "mode": "llm",
+  "model_inference": true,
+  "company_policy_citation_checked": true,
+  "elapsed_seconds": 26.707,
+  "platform": "Windows PowerShell launcher -> connected HTTP CLI",
+  "event_records": 47,
+  "roles": [
+    "company",
+    "investigator",
+    "resolver"
+  ],
+  "model_start_events": 8,
+  "memory_saved_events": 1,
+  "progress_trace_saved_locally": true,
+  "browser_visual_review": false
+}

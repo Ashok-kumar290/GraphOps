@@ -48,10 +48,10 @@ event/
     agents/        Model loop, investigation, session context and MCP catalog
     actions/       Supported recovery policy, recovery tools and Go adapter
     memory/        Memory repository, retrieval rules and memory MCP tools
-    workspace/     Read models, audit and complete backup/restore
+    workspace/     Read models, process monitoring, audit and backup/restore
     runs/          Task checkpoints, sessions, events and recovery plans
     models/        Explicit provider routing and inference transports
-    runtime/       Worker lifecycle, job dispatch and CLI implementation
+    runtime/       Worker lifecycle, connected CLI, progress follower and display
     core/          Identifiers and shared synthetic fixture definitions
     settings.py    Local configuration and data location
     cli.py         Stable CLI command entry point

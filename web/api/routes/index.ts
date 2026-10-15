@@ -14,6 +14,14 @@ export async function handleApi(req:IncomingMessage,res:ServerResponse,url:URL,b
  if(url.pathname==="/api/health"){const health=bridge.health();json(res,health.ready?200:503,{...health,access_required:!!accessToken});return true;}
  if(!authorized(req)){json(res,401,{error:"Enter the demo access token."});return true;}
  if(url.pathname==="/api/events"&&req.method==="GET"){bridge.connect(req,res);return true;}
+ if(url.pathname==="/api/monitor"&&req.method==="GET"){
+  const usage=process.cpuUsage();
+  const api={name:"Node HTTP API",pid:process.pid,running:true,rss_bytes:process.memoryUsage().rss,cpu_seconds:(usage.user+usage.system)/1e6,uptime_seconds:process.uptime(),metrics_available:true};
+  let report:any;
+  try {report=await bridge.rpc("monitor",{task:url.searchParams.get("task")});}
+  catch {report={schema:"graphops.monitor.v1",degraded:true,error:"Agent worker is unavailable. The API supervisor will retry.",processes:[],modules:[]};}
+  json(res,200,{...report,server:bridge.health(),observed_at:report.observed_at||new Date().toISOString(),processes:[api,...report.processes]});return true;
+ }
  if(url.pathname==="/api/workspace"&&req.method==="GET"){json(res,200,{...(await bridge.rpc("snapshot",{task:url.searchParams.get("task")})),access_required:!!accessToken});return true;}
  const groups=[companyRoutes(url),runRoutes(url),workspaceRoutes()];
  for(const group of groups){

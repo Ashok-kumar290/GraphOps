@@ -105,20 +105,28 @@ For an independent checkout, create this repository's own `.venv` as above.
 
 ### Terminal workflow
 
-Stop the web app first; it owns the lab ports. These commands use the same
-Python worker, actual MCP subprocesses, graph store and HTTP services:
+Keep the app running and open a second terminal. The CLI connects to the same
+server, active job, graph, MCP sessions and services used by the web interface:
 
 ```powershell
-.\.venv\Scripts\python.exe -m graphops.cli investigate --scenario config --mode llm
-.\.venv\Scripts\python.exe -m graphops.cli run --scenario worker --mode llm
-.\.venv\Scripts\python.exe -m graphops.cli resume INC-RETURNED_ID
-.\.venv\Scripts\python.exe -m graphops.cli memory payments
-.\.venv\Scripts\python.exe -m graphops.cli ask "Who owns payments and which decision supports recovery?"
-.\.venv\Scripts\python.exe -m graphops.cli doctor
+.\graphops.ps1 monitor
+.\graphops.ps1 demo
+.\graphops.ps1 investigate --scenario config
+.\graphops.ps1 resume INC-RETURNED_ID
+.\graphops.ps1 memory payments
+.\graphops.ps1 ask "Who owns payments and which decision supports recovery?"
+.\graphops.ps1 doctor
 ```
 
-Each CLI invocation creates a fresh process and reloads persisted context.
-Use `--mode scripted` explicitly when checking the baseline.
+The monitor shows all six modules, service health, actual owned process metrics,
+the current task and latest persisted event. Task commands stream saved session,
+model, tool, action and memory events and finish at a checkpoint. Ctrl+C detaches;
+use `stop TASK_ID` to request a checkpoint stop. `watch TASK_ID` replays saved
+progress. Use `--mode scripted` explicitly for the deterministic baseline.
+
+For a CLI-owned local worker, stop the web app and use `--standalone` before the
+command. There is no automatic fallback that creates another service stack.
+See [CLI.md](CLI.md) for module commands, monitoring, JSON output and remote access.
 
 ## Product workflows
 
