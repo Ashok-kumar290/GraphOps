@@ -121,6 +121,22 @@ class EventIntegration(unittest.TestCase):
         self.store.write("MATCH (:Service {id:'orders'})-[r:DEPENDS_ON]->(:Service {id:'payments'}) DELETE r",context=True)
         self.store.seed(self.port)
         self.assertEqual(len(self.store.topology.paths('gateway')['paths']),1)
+        self.lab.inject('config')
+        handoff=self.investigator.handoff_target('payments')
+        self.assertTrue(handoff['terminal'])
+        self.assertEqual(self.store.runs.get(self.task)['status'],'blocked')
+        self.assertEqual(self.lab.state()['action_count'],0)
+
+    def test_removed_dependency_blocks_prepared_recovery(self):
+        self.lab.inject('config')
+        self.investigator.handoff_target('payments')
+        plan=self.resolver.prepare_recovery()
+        self.assertTrue(plan['ready'])
+        self.store.write("MATCH (:Service {id:'orders'})-[r:DEPENDS_ON]->(:Service {id:'payments'}) DELETE r",context=True)
+        with self.assertRaisesRegex(ValueError,'Dependency path changed'):
+            self.resolver.execute_recovery(plan['plan_id'])
+        self.assertEqual(self.lab.state()['action_count'],0)
+        self.assertEqual(request(self.lab.url('payments')+'/health')['http_status'],503)
 
     def test_payments_recovery_and_unrelated_fault_untouched(self):
         outcome,_=self.recover()

@@ -16,6 +16,8 @@ through a cited company answer, graph evidence, an investigator handoff, a fresh
 resolver and the resulting shared memory. See [the five-step walkthrough](WALKTHROUGH.md).
 The current company is synthetic and actions operate on the included Go lab.
 Read [the requirements map](HACKATHON_REQUIREMENTS.md) before submission.
+Recording and submission drafts are in [DEMO.md](DEMO.md) and
+[the submission package](submission/README.md).
 
 Built for Graph Hacks, October 15–18, 2026. Intended tracks: **Agents That Act on
 Connected Data**, **Agent Memory and Coordination**, **Company Brain**.

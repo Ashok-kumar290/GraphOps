@@ -59,3 +59,9 @@ company answer/source presentation, navigation/focus improvements and the
 associated DOM and live API/evidence-function checks. Native browser review
 could not run because the computer-use helper and browser connection were
 unavailable. Participant review and ownership of the code remain separate work.
+
+Codex also prepared the recording plan, submission text draft, evidence map and
+local source-archive helper. During package review, direct graph-edge-removal
+checks were added for handoff and prepared-plan execution; the current 63-check
+backend suite passed. The source package is a local review artifact, not a
+claim of public publication, video completion or participant verification.

@@ -35,3 +35,5 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [Company answers across source revisions](native-cli-company-revisions.json)
 - [Isolated backup restoration and fresh recovery](native-cli-backup-restore.json)
 - [Guided frontend: DOM checks, live API evidence and remaining browser review](frontend-guided-workflow.json)
+- [Current 63-check backend, product and terminal suite](checks-current.json)
+- [Graph-edge removal blocks handoff and prepared execution](graph-dependency-proof.json)

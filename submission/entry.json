@@ -1,0 +1,39 @@
+{
+  "status": "draft",
+  "project_name": "GraphOps",
+  "tagline": "A company copilot that carries sourced context into the next session.",
+  "tracks": [
+    "Agents That Act on Connected Data",
+    "Agent Memory and Coordination",
+    "Company Brain"
+  ],
+  "team": {
+    "registered_name": null,
+    "members": []
+  },
+  "links": {
+    "public_repository": null,
+    "demo_video": null,
+    "public_deployment": null
+  },
+  "local_setup": "README.md",
+  "graph_model_and_queries": "QUERIES.md",
+  "architecture": "ARCHITECTURE.md",
+  "product_walkthrough": "WALKTHROUGH.md",
+  "recording_plan": "DEMO.md",
+  "measured_results": "RESULTS.md",
+  "ai_assistance_and_reuse": "PROVENANCE.md",
+  "participant_review_record": "LEARN.md",
+  "pending": [
+    "Registered team name and actual member contributions",
+    "Participant code review and technical walkthrough",
+    "Public repository publication and visibility check",
+    "Working demo video recording and access check",
+    "Real-browser desktop/mobile and keyboard review",
+    "Final signed-in submission form fields and constraints"
+  ],
+  "deployment_status": "No public instance provisioned; complete local setup is provided",
+  "official_rules_last_checked": "2026-10-15",
+  "official_rules_url": "https://www.wemakedevs.org/hackathons/falkordb/rules",
+  "submission_form_verified": false
+}

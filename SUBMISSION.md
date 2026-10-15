@@ -1,5 +1,11 @@
 # Submission preparation
 
+Prepared artifacts: [submission package](submission/README.md),
+[form text draft](submission/FORM_DRAFT.md), [entry fields](submission/entry.json),
+[track evidence](submission/TRACK_EVIDENCE.md), and [recording plan](DEMO.md).
+These are draft materials; a video, public repository and participant review
+remain pending.
+
 See [the supplied rules map](HACKATHON_REQUIREMENTS.md), [module design](MODULES.md)
 and [participant walkthrough](LEARN.md). Participant understanding and meaningful
 contribution are explicit requirements under rules 12-13; the walkthrough is not
@@ -31,7 +37,8 @@ is accepted by the published rules. Review the actual form once submissions open
 
 ## Before submitting
 
-- [ ] Confirm organizer acceptance of the disclosed preparation concept/adapter.
+- [ ] Review the disclosed event work and preparation reuse in PROVENANCE.md;
+      seek organizer clarification if the team still has eligibility questions.
 - [ ] Record each teammate's actual contributions in PROVENANCE.md.
 - [ ] Complete the participant walkthrough; explain the schema, essential queries,
       module interfaces and decisions in your own words.
@@ -46,6 +53,11 @@ is accepted by the published rules. Review the actual form once submissions open
       recovery, memory reuse, changed company knowledge and a blocked action.
 - [ ] Add the public repository, demo URL and video to the submission form.
 - [ ] Review all form requirements and deadline shown in the signed-in portal.
+
+The public overview and rules were rechecked on October 15, 2026. The published
+requirements match the supplied rule text. The public registration/submission
+panel still displays Loading; no claim is made about the signed-in form's fields
+or video-length limits. The four-minute recording target in DEMO.md is our plan.
 
 ## Suggested demonstration order
 

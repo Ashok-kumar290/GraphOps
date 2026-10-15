@@ -4,6 +4,13 @@ Basis: the participant supplied the full 18 rules from the hackathon page in
 this conversation on October 15, 2026. This map uses that supplied text. Review
 the final submission portal and organizer updates before submitting.
 
+The public overview and rules were also rechecked October 15, 2026. Their
+published requirements match the supplied rules. The signed-in form remains
+unverified; its public panel displays Loading. Prepared submission text and
+unfilled team/link fields are in [submission/](submission/README.md).
+[Official overview](https://www.wemakedevs.org/hackathons/falkordb),
+[official rules](https://www.wemakedevs.org/hackathons/falkordb/rules).
+
 ## Entry and implementation
 
 | Rule | Requirement | Our implementation / remaining work |

@@ -1,0 +1,24 @@
+{
+  "checked_on": "2026-10-15",
+  "scope": "Direct backend policy checks in isolated FalkorDB graphs and actual Go HTTP fixtures",
+  "tests": 2,
+  "passed": 2,
+  "duration_seconds": 5.401,
+  "model_inference": false,
+  "checks": [
+    {
+      "name": "test_seed_does_not_restore_deleted_dependency",
+      "change": "Remove orders -> payments; initialize the same workspace again",
+      "result": "Missing edge remains missing; payments handoff is blocked",
+      "recovery_actions": 0
+    },
+    {
+      "name": "test_removed_dependency_blocks_prepared_recovery",
+      "change": "Prepare a valid payments recovery plan, then remove orders -> payments",
+      "result": "Execution rejects the changed dependency path; payments remains HTTP 503",
+      "recovery_actions": 0
+    }
+  ],
+  "active_team_workspace_modified": false,
+  "limits": "These exercise backend guards with explicit tool calls, not model reasoning or arbitrary graph failure recovery."
+}
