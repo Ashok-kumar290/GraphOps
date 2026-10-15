@@ -1,0 +1,46 @@
+{
+  "checked_on": "2026-10-15",
+  "platform": "Windows PowerShell",
+  "scope": "Local synthetic company and controlled Go services",
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "actual_model_inference": true,
+  "actual_falkordb_go_http_mcp": true,
+  "cold_start": {
+    "initial_failure": "Windows PowerShell stopped on Docker daemon stderr before the restart branch; per-user Docker Desktop path was absent",
+    "fixed": true,
+    "observed_result": "Started per-user Docker Desktop, reused existing FalkorDB and restored app availability with previous runs intact",
+    "already_running_check": "Passed without starting another app"
+  },
+  "worker_scenario": {
+    "task": "INC-E7AB5F8E",
+    "investigator_session": "1f522b60-e394-40b0-95ab-3c914fb156f1",
+    "resolver_session": "6de4d65f-be58-4af1-9669-c95c6b91ce49",
+    "investigate_duration_seconds": 13.745,
+    "resume_duration_seconds": 8.567,
+    "target": "orders",
+    "action": "restart_worker",
+    "target_http_before": 503,
+    "target_http_after": 200,
+    "gateway_http_after": 200,
+    "status": "resolved",
+    "memory_retrieved_in_new_cli_process": true,
+    "saved_memory_kinds": ["episodic", "procedural", "semantic"],
+    "report_exported": true
+  },
+  "doctor": {
+    "task": "INC-54E6E2DE",
+    "duration_seconds": 4.361,
+    "model": true,
+    "mcp": true
+  },
+  "launcher_regression_checks": {
+    "tests": 2,
+    "passed": 2,
+    "duration_seconds": 4.405,
+    "real_powershell_invocations": 4,
+    "http": "Local stub; these path checks do not validate model inference",
+    "coverage": "Both launchers import and export relative to a separate caller folder whose name contains spaces"
+  },
+  "limits": "Finite local checks. Analytics intentionally remains HTTP 503. Expired health observations become historical memory. No public hosting or browser visual review was performed."
+}

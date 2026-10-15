@@ -7,9 +7,11 @@ if (-not (Test-Path -LiteralPath $taskPython)) {
 if (-not (Test-Path -LiteralPath $taskPython)) { throw 'Run start.ps1 once to set up Python dependencies.' }
 $taskArguments = @($args)
 if ($taskArguments.Count -eq 0) { $taskArguments = @('--help') }
-Push-Location -LiteralPath $PSScriptRoot
+$taskPreviousPythonPath = $env:PYTHONPATH
 try {
+    $env:PYTHONPATH = $PSScriptRoot
+    if ($taskPreviousPythonPath) { $env:PYTHONPATH += [IO.Path]::PathSeparator + $taskPreviousPythonPath }
     & $taskPython -m graphops.cli @taskArguments
     $taskExit = $LASTEXITCODE
-} finally { Pop-Location }
+} finally { $env:PYTHONPATH = $taskPreviousPythonPath }
 exit $taskExit

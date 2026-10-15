@@ -23,20 +23,31 @@ try {
         & $pythonPath -m graphops.bootstrap database
         return $LASTEXITCODE -eq 0
     }
+    function Test-GraphOpsDocker {
+        # Windows PowerShell treats redirected native stderr as an error record.
+        # An unavailable daemon is expected here; inspect the exit code instead.
+        $previousErrorAction = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = 'Continue'
+            & docker info --format '{{.ServerVersion}}' 2>$null | Out-Null
+            return $LASTEXITCODE -eq 0
+        } finally { $ErrorActionPreference = $previousErrorAction }
+    }
     if (-not (Test-GraphOpsDatabase)) {
         if ($config.db_host -notin @('localhost','127.0.0.1') -or $config.db_port -ne 6379) { throw 'The configured external database is unavailable. Restore that connection, then retry.' }
-        & docker info --format '{{.ServerVersion}}' 2>$null | Out-Null
-        if ($LASTEXITCODE -ne 0) {
-            $desktop = Join-Path $env:ProgramFiles 'Docker/Docker/Docker Desktop.exe'
-            if (-not (Test-Path -LiteralPath $desktop)) { throw 'Install Docker Desktop and start it, then retry.' }
+        if (-not (Test-GraphOpsDocker)) {
+            $desktop = @(
+                (Join-Path $env:ProgramFiles 'Docker/Docker/Docker Desktop.exe')
+                (Join-Path $env:LOCALAPPDATA 'Programs/DockerDesktop/Docker Desktop.exe')
+            ) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+            if (-not $desktop) { throw 'Install Docker Desktop and start it, then retry.' }
             Start-Process -FilePath $desktop -WindowStyle Hidden
             Write-Host 'Waiting for Docker Desktop...'
             for ($attempt=0; $attempt -lt 60; $attempt++) {
                 Start-Sleep -Seconds 2
-                & docker info --format '{{.ServerVersion}}' 2>$null | Out-Null
-                if ($LASTEXITCODE -eq 0) { break }
+                if (Test-GraphOpsDocker) { break }
             }
-            if ($LASTEXITCODE -ne 0) { throw 'Docker Desktop did not become ready.' }
+            if (-not (Test-GraphOpsDocker)) { throw 'Docker Desktop did not become ready.' }
         }
         $candidates = @(& docker ps -a --filter publish=6379 --format '{{.ID}}')
         $matching = @($candidates | Where-Object { ((& docker inspect --format '{{.Config.Image}}' $_) -like 'falkordb/falkordb*') })

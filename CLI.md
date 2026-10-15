@@ -16,6 +16,12 @@ Open another terminal in this repository:
 Both the parent workspace and this repository have a `graphops.ps1` launcher.
 On Linux/macOS or in a virtual environment, use `python -m graphops.cli` followed
 by the same arguments. Docker package commands can also use that Python entry.
+Relative import and export paths resolve from the terminal's current directory,
+including when the launcher is invoked from another folder.
+
+On Windows, `start.ps1` can start an installed Docker Desktop when the daemon is
+stopped. It checks both system and per-user installation locations, then reuses
+the existing FalkorDB container so saved company data and runs remain available.
 
 ## One complete demonstration
 
