@@ -126,12 +126,18 @@ class ProductIntegration(unittest.TestCase):
             self.assertEqual(result['nodes'],len(backup['nodes']))
             self.assertEqual(restored.runs.get(self.task)['status'],'resolved')
             self.assertEqual(len(restored.company.search('72 hours')['documents']),1)
+            for offset,service in enumerate(('gateway','orders','payments','analytics')):
+                self.assertEqual(restored.read('MATCH (s:Service {id:$id}) RETURN s.url',id=service)[0][0],f'http://127.0.0.1:{port+offset}')
             with self.assertRaises(ValueError):restore_workspace(backup,target,port)
             restored_lab=Lab(settings.DATA/target,port).start()
             self.assertEqual(request(restored_lab.url('gateway')+'/health')['http_status'],200)
             self.assertEqual(restored_lab.state()['action_count'],1)
             semantic=[m for m in restored.memory.list('payments') if m['kind']=='semantic'][0]
             self.assertFalse(semantic['verified'])
+            self.assertTrue(semantic['data']['restored_snapshot'])
+            original_semantic=next(m for m in self.store.memory.list('payments') if m['kind']=='semantic')
+            self.assertTrue(original_semantic['verified'])
+            self.assertNotIn('restored_snapshot',original_semantic['data'])
         finally:
             if restored_lab:restored_lab.close()
             if 'restored' in locals():restored.graph.delete()

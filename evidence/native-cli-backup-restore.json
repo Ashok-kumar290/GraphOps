@@ -1,0 +1,61 @@
+{
+  "checked_on": "2026-10-15",
+  "scope": "Local synthetic company, FalkorDB and controlled Go HTTP services",
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "actual_model_inference": true,
+  "source_workspace": "team-demo",
+  "restored_workspace": "cli-restore-20261015-1633",
+  "backup": {
+    "nodes": 800,
+    "edges": 1376,
+    "saved_runs": 24,
+    "includes_provider_keys": false,
+    "simulator_action_count": 13
+  },
+  "restore": {
+    "completed": true,
+    "lab_port": 9165,
+    "service_ports": [9165, 9166, 9167, 9168],
+    "saved_incident_status_preserved": "resolved",
+    "initial_gateway_orders_payments_http": 200,
+    "duplicate_target_rejected": true,
+    "copied_payments_health_snapshots_marked_unverified": 4
+  },
+  "new_recovery_in_restored_copy": {
+    "task": "INC-DCC0C43D",
+    "scenario": "worker",
+    "investigator_session": "980eaf9a-17c6-4ab0-8c34-69b891f7e35e",
+    "resolver_session": "493f32d6-5ec5-4afb-8b53-2e79438a68ca",
+    "status": "resolved",
+    "target": "orders",
+    "target_http_before": 503,
+    "target_http_after": 200,
+    "gateway_http_after": 200,
+    "ticket_closed": true,
+    "simulator_action_count_after": 14
+  },
+  "company_answer_in_restored_copy": {
+    "task": "INC-4C4E59F3",
+    "status": "answered",
+    "observed_review_window_hours": 48,
+    "source": "owned:document/owned-c4fe4244940fa9baf7e5",
+    "source_revision": "075ec10ab7ba0a8c"
+  },
+  "isolation": {
+    "original_workspace_stayed_running": true,
+    "original_simulator_action_count_after": 13,
+    "restored_incident_present_in_original": false,
+    "original_service_ports": [8865, 8866, 8867, 8868],
+    "connected_workspace_mismatch_rejected_before_submission": true
+  },
+  "regression_check": {
+    "name": "tests.test_product.ProductIntegration.test_backup_restore_preserves_company_and_recovery",
+    "passed": true,
+    "duration_seconds": 11.673,
+    "model_inference": false,
+    "actual_falkordb_go_fixture": true,
+    "added_assertions": "Every service URL uses the new port range; copied semantic facts are flagged as restored snapshots without mutating the original memory"
+  },
+  "limits": "One local backup/restore rehearsal. Not a database disaster-recovery guarantee. Historical evidence keeps its original source URLs. Analytics intentionally remains unhealthy."
+}

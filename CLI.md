@@ -217,3 +217,25 @@ Standalone supports run, investigate, resume, ask, doctor, status, memory and
 backup. Connected monitoring and company management require the running server.
 Restore is an offline operation and always requires a new workspace name.
 Provider configuration also remains local and uses hidden prompts.
+
+After restoring into `restored-demo`, verify the copy with explicit standalone
+commands and the same port used during restoration:
+
+```powershell
+.\graphops.ps1 --standalone --workspace restored-demo --port 9165 status
+.\graphops.ps1 --standalone --workspace restored-demo --port 9165 memory payments
+.\graphops.ps1 --standalone --workspace restored-demo --port 9165 ask "Who owns payments? Cite sources." --service payments
+.\graphops.ps1 --standalone --workspace restored-demo --port 9165 run --scenario worker
+```
+
+Each standalone invocation starts its own simulator and closes it when the
+command ends. Its graph and simulator state persist under the restored workspace.
+The original web app can stay running when the restored copy uses a separate
+workspace and five free consecutive ports. Service endpoints are remapped;
+historical evidence retains its original source locations. Copied semantic
+health facts are marked unverified until fresh observations replace them.
+
+`--workspace restored-demo` alone does not switch the running web app. In
+connected mode it checks that the server already owns that workspace and rejects
+a mismatch before submitting a command. Use `--standalone` to operate the offline
+copy, or connect to a server explicitly started for that workspace.
