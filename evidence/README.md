@@ -38,3 +38,4 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [Current 63-check backend, product and terminal suite](checks-current.json)
 - [Graph-edge removal blocks handoff and prepared execution](graph-dependency-proof.json)
 - [Cold restart and connected live model/MCP diagnostics](native-restart-publication.json)
+- [Two live CLI rehearsals with incident-specific completion evidence](judge-cli-rehearsal.json)

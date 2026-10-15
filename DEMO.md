@@ -24,6 +24,13 @@ visible. The recording itself has not been made yet.
 5. Read [WALKTHROUGH.md](WALKTHROUGH.md). Each presenter should perform the
    parts they will explain. Record actual team contributions in PROVENANCE.md.
 
+The latest [connected CLI rehearsal](evidence/judge-cli-rehearsal.json) passed
+both supported scenarios with real Qwen3:8b inference. To repeat it before
+recording, run `graphops.ps1 demo --scenario config` and then
+`graphops.ps1 demo --scenario worker`. Each drill creates a company question and
+a new incident, injects a synthetic fault, recovers it and checks its own saved
+evidence. A successful CLI rehearsal does not complete the browser review.
+
 ## Main story
 
 | Time target | Show | Narration draft |

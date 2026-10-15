@@ -1,0 +1,135 @@
+{
+  "observed_at": "2026-10-15T20:12:03.177575+00:00",
+  "source_base_commit": "7d5e98024e19e10c33db5cfe736fd685368b3bcf",
+  "scope": "Two complete native connected CLI drills using actual Qwen3:8b inference, FalkorDB, role-bound MCP and Go HTTP services. Evidence rechecked with the final demo validator. No browser interaction.",
+  "terminal_checks": {
+    "command": "python -m unittest tests.test_terminal -v",
+    "passed": 24,
+    "total": 24,
+    "live_model_inference": false
+  },
+  "rehearsals": [
+    {
+      "scenario": "config",
+      "task": "INC-7FD20961",
+      "question_task": "INC-2E05E5FB",
+      "elapsed_seconds": 31.17,
+      "mode": "llm",
+      "model": {
+        "provider": "ollama",
+        "model": "qwen3:8b",
+        "configured": true
+      },
+      "company_answer": {
+        "summary": "The incident review window according to the \"CLI synthetic incident policy\" is **48 hours**. \n\nThe exact source location is:  \n**owned:document/owned-c4fe4244940fa9baf7e5**.",
+        "citations": [
+          "owned:document/owned-c4fe4244940fa9baf7e5"
+        ],
+        "validation_scope": "Known source location; not full claim entailment"
+      },
+      "action": "restore_config",
+      "target": "payments",
+      "target_before_http": 503,
+      "target_after_http": 200,
+      "gateway_after_http": 200,
+      "ticket_closed": true,
+      "evidence": {
+        "checks": {
+          "matching_incident": true,
+          "graph_path": true,
+          "distinct_sessions": true,
+          "measured_recovery": true,
+          "ticket_closed": true,
+          "matching_memory": true,
+          "workspace_idle": true
+        },
+        "sessions": {
+          "investigator": [
+            "199431ed-3b3b-4099-9289-cf89cb0f7b94"
+          ],
+          "resolver": [
+            "ac0ccf72-39aa-4c35-b8b5-ac64ef5356b9"
+          ]
+        },
+        "memory_ids": [
+          "INC-7FD20961:episodic",
+          "INC-7FD20961:procedural",
+          "INC-7FD20961:semantic"
+        ],
+        "success": true
+      }
+    },
+    {
+      "scenario": "worker",
+      "task": "INC-CD8D2C59",
+      "question_task": "INC-5FAE58C3",
+      "elapsed_seconds": 29.672,
+      "mode": "llm",
+      "model": {
+        "provider": "ollama",
+        "model": "qwen3:8b",
+        "configured": true
+      },
+      "company_answer": {
+        "summary": "The incident review window according to the \"CLI synthetic incident policy\" is **48 hours**. \n\nThe exact source location is:  \n**owned:document/owned-c4fe4244940fa9baf7e5**  \nwith the text:  \n*\"For this synthetic CLI drill, the incident review window is 48 hours. Recovery still requires the approved service runbook.\"*",
+        "citations": [
+          "owned:document/owned-c4fe4244940fa9baf7e5"
+        ],
+        "validation_scope": "Known source location; not full claim entailment"
+      },
+      "action": "restart_worker",
+      "target": "orders",
+      "target_before_http": 503,
+      "target_after_http": 200,
+      "gateway_after_http": 200,
+      "ticket_closed": true,
+      "evidence": {
+        "checks": {
+          "matching_incident": true,
+          "graph_path": true,
+          "distinct_sessions": true,
+          "measured_recovery": true,
+          "ticket_closed": true,
+          "matching_memory": true,
+          "workspace_idle": true
+        },
+        "sessions": {
+          "investigator": [
+            "07bc9c1c-b787-425c-a05d-1f6dc14b0a3b"
+          ],
+          "resolver": [
+            "a259d87b-f93c-4c15-851b-d62d83b7b1df"
+          ]
+        },
+        "memory_ids": [
+          "INC-CD8D2C59:episodic",
+          "INC-CD8D2C59:procedural",
+          "INC-CD8D2C59:semantic"
+        ],
+        "success": true
+      }
+    }
+  ],
+  "final_health": [
+    {
+      "service": "gateway",
+      "http_status": 200
+    },
+    {
+      "service": "orders",
+      "http_status": 200
+    },
+    {
+      "service": "payments",
+      "http_status": 200
+    },
+    {
+      "service": "analytics",
+      "http_status": 503
+    }
+  ],
+  "limitations": [
+    "Two controlled scenarios do not establish general reliability or production capacity.",
+    "Browser review, public repository publication and video recording remain pending."
+  ]
+}

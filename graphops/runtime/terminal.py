@@ -145,6 +145,39 @@ def monitor(client,display,args):
         time.sleep(min(args.interval,max(.01,duration-(time.monotonic()-start))) if duration else args.interval)
 
 
+def demo_evidence(task_id, report, memory, live, paths, mode):
+    """Require evidence belonging to this drill, rather than workspace totals."""
+    task=report.get('incident',{})
+    target=task.get('target')
+    outcome=task.get('outcome') or {}
+    sessions={role:sorted({event['session'] for event in report.get('events',[])
+        if event.get('kind')=='session_started' and event.get('role')==role
+        and event.get('session') and event.get('data',{}).get('mode')==mode})
+        for role in ('investigator','resolver')}
+    records=[record for group in ('active','historical') for record in memory.get(group,[])
+        if record.get('task')==task_id and record.get('service')==target
+        and record.get('verified') is True and record.get('source')]
+    selected=live.get('selected') or {}
+    checks={
+        'matching_incident':task.get('id')==task_id and task.get('mode')==mode and not task.get('question'),
+        'graph_path':bool(target) and (target==task.get('service') or any(
+            path.get('services',[])[:1]==[task.get('service')]
+            and path.get('services',[])[-1:]==[target] for path in paths)),
+        'distinct_sessions':any(i!=r for i in sessions['investigator'] for r in sessions['resolver']),
+        'measured_recovery':task.get('status')=='resolved' and not task.get('last_error')
+            and outcome.get('success') is True and outcome.get('target')==target
+            and (outcome.get('after') or {}).get('http_status')==200
+            and (outcome.get('incident') or {}).get('http_status')==200,
+        'ticket_closed':task.get('ticket_closed') is True,
+        'matching_memory':all(any(record.get('kind')==kind for record in records)
+            for kind in ('episodic','procedural','semantic')),
+        'workspace_idle':not live.get('degraded') and live.get('busy') is False
+            and selected.get('id')==task_id and selected.get('job')=='idle',
+    }
+    return {'checks':checks,'sessions':sessions,'memory_ids':sorted({record['id'] for record in records}),
+        'success':all(checks.values())}
+
+
 def demo(client,display,args):
     started=time.monotonic()
     def step(module,detail):display.emit('module',{'module':module,'detail':detail},f'\n[{module.upper()}] {detail}')
@@ -182,12 +215,14 @@ def demo(client,display,args):
     step('Workspace','Retrieve the saved report and operational monitor')
     report=client.get('/api/reports',task=reply['task'])
     live=client.get('/api/monitor',task=reply['task'])
-    success=bool(report['incident'].get('ticket_closed')) and not live.get('degraded') and counts['active']+counts['historical']>=3
+    evidence=demo_evidence(reply['task'],report,memory,live,paths,args.mode)
+    success=evidence['success']
     display.emit('demo_complete',{'success':success,'task':reply['task'],'question_task':answer['task']['id'],
         'modules':['Company knowledge','Graph','Agent','Actions','Memory','Workspace'],'mode':args.mode,
         'model_inference':args.mode=='llm','company_policy_citation_checked':args.mode=='llm',
-        'elapsed_seconds':round(time.monotonic()-started,3)},
-        f"\nSIX-MODULE DEMO {'PASSED' if success else 'FAILED'} | task={reply['task']} | mode={args.mode}")
+        'elapsed_seconds':round(time.monotonic()-started,3),'evidence':evidence},
+        f"\nSIX-MODULE DEMO {'PASSED' if success else 'FAILED'} | task={reply['task']} | mode={args.mode}"+
+        ('' if success else '\nFailed checks: '+', '.join(name for name,passed in evidence['checks'].items() if not passed)))
     return 0 if success else 2
 
 

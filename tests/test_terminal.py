@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import httpx
-from graphops.runtime.terminal import build_parser, follow_task, write_export
+from graphops.runtime.terminal import build_parser, demo_evidence, follow_task, write_export
 from graphops.runtime.terminal_client import ProductClient, TerminalError
 from graphops.runtime.terminal_display import Display, clean, event_record
 from graphops.workspace.processes import sample_process
@@ -17,6 +17,64 @@ from tests import test_event as fixtures
 
 
 class TerminalUnit(unittest.TestCase):
+    def demo_fixture(self):
+        task='INC-NEW'
+        report={'incident':{'id':task,'mode':'llm','service':'gateway','target':'payments',
+            'status':'resolved','ticket_closed':True,'outcome':{'success':True,'target':'payments',
+                'after':{'http_status':200},'incident':{'http_status':200}}},
+            'events':[{'kind':'session_started','role':role,'session':role+'-session','data':{'mode':'llm'}}
+                for role in ('investigator','resolver')]}
+        memory={'active':[{'id':task+':'+kind,'task':task,'service':'payments','kind':kind,
+            'verified':True,'source':'fixture:source'} for kind in ('episodic','procedural','semantic')],
+            'historical':[],'unverified':[]}
+        live={'degraded':False,'busy':False,'selected':{'id':task,'job':'idle'}}
+        return task,report,memory,live,[{'services':['gateway','orders','payments']}],'llm'
+
+    def test_demo_requires_this_incident_evidence(self):
+        args=self.demo_fixture()
+        evidence=demo_evidence(*args)
+        self.assertTrue(evidence['success'])
+        self.assertEqual(len(evidence['memory_ids']),3)
+        self.assertTrue(all(evidence['checks'].values()))
+
+    def test_demo_rejects_older_wrong_service_and_unverified_memories(self):
+        for mismatch in ('older','wrong-service','unverified','false-verification','missing-source','missing-kind'):
+            with self.subTest(mismatch=mismatch):
+                args=self.demo_fixture();memory=args[2]
+                if mismatch=='older':
+                    for row in memory['active']:row['task']='INC-OLD'
+                elif mismatch=='wrong-service':
+                    for row in memory['active']:row['service']='orders'
+                elif mismatch=='unverified':
+                    memory['unverified']=memory['active'];memory['active']=[]
+                elif mismatch=='false-verification':memory['active'][0]['verified']=False
+                elif mismatch=='missing-source':memory['active'][0]['source']=''
+                else:memory['active'][-1]['kind']='episodic'
+                evidence=demo_evidence(*args)
+                self.assertFalse(evidence['success']);self.assertFalse(evidence['checks']['matching_memory'])
+
+    def test_demo_rejects_reused_or_wrong_mode_sessions(self):
+        for mismatch in ('same-session','wrong-mode','missing-resolver'):
+            with self.subTest(mismatch=mismatch):
+                args=self.demo_fixture();events=args[1]['events']
+                if mismatch=='same-session':events[1]['session']=events[0]['session']
+                elif mismatch=='wrong-mode':events[1]['data']['mode']='scripted'
+                else:events.pop()
+                self.assertFalse(demo_evidence(*args)['checks']['distinct_sessions'])
+
+    def test_demo_rejects_unmeasured_unfinished_or_disconnected_recovery(self):
+        for mismatch in ('http','ticket','busy','different-task','path','unrelated-path','blocked'):
+            with self.subTest(mismatch=mismatch):
+                args=self.demo_fixture();task=args[1]['incident'];live=args[3]
+                if mismatch=='http':task['outcome']['incident']['http_status']=503
+                elif mismatch=='ticket':task['ticket_closed']=False
+                elif mismatch=='busy':live['busy']=True
+                elif mismatch=='different-task':live['selected']['id']='INC-OLD'
+                elif mismatch=='path':args[4].clear()
+                elif mismatch=='unrelated-path':args[4][0]['services'][0]='analytics'
+                else:task['status']='blocked'
+                self.assertFalse(demo_evidence(*args)['success'])
+
     def test_parser_accepts_json_on_either_side_of_command(self):
         parser=build_parser()
         for args in (['--json','monitor','--once'],['monitor','--once','--json']):

@@ -43,6 +43,14 @@ The CLI prints persisted events as they happen: session starts, model request
 starts and timings, tool names, evidence IDs, plan readiness, measured recovery,
 memory writes and the final checkpoint. It displays the execution mode.
 
+Completion requires the matching resolved incident, a graph path from its entry
+service to the target, distinct investigator/resolver sessions in the requested
+mode, target and gateway HTTP 200, a closed ticket, and an idle workspace.
+The memory check requires verified, sourced episodic, procedural and semantic
+records belonging to this incident and target. Older workspace memory cannot
+satisfy it. `demo_complete.evidence` includes the individual checks, session IDs
+and matching memory IDs; a failed check produces a failing exit status.
+
 `demo --mode scripted` exercises infrastructure with a deterministic policy.
 It does not validate model inference or policy-answer citation accuracy. A live
 demo checks known source locations, not full claim entailment.
