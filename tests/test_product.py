@@ -34,6 +34,10 @@ class ProductIntegration(unittest.TestCase):
         with self.assertRaises(ConflictError):self.source(text='Changed without the latest revision')
         revised=self.source(id=doc['id'],base_revision=doc['revision'],text='Refund review window: 96 hours.')
         self.assertNotEqual(doc['revision'],revised['revision'])
+        with self.assertRaises(ConflictError):
+            self.source(id=doc['id'],base_revision=doc['revision'],text='Stale edit: review window is 12 hours.')
+        self.assertEqual(self.store.company.document(doc['id']),revised)
+        self.assertEqual(self.store.company.search('12 hours')['documents'],[])
         self.assertIn(doc['revision'],[d['revision'] for d in self.store.company.context('payments')['historical_documents']])
         self.assertEqual(len(self.store.audit.list()),2)
 

@@ -1,0 +1,60 @@
+{
+  "checked_on": "2026-10-15",
+  "scope": "Local synthetic company policy; connected CLI and fresh company-agent sessions",
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "actual_model_inference": true,
+  "actual_falkordb_mcp": true,
+  "document": "owned-c4fe4244940fa9baf7e5",
+  "source": "owned:document/owned-c4fe4244940fa9baf7e5",
+  "answers": [
+    {
+      "task": "INC-15B9388F",
+      "session": "a9446df9-598a-4b61-aab6-515e43ad1054",
+      "expected_hours": 48,
+      "observed_hours": 48,
+      "expected_revision": "075ec10ab7ba0a8c",
+      "source_and_revision_in_answer": true,
+      "agent_duration_ms": 10455
+    },
+    {
+      "task": "INC-724CD5D2",
+      "session": "fc685eef-9b45-41c9-8992-6a8d72f7b024",
+      "expected_hours": 96,
+      "observed_hours": 96,
+      "expected_revision": "9dab039fa4cab25a",
+      "source_and_revision_in_answer": true,
+      "agent_duration_ms": 11350
+    },
+    {
+      "task": "INC-048F12B4",
+      "session": "adb32cc3-f18c-409c-bb09-7f1e8e893ddc",
+      "expected_hours": 48,
+      "observed_hours": 48,
+      "expected_revision": "075ec10ab7ba0a8c",
+      "source_and_revision_in_answer": true,
+      "agent_duration_ms": 11311
+    }
+  ],
+  "stale_edit": {
+    "http_status": 409,
+    "cli_exit_code": 1,
+    "newer_current_revision_preserved": true
+  },
+  "history": {
+    "original_revision_readable_after_update": true,
+    "updated_revision_readable_after_restoration": true,
+    "search_finds_updated_policy_while_current": true,
+    "search_96_hours_after_restoration": 0
+  },
+  "restored_to_original_policy": true,
+  "regression_check": {
+    "name": "tests.test_product.ProductIntegration.test_source_import_search_version_and_conflict",
+    "passed": true,
+    "duration_seconds": 2.696,
+    "actual_falkordb_go_fixture": true,
+    "model_inference": false,
+    "added_assertions": "A stale edit after an accepted update cannot change the current document, appear in search, or create another audit entry"
+  },
+  "limits": "Three finite local answers. Source-location validation does not prove claim entailment. The specific values and revision strings were checked against the actual policy text."
+}

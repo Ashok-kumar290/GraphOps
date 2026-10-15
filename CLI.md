@@ -162,6 +162,25 @@ Update an imported source with `import FILE --title TITLE --id DOCUMENT_ID
 are enforced by the same backend used by the UI. Imports remain reference data
 and cannot authorize an action. Output files refuse overwrites.
 
+To check company answers across sessions:
+
+1. Run `demo` to create the synthetic CLI policy, then use `search` to find its
+   document ID and current revision. Ask for its incident review window with
+   `ask`, requesting the exact source location and revision.
+2. Save an edited copy of the policy in a local text file and import it using
+   that ID and `--base-revision`. Ask again from another CLI invocation. Compare
+   the returned value, source and revision with the imported document.
+3. Try another import with the old base revision. Expect HTTP 409 and a nonzero
+   exit code. Read the current source to confirm it was not overwritten.
+4. Use `source ID --revision OLD_REVISION` to read historical text. `search`
+   searches current documents; reading an old revision does not make it current.
+5. Restore the original policy text through an import using the latest base
+   revision. Content-identical restoration reuses the original immutable revision.
+
+Each `ask` creates a new company-agent session. Known source-location validation
+does not prove that every model claim follows from its source. Check the actual
+answer against the source text and revision, as in this rehearsal.
+
 ## Authentication, remote access and JSON
 
 Default origin: `http://127.0.0.1:8080`. Use a different origin explicitly:
