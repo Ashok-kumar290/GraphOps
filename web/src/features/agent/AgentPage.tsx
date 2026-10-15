@@ -1,9 +1,7 @@
 import React from "react";
 import { Activity, ArrowRight, ArrowUpRight, Braces, CheckCircle2, Database, GitBranch, Layers3, LoaderCircle, Network, Play } from "lucide-react";
-import type { Inspect } from "../../shared/contracts";
 import { nice } from "../../shared/format";
 import { useWorkspace } from "../../app/WorkspaceContext";
-import { api } from "../../shared/api";
 import { Metric } from "../../shared/ui";
 import { Timeline } from "../runs/Timeline";
 import { ServiceGraph } from "../graph/ServiceGraph";
@@ -19,14 +17,17 @@ const {
   pauseAfterHandoff,
   setPauseAfterHandoff,
   locked,
+  connectionError,
   stage,
   command,
   busy,
-  selected,
+  selected: selectedTask,
   company,
   allMemory,
   inspect
 } = useWorkspace();
+const selected = selectedTask?.question ? undefined : selectedTask;
+const recoveryComplete = selected?.status === "resolved" && selected.ticket_closed === true && selected.job === "idle" && !selected.last_error;
 return (
                 <>
                   <section className="run-control panel">
@@ -74,7 +75,7 @@ return (
                       </select>
                       <button
                         className="button primary"
-                        disabled={busy || !data || locked}
+                        disabled={busy || !data || locked || !!connectionError}
                         onClick={() =>
                           void command("/api/incidents", {
                             scenario,
@@ -142,7 +143,7 @@ return (
                     <Metric
                       label="INCIDENT STATUS"
                       value={
-                        selected ? nice(selected.status) : "Ready to begin"
+                        selected ? selected.job === "interrupted" ? "Interrupted" : nice(selected.status) : "Ready to begin"
                       }
                       icon={<GitBranch size={15} />}
                     />
@@ -197,11 +198,11 @@ return (
                     <section
                       className={
                         "handoff-bar " +
-                        (selected.status === "resolved" ? "complete" : "")
+                        (recoveryComplete ? "complete" : "")
                       }
                     >
                       <span className="small-icon">
-                        {selected.status === "resolved" ? (
+                        {recoveryComplete ? (
                           <CheckCircle2 size={19} />
                         ) : (
                           <GitBranch size={19} />
@@ -209,15 +210,17 @@ return (
                       </span>
                       <div>
                         <strong>
-                          {selected.status === "resolved"
+                          {recoveryComplete
                             ? "Recovery verified"
+                            : selected.job === "interrupted"
+                              ? "Run interrupted. Your checkpoint is saved."
+                            : selected.status === "resolved"
+                              ? busy ? "Recovery measured. Completing the ticket." : "Recovery measured. Resume to finish the ticket."
                             : selected.status === "handoff"
                               ? busy
                                 ? "Investigation saved. Resolver is continuing."
                                 : "Investigation saved. Resume to recover checkout."
-                              : selected.job === "interrupted"
-                                ? "Run interrupted. Your checkpoint is saved."
-                                : selected.status === "blocked"
+                              : selected.status === "blocked"
                                   ? "Evidence needs attention"
                                   : "Investigation in progress"}
                         </strong>
@@ -234,9 +237,9 @@ return (
                       </div>
                       <button
                         className="button secondary"
-                        disabled={busy}
+                        disabled={busy || !!connectionError || locked}
                         onClick={() =>
-                          selected.status === "resolved"
+                          recoveryComplete
                             ? inspect(
                                 "Measured recovery result",
                                 selected.outcome,
@@ -249,7 +252,7 @@ return (
                         ) : (
                           <ArrowRight size={15} />
                         )}{" "}
-                        {selected.status === "resolved"
+                        {recoveryComplete
                           ? "Inspect recovery"
                           : "Resume in new session"}
                       </button>
@@ -273,7 +276,7 @@ return (
                         {busy ? stage : "Checkpoint synced"}
                       </span>
                     </div>
-                    <Timeline events={data?.events || []} inspect={inspect} />
+                    <Timeline events={selected ? data?.events || [] : []} inspect={inspect} />
                   </section>
                 </>
               );

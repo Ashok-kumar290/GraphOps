@@ -1,6 +1,5 @@
-import React from "react";
-import { Activity, ArrowUpRight, Box, Braces, ChevronDown, Clock3, Layers3, LockKeyhole, Network, RefreshCw, ShieldCheck, SquareTerminal, Users, Workflow, X, Zap, Settings2, Download, LogOut } from "lucide-react";
-import type { Workspace, Memory } from "../shared/contracts";
+import React, { useEffect } from "react";
+import { Activity, ArrowUpRight, Box, Braces, Clock3, Layers3, LockKeyhole, Network, RefreshCw, ShieldCheck, SquareTerminal, Users, Workflow, X, Zap, Settings2, Download, LogOut } from "lucide-react";
 import { time, nice } from "../shared/format";
 import { WorkspaceProvider, useWorkspace } from "./WorkspaceContext";
 import { PAGE_META } from "./navigation";
@@ -12,6 +11,7 @@ import { MemoryPage } from "../features/memory/MemoryPage";
 import { CompanyPage } from "../features/company/CompanyPage";
 import { HistoryPage } from "../features/runs/HistoryPage";
 import { SystemPage } from "../features/system/SystemPage";
+import { WalkthroughGuide } from "../features/walkthrough/WalkthroughGuide";
 function WorkspaceShell() {
 const {
   data,
@@ -25,7 +25,6 @@ const {
   pending,
   inspector,
   setInspector,
-  question,
   locked,
   token,
   setToken,
@@ -33,13 +32,18 @@ const {
   command,
   busy,
   selected,
-  company,
+  service,
   allMemory,
   choose,
   download
 } = useWorkspace();
+const showRunAlerts = (view === "workspace" && !selected?.question) ||
+  (view === "company" && selected?.question && !selected.diagnostic && selected.target === service) ||
+  (view === "system" && selected?.diagnostic);
+useEffect(() => { document.getElementById("page-title")?.focus(); }, [view]);
 return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <aside className="sidebar">
         <a className="brand" href="/" aria-label="GraphOps home">
           <span className="brand-mark">
@@ -50,13 +54,12 @@ return (
         <div className="workspace-switch">
           <span className="workspace-avatar">G</span>
           <div>
-            <strong>Graph Hacks</strong>
-            <small>Team workspace</small>
+            <strong>{data?.workspace || "Company workspace"}</strong>
+            <small>Shared company context</small>
           </div>
-          <ChevronDown size={14} />
         </div>
         <div className="nav-label">OPERATIONS</div>
-        <nav>
+        <nav aria-label="Main navigation">
           {(
             [
               { id: "home", label: "Start here", icon: Box },
@@ -71,6 +74,9 @@ return (
             <button
               key={item.id}
               className={"nav-item " + (view === item.id ? "active" : "")}
+              aria-label={item.label}
+              aria-current={view === item.id ? "page" : undefined}
+              title={item.label}
               onClick={() => setView(item.id)}
             >
               <item.icon size={17} />
@@ -109,8 +115,8 @@ return (
         </div>
         <div className="sidebar-bottom">
           <div className="live-connection">
-            <span className={"status-dot " + (data ? "resolved" : "blocked")} />
-            {data ? "FalkorDB connected" : "Connecting to FalkorDB"}
+            <span className={"status-dot " + (data && !connectionError ? "resolved" : "blocked")} />
+            {connectionError ? "Connection interrupted" : data ? "FalkorDB connected" : "Connecting to FalkorDB"}
           </div>
           <div className="local-note">
             <Box size={13} />
@@ -158,13 +164,13 @@ return (
             <span className="team-avatar">G</span>
           </div>
         </header>
-        <main>
+        <main id="main-content" tabIndex={-1}>
           <div className="page-heading">
             <div>
               <div className="eyebrow">
                 <span /> EVIDENCE BEFORE ACTION
               </div>
-              <h1>{PAGE_META[view].title}</h1><p>{PAGE_META[view].description}</p>
+              <h1 id="page-title" tabIndex={-1}>{PAGE_META[view].title}</h1><p>{PAGE_META[view].description}</p>
             </div>
             <button
               className="button secondary icon-button"
@@ -189,13 +195,13 @@ return (
               </button>
             </div>
           )}
-          {selected?.last_error && (
+          {showRunAlerts && selected?.last_error && (
             <div className="alert" role="alert">
               <Activity size={16} />
               <span>{selected.last_error}</span>
             </div>
           )}
-          {selected?.blocker && !selected.last_error && (
+          {showRunAlerts && selected?.blocker && !selected.last_error && (
             <div className="alert" role="status">
               <ShieldCheck size={16} />
               <span>{selected.blocker}</span>
@@ -230,6 +236,7 @@ return (
               decisions are deterministic.
             </div>
           )}
+          <WalkthroughGuide />
           {view === "workspace" && selected && !selected.question && (
             <div className="report-action">
               <button

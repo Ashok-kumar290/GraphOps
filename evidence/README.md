@@ -26,3 +26,12 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [evaluation-qwen8-interface](evaluation-qwen8-interface.json)
 - [evaluation-qwen8-final](evaluation-qwen8-final.json)
 - [evaluation-qwen8-bounded-retry](evaluation-qwen8-bounded-retry.json)
+
+## Additional local CLI and frontend rehearsals
+
+- [Windows startup, caller paths and worker recovery](native-cli-followup.json)
+- [CLI interruption and resume](native-cli-interruption.json)
+- [Runbook retirement blocks recovery](native-cli-runbook-gate.json)
+- [Company answers across source revisions](native-cli-company-revisions.json)
+- [Isolated backup restoration and fresh recovery](native-cli-backup-restore.json)
+- [Guided frontend: DOM checks, live API evidence and remaining browser review](frontend-guided-workflow.json)

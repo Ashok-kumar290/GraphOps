@@ -1,6 +1,5 @@
 import React from "react";
 import { Layers3 } from "lucide-react";
-import type { Memory, Inspect } from "../../shared/contracts";
 import { nice } from "../../shared/format";
 import { useWorkspace } from "../../app/WorkspaceContext";
 
@@ -17,6 +16,8 @@ const {
   packet,
   inspect
 } = useWorkspace();
+const visible = (group: "active" | "historical" | "unverified") => (packet?.[group] || []).filter(m =>
+  (memoryKind === "all" || m.kind === memoryKind) && JSON.stringify(m).toLowerCase().includes(memoryQuery.toLowerCase()));
 return (
                 <>
                   <div className="section-intro panel">
@@ -65,6 +66,7 @@ return (
                       <option value="procedural">Procedural</option>
                       <option value="semantic">Semantic</option>
                     </select>
+                    <button className="button secondary" disabled={!memoryQuery && memoryKind === "all"} onClick={() => {setMemoryQuery(""); setMemoryKind("all");}}>Clear filters</button>
                   </div>
                   {!!packet?.conflicts.length && (
                     <button
@@ -96,18 +98,10 @@ return (
                               <h2>{nice(group)}</h2>
                             </div>
                             <span className="count-tag">
-                              {packet?.[group].length || 0}
+                              {visible(group).length} / {packet?.[group].length || 0}
                             </span>
                           </div>
-                          {packet?.[group]
-                            .filter(
-                              (m) =>
-                                (memoryKind === "all" ||
-                                  m.kind === memoryKind) &&
-                                JSON.stringify(m)
-                                  .toLowerCase()
-                                  .includes(memoryQuery.toLowerCase()),
-                            )
+                          {visible(group)
                             .map((m) => (
                               <MemoryCard
                                 key={m.id}
@@ -115,9 +109,9 @@ return (
                                 inspect={inspect}
                               />
                             ))}
-                          {!packet?.[group].length && (
+                          {!visible(group).length && (
                             <p className="quiet-note">
-                              No {group} records for this service.
+                              {packet?.[group].length ? "No records match the current filters." : `No ${group} records for this service.`}
                             </p>
                           )}
                         </section>
@@ -125,6 +119,7 @@ return (
                     )}
                   </div>
                   <p className="footnote">
+                    Counts show matching / retrieved records.{" "}
                     {packet?.cache_hit
                       ? "Packet reused from a valid revision-aware cache."
                       : "Packet retrieved from graph records."}{" "}

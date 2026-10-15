@@ -1,21 +1,17 @@
 import React from "react";
-import { Clock3, FileText, Send, Users } from "lucide-react";
+import { Clock3, FileText, Users } from "lucide-react";
 
 import { useWorkspace } from "../../app/WorkspaceContext";
 import { api } from "../../shared/api";
-import { Timeline } from "../runs/Timeline";
 import { DocumentCard } from "./DocumentCard";
 import { SourceManager } from "./SourceManager";
 import { KnowledgeGraph } from "../graph/KnowledgeGraph";
+import { CompanyQuestion } from "./CompanyQuestion";
 export function CompanyPage() {
 const {
   data,
   service,
   setService,
-  mode,
-  setMode,
-  question,
-  setQuestion,
   owner,
   setOwner,
   refresh,
@@ -37,6 +33,7 @@ return (
                       </button>
                     ))}
                   </div>
+                  <CompanyQuestion />
                   <KnowledgeGraph
                     data={data}
                     service={service}
@@ -169,51 +166,6 @@ return (
                       </div>
                     </section>
                   )}
-                  <section className="panel question-box">
-                    <h3>Ask the company agent about {service}</h3>
-                    <label className="question-mode">
-                      Execution mode
-                      <select
-                        value={mode}
-                        onChange={(e) => setMode(e.target.value)}
-                        disabled={busy}
-                      >
-                        <option value="llm">Agent LLM</option>
-                        <option value="scripted">Scripted baseline</option>
-                      </select>
-                    </label>
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        void command("/api/questions", {
-                          question,
-                          mode,
-                          service,
-                        });
-                      }}
-                    >
-                      <input
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        aria-label="Company question"
-                        placeholder="Who owns this service, and what procedure applies?"
-                        maxLength={1000}
-                      />
-                      <button
-                        className="button primary"
-                        disabled={busy || !question.trim()}
-                      >
-                        <Send size={15} />
-                        Ask
-                      </button>
-                    </form>
-                    <Timeline
-                      events={(data?.events || []).filter(
-                        (e) => e.kind === "session_finished",
-                      )}
-                      inspect={inspect}
-                    />
-                  </section>
                 </>
               );
 }

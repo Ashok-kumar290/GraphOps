@@ -25,6 +25,8 @@ is accepted by the published rules. Review the actual form once submissions open
 - [x] Full Docker product acceptance: 48 checks with actual local model inference,
       including 24 connected CLI commands and the six-module demonstration.
 - [x] Connected CLI with live task progress, durable replay and owned process monitoring.
+- [x] Guided frontend with run-specific evidence, cited company answers,
+      graph inspection, a saved handoff, fresh resolver and matching incident memory.
 - [x] Backend integration and UI component checks; remote CI workflow prepared.
 
 ## Before submitting

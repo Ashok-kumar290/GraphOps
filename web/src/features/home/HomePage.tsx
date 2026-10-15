@@ -13,20 +13,25 @@ const MODULES: {name:string; purpose:string; view:View; icon:typeof Network}[] =
 ];
 
 export function HomePage() {
-  const {setView, setQuestion, setService, data} = useWorkspace();
+  const {setView, setQuestion, setService, data, startWalkthrough, busy, locked, connectionError, walkthrough, openWalkthroughStep, choose} = useWorkspace();
   const documents = Object.values(data?.company || {}).reduce((n, c) => n + c.documents.length, 0);
+  const checkoutReady = data?.health.find(h => h.service === "gateway")?.http_status === 200;
+  const unfinished = data?.tasks.find(t => !t.question && t.status !== "resolved");
   return <div className="product-overview">
     <section className="panel overview-intro">
-      <span className="eyebrow">WHAT WE ARE BUILDING</span>
+      <span className="eyebrow">COMPANY CONTEXT THAT SURVIVES A SESSION</span>
       <h2>A company copilot that carries useful context into the next session.</h2>
       <p>Give it company knowledge and a task. It uses a graph to find relevant context, chooses supported steps, verifies the outcome and saves evidence for the next agent session.</p>
       <div className="overview-flow" aria-label="Product workflow">
         {["Task", "Connected context", "Agent steps", "Verified result", "Shared memory"].map((step, i) => <React.Fragment key={step}>{i > 0 && <ArrowRight size={16} aria-hidden="true" />}<span>{step}</span></React.Fragment>)}
       </div>
       <div className="product-actions">
-        <button className="button primary" onClick={() => setView("workspace")}>Try the action demo <ArrowRight size={15} /></button>
+        <button className="button primary" disabled={!data || busy || locked || !!connectionError || !walkthrough && !checkoutReady} onClick={() => walkthrough ? openWalkthroughStep(walkthrough.step) : startWalkthrough()}>{walkthrough ? "Continue guided walkthrough" : "Start guided walkthrough"} <ArrowRight size={15}/></button>
+        <button className="button secondary" onClick={() => setView("workspace")}>Try the action demo <ArrowRight size={15} /></button>
         <button className="button secondary" onClick={() => {setService("payments"); setQuestion("Who owns payments, and which current procedure supports recovery? Cite your sources."); setView("company");}}>Ask about the company</button>
       </div>
+      <p className="overview-guide-note">Five guided steps: ask a company question, inspect the graph, save an investigation, resume in a fresh session and inspect the memory. You choose when to run each action.</p>
+      {data && !checkoutReady && !walkthrough && <div className="overview-resume" role="status"><p>Checkout is already unhealthy. Resolve the existing fault before starting a new walkthrough.</p><button className="button secondary" disabled={busy} onClick={() => unfinished ? choose(unfinished.id, unfinished) : setView("workspace")}>{unfinished ? "Open unfinished incident" : "Inspect agent tasks"}</button></div>}
     </section>
     <section className="panel overview-example">
       <div><span className="eyebrow">A CONCRETE EXAMPLE</span><h3>Checkout is failing. Which service should we change?</h3></div>

@@ -11,7 +11,9 @@ a simulated service and measures HTTP health.
 ## Understand the project first
 
 Start with [the six modules](MODULES.md) and [the developer walkthrough](LEARN.md).
-The app opens on **Start here**, which explains the flow and links to each module.
+The app opens on **Start here**. Select **Start guided walkthrough** for one flow
+through a cited company answer, graph evidence, an investigator handoff, a fresh
+resolver and the resulting shared memory. See [the five-step walkthrough](WALKTHROUGH.md).
 The current company is synthetic and actions operate on the included Go lab.
 Read [the requirements map](HACKATHON_REQUIREMENTS.md) before submission.
 
@@ -130,6 +132,9 @@ See [CLI.md](CLI.md) for module commands, monitoring, JSON output and remote acc
 
 ## Product workflows
 
+- **Guided walkthrough:** five explicit steps with progress tied to the question
+  and incident created during that walkthrough. Existing history cannot complete
+  its steps. Leaving the guide does not stop a running server job.
 - **Workspace:** automatic incident recovery, optional saved handoff, stop at a
   checkpoint, resume, evidence inspection, and downloadable incident reports.
 - **Company knowledge:** connected ownership and expertise, editable ownership

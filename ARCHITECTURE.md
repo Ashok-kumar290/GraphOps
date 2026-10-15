@@ -22,6 +22,25 @@ flowchart TD
     Graph -->|Persisted handoff| Resolver
 ```
 
+## Guided frontend workflow
+
+The starting page can open a five-step guide across the existing feature pages.
+It records the IDs returned for its company question and incident; existing runs
+cannot satisfy its completion checks. `walkthrough/model.ts` derives progress
+from actual task state, cited model-answer events, directed graph edges, distinct
+investigator/resolver sessions, measured HTTP recovery, ticket closure and the
+three memory kinds saved by that exact incident.
+
+The guide retains evidence from its selected runs while navigation switches the
+workspace's selected task. This is browser state, not an additional agent-memory
+store or authorization mechanism. Reloading resets the guide; backend tasks,
+events and memory remain available through history. Leaving the guide does not
+cancel work. Backend validations still govern every action independently.
+
+Company answer source buttons inspect the revision captured by the question's
+tool events. They do not silently replace that evidence with a newer document.
+An asynchronous full-source read cannot reopen an inspector after it is closed.
+
 ## Graph is a decision dependency
 
 The agent sees sourced dependency paths from Cypher together with live HTTP

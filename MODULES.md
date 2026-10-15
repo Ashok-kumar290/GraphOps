@@ -69,6 +69,7 @@ event/
       app/         Application shell, workspace state and navigation
       features/
         home/      Plain-English product explanation and module map
+        walkthrough/ Guided navigation and evidence-derived progress
         company/   Company sources and questions
         graph/     Actual graph relationships and evidence inspection
         agent/     Controlled task execution

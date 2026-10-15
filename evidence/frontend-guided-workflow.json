@@ -1,0 +1,69 @@
+{
+  "checked_on": "2026-10-15",
+  "product_change": "Five-step frontend walkthrough across company knowledge, graph inspection, investigator handoff, fresh resolver and incident-specific memory",
+  "frontend_checks": {
+    "tests": 27,
+    "passed": 27,
+    "failed": 0,
+    "test_files": 3,
+    "react_dom_checks": 21,
+    "pure_progress_rule_checks": 6,
+    "http_and_eventsource": "Mocked",
+    "browser_visual_review": false,
+    "coverage": [
+      "Starting the guide does not submit an action",
+      "Existing history cannot complete a newly started guide",
+      "Complete question-to-memory interaction sends explicit API commands",
+      "Directed graph records are required for the dependency path",
+      "Separate sessions, measured health and ticket closure are required for recovery completion",
+      "Only this incident's three memory kinds satisfy its memory step",
+      "Company answers exclude incident resolver summaries",
+      "Source inspection uses the captured revision",
+      "Escape closes the inspector and restores focus",
+      "A delayed source read cannot reopen a closed inspector",
+      "Leaving the guide does not cancel a running server job",
+      "An unfinished checkout links to its existing incident",
+      "No-match memory filters have an explanation and can be cleared",
+      "An interruption after recovery still offers resume to finish ticket closure"
+    ]
+  },
+  "live_api_and_frontend_progress": {
+    "checks": 7,
+    "passed": 7,
+    "elapsed_seconds": 34.696,
+    "model_inference": true,
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "workspace": "team-demo",
+    "question_task": "INC-42784457",
+    "incident_task": "INC-8448835C",
+    "investigator_session": "cd552958-8cff-4a2b-aaef-e041a65f4e7f",
+    "resolver_session": "37d5e67d-f4bd-40e0-8bcc-1d846c3bf2c4",
+    "incident_memory_records": 3,
+    "all_five_frontend_progress_steps_satisfied": true,
+    "method": "Actual app API responses are passed to the same TypeScript evidence function used by the frontend; this is not browser interaction"
+  },
+  "build_and_serving": {
+    "typescript_check": "Passed",
+    "production_vite_build": "Passed",
+    "html_http": 200,
+    "javascript": {
+      "asset": "/assets/index-DiRswHSG.js",
+      "http": 200,
+      "bytes": 293890
+    },
+    "css": {
+      "asset": "/assets/index-DM79jngt.css",
+      "http": 200,
+      "bytes": 33541
+    },
+    "synthetic_test_fixtures_in_production_bundle": false
+  },
+  "initial_check_failures_retained": [
+    "Three new DOM checks initially failed because the HTTP stub treated GET requests with an options object as mutations. Dispatch and assertions were corrected to inspect the POST method.",
+    "The initial Vitest include pattern excluded pure .test.ts files. It now includes both .test.ts and .test.tsx, so the six progress-rule checks execute."
+  ],
+  "browser_review_blocker": "Computer-use native pipe unavailable; browser/app inventory empty",
+  "current_app_state": "Original app running and idle; gateway, orders and payments HTTP 200",
+  "limits": "Finite synthetic checks. DOM and live API checks do not establish desktop/mobile visual quality. Known citation locations do not verify claim entailment. Guide state resets on reload; backend work remains saved."
+}

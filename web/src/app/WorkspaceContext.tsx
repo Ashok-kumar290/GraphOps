@@ -2,11 +2,13 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import type { Workspace, Doc, Incident, View } from "../shared/contracts";
 import { api } from "../shared/api";
 import { nice } from "../shared/format";
+import { WALKTHROUGH_STEPS, type Walkthrough, type WalkthroughStep } from "../features/walkthrough/model";
 type Evidence = { title: string; value: unknown };
 
 function useWorkspaceController() {
 const [data, setData] = useState<Workspace | null>(null),
     [view, setView] = useState<View>("home");
+const [walkthrough, setWalkthrough] = useState<Walkthrough | null>(null);
 
 const [taskId, setTaskId] = useState(
       localStorage.getItem("graphops-task") || "",
@@ -99,7 +101,15 @@ const command = async (path: string, body: unknown) => {
     setError("");
     try {
       const result = await api(path, body);
-      if (result.task) setTaskId(result.task);
+      if (result.task) {
+        ref.current = result.task;
+        setTaskId(result.task);
+        setWalkthrough(guide => !guide ? null : path === "/api/questions"
+          ? {...guide, questionId: result.task, questionEvents: [], step: "company"}
+          : path === "/api/incidents"
+            ? {...guide, incidentId: result.task, incidentEvents: [], step: "investigate"}
+            : guide);
+      }
       if (path === "/api/access") setToken("");
       if (path === "/api/logout") {
         setData(null);
@@ -117,6 +127,40 @@ const command = async (path: string, body: unknown) => {
 
 const busy = pending || !!data?.busy,
     selected = data?.selected;
+
+useEffect(() => {
+  if (!data) return;
+  setWalkthrough(guide => {
+    if (!guide) return guide;
+    if (guide.workspace !== data.workspace) return null;
+    const field = data.selected?.id === guide.questionId ? "questionEvents"
+      : data.selected?.id === guide.incidentId ? "incidentEvents" : null;
+    if (!field || guide[field].at(-1)?.id === data.events.at(-1)?.id) return guide;
+    return {...guide, [field]: data.events};
+  });
+}, [data]);
+
+const startWalkthrough = () => {
+  if (!data || busy || locked || connectionError || data.health.find(h => h.service === "gateway")?.http_status !== 200) return;
+  setWalkthrough({workspace: data.workspace, step: "company", questionId: null, incidentId: null, questionEvents: [], incidentEvents: []});
+  setService("payments");
+  setQuestion("Who owns payments, and which current procedure supports recovery? Cite the exact sources and revisions.");
+  setMode("llm");
+  setScenario("config");
+  setPauseAfterHandoff(true);
+  setView("company");
+};
+
+const openWalkthroughStep = (step: WalkthroughStep) => {
+  if (!walkthrough) return;
+  setWalkthrough(guide => guide && {...guide, step});
+  const id = step === "company" ? walkthrough.questionId : walkthrough.incidentId;
+  if (id) { ref.current = id; setTaskId(id); }
+  const incident = data?.tasks.find(t => t.id === walkthrough.incidentId);
+  if (step === "memory") { setMemoryQuery(walkthrough.incidentId || ""); setMemoryKind("all"); }
+  setService(step === "company" || step === "graph" ? "payments" : incident?.target || (scenario === "worker" ? "orders" : "payments"));
+  setView(WALKTHROUGH_STEPS.find(s => s.id === step)!.view);
+};
 
 const selectedHealth = data?.health.find((h) => h.service === service),
     company = data?.company[service],
@@ -140,7 +184,7 @@ const inspect = (title: string, value: unknown) => {
           "&revision=" +
           encodeURIComponent(doc.revision),
       )
-        .then((full) => setInspector({ title, value: full }))
+        .then((full) => setInspector(current => current?.value === value ? { title, value: full } : current))
         .catch((e) => setError(e.message));
   };
 
@@ -200,7 +244,7 @@ async function download(path: string, name: string) {
       setError(e.message);
     }
   }
-return { data, view, setView, taskId, setTaskId, service, setService, scenario, setScenario, mode, setMode, pauseAfterHandoff, setPauseAfterHandoff, error, setError, connectionError, setConnectionError, pending, memoryQuery, setMemoryQuery, memoryKind, setMemoryKind, inspector, setInspector, question, setQuestion, owner, setOwner, locked, token, setToken, stage, refresh, command, busy, selected, selectedHealth, company, packet, allMemory, inspect, choose, download };
+return { data, view, setView, taskId, setTaskId, service, setService, scenario, setScenario, mode, setMode, pauseAfterHandoff, setPauseAfterHandoff, error, setError, connectionError, setConnectionError, pending, memoryQuery, setMemoryQuery, memoryKind, setMemoryKind, inspector, setInspector, question, setQuestion, owner, setOwner, locked, token, setToken, stage, refresh, command, busy, selected, selectedHealth, company, packet, allMemory, inspect, choose, download, walkthrough, startWalkthrough, openWalkthroughStep, leaveWalkthrough: () => {setWalkthrough(null); if (memoryQuery === walkthrough?.incidentId) setMemoryQuery("");} };
 }
 type Controller = ReturnType<typeof useWorkspaceController>;
 const Context = createContext<Controller | null>(null);

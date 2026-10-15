@@ -52,3 +52,10 @@ monitor, durable event pagination/replay, module commands and six-module CLI
 demonstration. Recorded checks include real inference and actual CLI commands
 against the running app; automated verification does not attest participant
 understanding or replace their own recorded contribution/review.
+
+After the CLI checks, the participant asked to continue with the frontend.
+Codex implemented the guided five-step workflow, run-specific progress rules,
+company answer/source presentation, navigation/focus improvements and the
+associated DOM and live API/evidence-function checks. Native browser review
+could not run because the computer-use helper and browser connection were
+unavailable. Participant review and ownership of the code remain separate work.
