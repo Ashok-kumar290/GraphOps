@@ -27,6 +27,9 @@ docker compose up --build -d
 ```
 
 Open **http://localhost:8081**, enter the token, and select **Agent · LLM**.
+Click **Run agent** to investigate and recover automatically. The resolver
+starts in a fresh session after loading the saved handoff from FalkorDB.
+Enable **Pause at handoff** only when you want to resume recovery manually.
 The container expects Ollama at `host.docker.internal:11434`. Its model-list
 endpoint was checked from Docker on this Windows machine; other OS configurations
 may differ. If inference cannot connect, use the Windows development
@@ -92,13 +95,13 @@ Use `--mode scripted` explicitly when checking the baseline.
 
 ## Judge walkthrough
 
-1. Run a payments configuration incident. The agent sees real failures in
+1. Enable **Pause at handoff**, then investigate a payments configuration incident. The agent sees real failures in
    gateway → orders → payments, plus an unrelated analytics failure. Inspect
    the graph and recorded measurements. The cause must be `payments`.
 2. Resume in a new session. The resolver reads the saved handoff, memory and
    current company procedure. It restores configuration, verifies target and
    gateway HTTP 200, and completes the ticket. Analytics must remain HTTP 503.
-3. Run an orders worker incident. Recovery must use `restart_worker`, rather
+3. Disable **Pause at handoff** and click **Run agent** for an orders worker incident. It should investigate, recover and verify automatically. Recovery must use `restart_worker`, rather
    than repeat the previous payments action.
 4. Open Memory navigator: inspect episodes, procedures, facts and source
    validity. Restart the app and confirm the records remain.
@@ -132,6 +135,7 @@ With FalkorDB and the compiled lab available, from this directory:
 .\.venv\Scripts\python.exe -m tests.evaluate_models --label my-model --cases config worker changed_runbook repeated company
 .\.venv\Scripts\python.exe -m tests.check_package
 .\.venv\Scripts\python.exe -m tests.check_package --mode llm
+.\.venv\Scripts\python.exe -m tests.check_live_app
 ```
 
 The model evaluation uses real inference. The integration suite uses real

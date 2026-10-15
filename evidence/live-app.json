@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-15T05:53:14.343812+00:00",
+  "mode": "llm",
+  "automatic_run": true,
+  "success": true,
+  "cases": [
+    {
+      "scenario": "config",
+      "task": "INC-97141C0D",
+      "status": "resolved",
+      "target": "payments",
+      "ticket_closed": true,
+      "fresh_resolver_session": true,
+      "gateway_http": 200,
+      "target_http": 200,
+      "unrelated_analytics_http": 503,
+      "model_requests": 8,
+      "seconds": 19.772,
+      "error": null,
+      "passed": true
+    },
+    {
+      "scenario": "worker",
+      "task": "INC-F7554534",
+      "status": "resolved",
+      "target": "orders",
+      "ticket_closed": true,
+      "fresh_resolver_session": true,
+      "gateway_http": 200,
+      "target_http": 200,
+      "unrelated_analytics_http": 503,
+      "model_requests": 6,
+      "seconds": 18.451,
+      "error": null,
+      "passed": true
+    }
+  ],
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "configured": true
+  },
+  "page_http": 200
+}

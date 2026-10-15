@@ -6,7 +6,7 @@ from graphops import settings
 
 
 def main():
-    names=['checks','stress','cli','package-scripted','package-llm',
+    names=['checks','stress','cli','live-app','package-scripted','package-llm',
            'evaluation-qwen-candidate','evaluation-qwen-interface-v2',
            'evaluation-qwen-interface-extended','evaluation-qwen8-interface','evaluation-qwen8-final',
            'evaluation-qwen8-bounded-retry']

@@ -18,5 +18,5 @@
   "ticket_closed": true,
   "gateway_http": 200,
   "analytics_http": 503,
-  "memories_after_restart": 9
+  "memories_after_restart": 12
 }

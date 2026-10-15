@@ -72,6 +72,7 @@ function App() {
     [service, setService] = useState("payments");
   const [scenario, setScenario] = useState("config"),
     [mode, setMode] = useState("llm"),
+    [pauseAfterHandoff, setPauseAfterHandoff] = useState(false),
     [error, setError] = useState(""),
     [pending, setPending] = useState(false);
   const [inspector, setInspector] = useState<Evidence | null>(null),
@@ -119,6 +120,8 @@ function App() {
       const item = JSON.parse(message.data);
       if (item.stage === "model")
         setStage(`${item.role} is selecting its next step`);
+      else if (item.stage === "handoff_saved")
+        setStage("Resolver is loading the saved handoff");
       else if (item.tool) setStage(nice(item.tool));
       else if (item.stage === "finished") setStage("Checkpoint saved");
       if (debounce.current) clearTimeout(debounce.current);
@@ -335,6 +338,12 @@ function App() {
               <span>{selected.last_error}</span>
             </div>
           )}
+          {selected?.blocker && !selected.last_error && (
+            <div className="alert" role="status">
+              <ShieldCheck size={16} />
+              <span>{selected.blocker}</span>
+            </div>
+          )}
           {locked && (
             <form
               className="access-form panel"
@@ -374,7 +383,7 @@ function App() {
                         <Play size={16} />
                       </span>
                       <div>
-                        <strong>Start a controlled incident</strong>
+                        <strong>Run a controlled incident</strong>
                         <small>Real services. Synthetic company context.</small>
                       </div>
                     </div>
@@ -415,7 +424,11 @@ function App() {
                         className="button primary"
                         disabled={busy || !data || locked}
                         onClick={() =>
-                          void command("/api/incidents", { scenario, mode })
+                          void command("/api/incidents", {
+                            scenario,
+                            mode,
+                            pause_after_handoff: pauseAfterHandoff,
+                          })
                         }
                       >
                         {busy ? (
@@ -423,9 +436,26 @@ function App() {
                         ) : (
                           <Play size={14} />
                         )}
-                        Investigate
+                        {pauseAfterHandoff ? "Investigate only" : "Run agent"}
                       </button>
                     </div>
+                    <label
+                      className="run-option"
+                      title="Save the investigation, then resume recovery manually in another session."
+                    >
+                      <input
+                        type="checkbox"
+                        checked={pauseAfterHandoff}
+                        onChange={(e) => setPauseAfterHandoff(e.target.checked)}
+                        disabled={busy}
+                      />
+                      Pause at handoff
+                      <span>
+                        {pauseAfterHandoff
+                          ? "You will resume recovery manually."
+                          : "Investigation and recovery run automatically in separate sessions."}
+                      </span>
+                    </label>
                   </section>
                   <div className="metrics">
                     <Metric
@@ -530,7 +560,9 @@ function App() {
                           {selected.status === "resolved"
                             ? "Recovery verified"
                             : selected.status === "handoff"
-                              ? "Investigation saved. Resolver can continue."
+                              ? busy
+                                ? "Investigation saved. Resolver is continuing."
+                                : "Investigation saved. Resume to recover checkout."
                               : selected.job === "interrupted"
                                 ? "Run interrupted. Your checkpoint is saved."
                                 : selected.status === "blocked"
@@ -552,7 +584,12 @@ function App() {
                         className="button secondary"
                         disabled={busy}
                         onClick={() =>
-                          void command("/api/resume", { task: selected.id })
+                          selected.status === "resolved"
+                            ? inspect(
+                                "Measured recovery result",
+                                selected.outcome,
+                              )
+                            : void command("/api/resume", { task: selected.id })
                         }
                       >
                         {busy ? (
@@ -561,7 +598,7 @@ function App() {
                           <ArrowRight size={15} />
                         )}{" "}
                         {selected.status === "resolved"
-                          ? "Recheck checkpoint"
+                          ? "Inspect recovery"
                           : "Resume in new session"}
                       </button>
                     </section>

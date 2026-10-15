@@ -9,12 +9,13 @@ production capacity, general agent reliability, or a promise of hosted speed.
 
 | Check | Measured result | What it exercises |
 |---|---|---|
-| Event integration suite | 24/24 passed | Actual FalkorDB, Go HTTP, MCP sessions, role limits, path/runbook guards, idempotence, memory, revisions, checkpoint concurrency; simulated model protocol cases |
+| Event integration suite | 28/28 passed | Actual FalkorDB, Go HTTP, MCP sessions, role limits, path/runbook guards, idempotence, memory, revisions, checkpoint concurrency; simulated model protocol cases; automatic recovery and optional pause |
+| Running app, default automatic LLM workflow | 2/2 passed | A single API start completed investigation, fresh resolver, recovery and ticket closure for payments (19.772 s) and orders (18.451 s); gateway/target HTTP 200 and unrelated analytics HTTP 503 |
 | Graph workload | 5,000 events + 2,500 memory writes + 5,000 task reads; zero lost records | 32 concurrent workers; 4.876 seconds workload time; median request 15.915 ms, p95 30.345 ms |
 | Checkpoint races | 50/50 races had one winner | 32 writes compete for each checkpoint version |
 | CLI continuation | Passed in two separate processes | Persisted handoff, fresh resolver, measured recovery, closed ticket, three memories |
 | Docker package | Passed with scripted baseline | Access rejection/login, static page, SSE, app restart, persisted handoff, new resolver, recovery, ticket and memory |
-| Docker package with actual Qwen3:8b inference | Passed | Authenticated API, streamed events, investigator handoff, app restart, fresh resolver, verified recovery and ticket; nine cumulative memory records remained |
+| Docker package with actual Qwen3:8b inference | Passed | Authenticated API, streamed events, investigator handoff, app restart, fresh resolver, verified recovery and ticket; memory remained available |
 | Rejected lab requests | 50/50 returned HTTP 403 after fix | Rejection transport under repeated process startup |
 | UI build | TypeScript check and Vite build passed | Compile/build only; browser visual inspection is pending |
 

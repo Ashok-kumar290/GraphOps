@@ -49,7 +49,13 @@ class Worker:
         try:
             agent = Agent(self.store, self.port, self.emit)
             if command == "question": await agent.run(task_id, "company", question, mode)
-            elif command == "start": await agent.run(task_id, "investigator", "Investigate the gateway failure. Compare reachable causes and unrelated failures, retrieve relevant context, then hand off supported evidence.", mode)
+            elif command == "start":
+                await agent.run(task_id, "investigator", "Investigate the gateway failure. Compare reachable causes and unrelated failures, retrieve relevant context, then hand off supported evidence.", mode)
+                if not task.get("pause_after_handoff", False) and self.store.task(task_id)["status"] == "handoff":
+                    self.emit({"type": "progress", "task": task_id, "stage": "handoff_saved", "role": "resolver"})
+                    # A fresh agent and MCP process load the saved handoff from FalkorDB.
+                    await Agent(Store(self.store.scope), self.port, self.emit).run(task_id, "resolver",
+                        "Continue the persisted handoff. Check memory and current procedure, recover only with a validated plan, verify health and complete the synthetic ticket.", mode)
             else:
                 if task["status"] in {"new", "blocked"}:
                     await agent.run(task_id, "investigator", "Resume this incident from its checkpoint using current evidence. Recheck the blocker before handing off.", mode)
@@ -73,8 +79,11 @@ class Worker:
         if command == "start":
             scenario, mode = body.get("scenario", "config"), body.get("mode", "llm")
             if scenario not in SCENARIOS or mode not in {"llm", "scripted"}: raise ValueError("Invalid scenario or mode")
+            pause = body.get("pause_after_handoff", False)
+            if not isinstance(pause, bool): raise ValueError("Pause after handoff must be a boolean")
             if mode == "llm": preflight()  # No fault injection until the local model is installed.
             task = self.store.create_task(scenario, "Investigate checkout service failure", mode)
+            self.store.update_task(task["id"], {"pause_after_handoff": pause})
             try: injection = self.lab.inject(scenario)
             except Exception:
                 self.store.update_task(task["id"], {"status": "blocked", "last_error": "Scenario not started; existing fault must be resolved"}); raise

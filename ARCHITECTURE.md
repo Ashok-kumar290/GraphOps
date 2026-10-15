@@ -32,6 +32,9 @@ The SVG uses database edges; its four fixture node positions are a fixed layout.
 ## Model and deterministic responsibilities
 
 The runtime first supplies a compact checkpoint and current observations.
+By default, Run agent completes investigation and starts a fresh resolver after
+the handoff is persisted. The optional Pause at handoff control stops before
+recovery so a person can resume it later or demonstrate an app restart.
 The model selects follow-up tools and a cause or blocker. A new resolver model
 session selects plan preparation, execution and ticket completion. Agent loops
 are bounded at eight model requests and 24 tool calls per session. Unfinished

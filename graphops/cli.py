@@ -35,7 +35,7 @@ async def main():
             print(json.dumps({'workspace':snapshot['workspace'],'model':configuration(),'health':snapshot['health'],'tasks':snapshot['tasks']},indent=2));return
         if args.command=='memory':
             print(json.dumps(worker.snapshot()['memory'].get(args.service,{}),indent=2));return
-        body=({'scenario':args.scenario,'mode':args.mode} if args.command=='investigate' else
+        body=({'scenario':args.scenario,'mode':args.mode,'pause_after_handoff':True} if args.command=='investigate' else
               {'task':args.task} if args.command=='resume' else {'question':args.question,'mode':args.mode})
         reply=await worker.dispatch({'investigate':'start','resume':'resume','ask':'question'}[args.command],body)
         await worker.active

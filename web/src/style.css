@@ -494,6 +494,26 @@ h1 {
 .run-inputs .button {
   min-height: 34px;
 }
+.run-option {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  gap: 8px;
+  font-size: 11px;
+  color: #c4d2db;
+}
+.run-option input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--mint);
+}
+.run-option span {
+  color: #8293a0;
+  font-size: 10px;
+}
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

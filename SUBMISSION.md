@@ -36,7 +36,7 @@ is accepted by the published rules. Review the actual form once submissions open
 
 1. Explain the real problem: a new session lacks reliable operational context;
    stale memory and propagated errors can lead it to change the wrong service.
-2. Show the graph path and the unrelated failing service. Investigate with an LLM.
+2. Show the graph path and the unrelated failing service. Enable Pause at handoff and investigate with an LLM.
 3. End the investigator session, restart the app, and resume with the resolver.
    Show the persisted target, sources, measured HTTP change and ticket update.
 4. Show memory labels after configuration changes, then another incident with

@@ -17,6 +17,7 @@ from graphops.models import Ollama, get_model, EmptyModelResponse
 from graphops.store import Store
 from graphops.tools import Tools
 from graphops.provider import CompatibleModel, provider_retry_delay
+from graphops.worker import Worker
 
 
 def free_port():
@@ -36,6 +37,58 @@ def free_port():
 
 
 class EventIntegration(unittest.TestCase):
+    def worker_for_lab(self):
+        """Use the already running fixture lab with the actual worker dispatch loop."""
+        worker=Worker.__new__(Worker)
+        worker.store,worker.port,worker.lab=self.store,self.port,self.lab
+        worker.emit=lambda value:None
+        worker.navigator=Navigator(self.store)
+        worker.active=None
+        return worker
+
+    def test_start_automatically_runs_fresh_resolver_session(self):
+        worker=self.worker_for_lab()
+        async def run():
+            reply=await worker.dispatch('start',{'scenario':'config','mode':'scripted'})
+            await worker.active
+            return reply['task']
+        task=asyncio.run(run());current=self.store.task(task)
+        self.assertEqual(current['status'],'resolved');self.assertTrue(current['ticket_closed'])
+        sessions=[e for e in self.store.events(task) if e['kind']=='session_started']
+        self.assertEqual([e['role'] for e in sessions],['investigator','resolver'])
+        self.assertNotEqual(sessions[0]['session'],sessions[1]['session'])
+        self.assertEqual(self.lab.state()['action_count'],1)
+        self.assertEqual(request(self.lab.url('gateway')+'/health')['http_status'],200)
+        self.assertEqual(request(self.lab.url('analytics')+'/health')['http_status'],503)
+
+    def test_pause_option_waits_for_explicit_resume(self):
+        worker=self.worker_for_lab()
+        async def run():
+            reply=await worker.dispatch('start',{'scenario':'worker','mode':'scripted','pause_after_handoff':True})
+            await worker.active
+            self.assertEqual(self.store.task(reply['task'])['status'],'handoff')
+            self.assertEqual(self.lab.state()['action_count'],0)
+            await worker.dispatch('resume',{'task':reply['task']});await worker.active
+            return reply['task']
+        task=asyncio.run(run());self.assertTrue(self.store.task(task)['ticket_closed'])
+        self.assertEqual(self.lab.state()['action_count'],1)
+
+    def test_automatic_run_still_blocks_retired_procedure(self):
+        doc=self.store.document('payments-runbook')
+        self.store.put_document(doc['id'],'payments','runbook',doc['title'],'Retired','retired-test',{'action':'requires_review'})
+        worker=self.worker_for_lab()
+        async def run():
+            reply=await worker.dispatch('start',{'scenario':'config','mode':'scripted'})
+            await worker.active
+            return reply['task']
+        task=asyncio.run(run());self.assertEqual(self.store.task(task)['status'],'blocked')
+        self.assertEqual(self.lab.state()['action_count'],0)
+
+    def test_invalid_pause_option_does_not_inject_fault(self):
+        worker=self.worker_for_lab()
+        with self.assertRaises(ValueError):asyncio.run(worker.dispatch('start',{'scenario':'config','mode':'scripted','pause_after_handoff':'false'}))
+        self.assertEqual(self.lab.state()['generation'],0)
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='graphops-event-test-')
         self.port=free_port();self.lab=Lab(Path(self.temp.name),self.port).start()

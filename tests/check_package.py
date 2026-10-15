@@ -39,7 +39,7 @@ def main():
             report['page_http']=client.get(base).status_code
             with client.stream('GET',base+'/api/events') as stream:
                 report['event_stream_connected']=next(line for line in stream.iter_lines() if line.startswith('data:')).startswith('data:')
-            task=client.post(base+'/api/incidents',json={'scenario':'worker','mode':args.mode}).json()['task']
+            task=client.post(base+'/api/incidents',json={'scenario':'worker','mode':args.mode,'pause_after_handoff':True}).json()['task']
             w=wait_task(client,task);report['handoff_before_restart']=w['selected']['status']=='handoff'
             print('Handoff saved. Restarting packaged app before resolver.',flush=True)
             subprocess.run(command+['restart','app'],cwd=settings.ROOT,env=env,check=True)
