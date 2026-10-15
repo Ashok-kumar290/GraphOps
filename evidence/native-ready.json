@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "url": "http://localhost:8080",
+  "workspace": "team-demo",
+  "synthetic_sources": 2,
+  "diagnostics": {
+    "checked_at": "2026-10-15T06:48:36.241012+00:00",
+    "task": "INC-8F4FE175",
+    "mcp": {
+      "success": true,
+      "session": "23ee518b-27c1-4403-a2f0-56b8112449bb"
+    },
+    "model": {
+      "success": true,
+      "provider": "ollama",
+      "model": "qwen3:8b"
+    },
+    "success": true
+  },
+  "company_answer": "The owner of the **payments** service is the **Payments Platform**. This information is sourced from the company context, which indicates that the service is owned by the Payments Platform team.\n\nThe **synthetic refund review window** is **72 hours**, as stated in the **synthetic refund review policy**. This policy is referenced in the company's documentation and is available under the **owned-0b343356fe09c35a9409** document.\n\n### Sources:\n- **Owner of payments**:  \n  - Source: `fixture:event/topology-v1`  \n  - Document: `company_context` for the `payments` service.\n\n- **Synthetic refund review window**:  \n  - Source: `owned:document/owned-0b343356fe09c35a9409`  \n  - Document: `owned-0b343356fe09c35a9409` (title: *Synthetic refund review policy*).",
+  "citation_check": "known_source_locations",
+  "components": {
+    "graph": {
+      "status": "online",
+      "message": "FalkorDB queries succeed"
+    },
+    "lab": {
+      "status": "online",
+      "message": "Controlled service controller responds"
+    },
+    "model": {
+      "status": "verified",
+      "message": "Live inference checked"
+    },
+    "mcp": {
+      "status": "verified",
+      "message": "MCP roundtrip checked"
+    }
+  },
+  "browser_visual_review": false
+}

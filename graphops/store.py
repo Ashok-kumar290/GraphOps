@@ -19,7 +19,7 @@ def age(timestamp):
 
 class Store:
     def __init__(self, scope=settings.SCOPE):
-        if not re.fullmatch(r"[a-zA-Z0-9_.-]{1,80}", scope): raise ValueError("Invalid workspace")
+        if not isinstance(scope,str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}", scope): raise ValueError("Workspace must start with a letter or number and contain at most 80 letters, numbers, dots, underscores or hyphens")
         self.scope = scope
         self.name = "graphops_event_" + hashlib.sha256(scope.encode()).hexdigest()[:20]
         self.db = FalkorDB(host=os.getenv("FALKORDB_HOST", "localhost"), port=int(os.getenv("FALKORDB_PORT", "6379")),
@@ -75,34 +75,62 @@ class Store:
                 if not self.document(doc_id): self.put_document(doc_id, service, kind, title, text, "v1", data)
         self.write("MATCH (m:Meta {id:'context'}) SET m.lab_port=$port", port=port)
 
-    def put_document(self, doc_id, service, kind, title, text, revision, data):
-        source = "fixture:event/" + doc_id
+    def put_document(self, doc_id, service, kind, title, text, revision, data, source=None):
+        source = source or "fixture:event/" + doc_id
+        existing=self.document(doc_id)
+        if existing and existing['service']!=service:raise ValueError("A document cannot move between services")
         previous = self.read("MATCH (v:Revision {id:$id}) RETURN v.payload", id=doc_id+":"+revision)
         payload = {"id": doc_id, "service": service, "kind": kind, "title": title, "text": text,
                    "revision": revision, "source": source, "data": data}
         encoded = json.dumps(payload, sort_keys=True)
         if previous and previous[0][0] != encoded: raise ValueError("A source revision is immutable; provide a new revision")
         self.write("""MATCH (s:Service {id:$service}) MERGE (d:Document {id:$id})
-            SET d.title=$title,d.kind=$kind,d.source=$source,d.payload=$payload,d.revision=$revision
-            MERGE (s)-[:HAS_DOCUMENT]->(d)
+            SET d.title=$title,d.kind=$kind,d.text=$text,d.source=$source,d.payload=$payload,d.revision=$revision
+            MERGE (s)-[link:HAS_DOCUMENT]->(d) SET link.source=$source
             MERGE (v:Revision {id:$version}) ON CREATE SET v.payload=$payload,v.title=$revision,v.source=$source
             MERGE (d)-[:HAS_REVISION]->(v)""", id=doc_id, service=service, title=title, source=source,
-            kind=kind, payload=encoded, revision=revision, version=doc_id+":"+revision, context=True)
+            kind=kind, text=text, payload=encoded, revision=revision, version=doc_id+":"+revision, context=True)
         return payload
 
     def document(self, doc_id):
         rows = self.read("MATCH (d:Document {id:$id}) RETURN d.payload", id=doc_id)
         return json.loads(rows[0][0]) if rows else None
 
-    def company(self, service):
+    def company(self, service, preview=False):
         owners = self.read("MATCH (t:Team)-[r:OWNS]->(:Service {id:$id}) RETURN t.title,r.source", id=service)
         docs = self.read("MATCH (:Service {id:$id})-[:HAS_DOCUMENT]->(d:Document) RETURN d.payload ORDER BY d.id", id=service)
         experts = self.read("MATCH (t:Team)-[:HAS_EXPERTISE]->(e:Expertise)-[:KNOWS]->(:Service {id:$id}) RETURN e.title,t.title", id=service)
         history = self.read("""MATCH (:Service {id:$id})-[:HAS_DOCUMENT]->(d:Document)-[:HAS_REVISION]->(v:Revision)
             WHERE v.id <> d.id+':'+d.revision RETURN v.payload LIMIT 12""", id=service)
+        documents=[json.loads(r[0]) for r in docs];historical=[json.loads(r[0]) for r in history]
+        if preview:
+            for doc in documents+historical:
+                doc['text_length']=len(doc['text']);doc['text_truncated']=len(doc['text'])>800;doc['text']=doc['text'][:800]
         return {"service": service, "owners": [{"name": r[0], "source": r[1]} for r in owners],
-                "experts": [{"name": r[0], "team": r[1]} for r in experts], "documents": [json.loads(r[0]) for r in docs],
-                "historical_documents": [json.loads(r[0]) for r in history]}
+                "experts": [{"name": r[0], "team": r[1]} for r in experts], "documents": documents,
+                "historical_documents": historical}
+
+    def search_documents(self, query, service=None):
+        if not isinstance(query,str) or not 1<=len(query.strip())<=120:raise ValueError('Search must contain 1–120 characters')
+        if service is not None and service not in SERVICES:raise ValueError('Unknown service')
+        rows=self.read("""MATCH (s:Service)-[:HAS_DOCUMENT]->(d:Document)
+            WHERE ($service='' OR s.id=$service) AND
+              (toLower(d.title) CONTAINS $term OR toLower(coalesce(d.text,d.payload)) CONTAINS $term)
+            RETURN d.payload ORDER BY d.id LIMIT 20""",service=service or '',term=query.strip().lower())
+        result=[]
+        for row in rows:
+            doc=json.loads(row[0]);text=doc['text'];position=text.lower().find(query.strip().lower())
+            start=max(0,position-120) if position>=0 else 0
+            result.append({**doc,'text':text[start:start+700],'text_length':len(text),'text_truncated':len(text)>700})
+        return {'query':query,'service':service,'documents':result,'limit':20}
+
+    def audit(self, action, details):
+        item={'id':uid(),'action':action,'details':details,'actor':'workspace_member','time':now()}
+        self.write('CREATE (:Audit {id:$id,time:$time,payload:$payload})',id=item['id'],time=item['time'],payload=json.dumps(item))
+        return item
+
+    def audits(self):
+        return [json.loads(row[0]) for row in self.read('MATCH (a:Audit) RETURN a.payload ORDER BY a.time DESC LIMIT 50')]
 
     def topology(self, service):
         rows = self.read("""MATCH p=(:Service {id:$service})-[:DEPENDS_ON*1..8]->(:Service)
@@ -120,8 +148,19 @@ class Store:
         rows = self.read("MATCH (t:Incident {id:$id}) RETURN t.payload,t.version", id=task_id)
         return {**json.loads(rows[0][0]), "version": rows[0][1]} if rows else None
 
-    def tasks(self):
-        return [self.task(r[0]) for r in self.read("MATCH (t:Incident) RETURN t.id,t.created_at ORDER BY t.created_at DESC LIMIT 100")]
+    def tasks(self, query='', before=''):
+        if not isinstance(query,str) or len(query)>120:raise ValueError('History search is too long')
+        if before:
+            try:datetime.fromisoformat(before)
+            except (ValueError,TypeError):raise ValueError('Invalid history cursor') from None
+        return [{**json.loads(r[0]),'version':r[1]} for r in self.read("""MATCH (t:Incident)
+            WHERE ($before='' OR coalesce(t.created_at,'')<$before) AND
+              ($term='' OR toLower(t.payload) CONTAINS $term)
+            RETURN t.payload,t.version ORDER BY t.created_at DESC LIMIT 100""",term=query.strip().lower(),before=before)]
+
+    def migrate(self):
+        for row in self.read('MATCH (t:Incident) WHERE t.created_at IS NULL RETURN t.id,t.payload LIMIT 1000'):
+            self.write('MATCH (t:Incident {id:$id}) SET t.created_at=$time',id=row[0],time=json.loads(row[1])['created_at'])
 
     def update_task(self, task_id, update, version=None):
         task = self.task(task_id)
@@ -145,10 +184,11 @@ class Store:
         if n != 1: raise ValueError("Cannot append to absent incident")
         return {"id": eid, "task": task_id, "session": session, "role": role, "kind": kind, "time": timestamp, "data": data}
 
-    def events(self, task_id):
+    def events(self, task_id, limit=500):
+        if not isinstance(limit,int) or not 1<=limit<=10000:raise ValueError('Invalid event limit')
         rows = self.read("""MATCH (t:Incident {id:$id})-[:HAS_EVENT]->(e:Event)<-[:EMITTED]-(s:Session)
-            RETURN e.id,s.id,e.role,e.kind,e.time,e.payload ORDER BY e.time LIMIT 500""", id=task_id)
-        return [{"id": r[0], "session": r[1], "role": r[2], "kind": r[3], "time": r[4], "data": json.loads(r[5])} for r in rows]
+            RETURN e.id,s.id,e.role,e.kind,e.time,e.payload ORDER BY e.time DESC LIMIT $limit""", id=task_id,limit=limit)
+        return [{"id": r[0], "session": r[1], "role": r[2], "kind": r[3], "time": r[4], "data": json.loads(r[5])} for r in reversed(rows)]
 
     def remember(self, task_id, service, kind, revision, source, data, verified=True):
         mid = task_id+":"+kind

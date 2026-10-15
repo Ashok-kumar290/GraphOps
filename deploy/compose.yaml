@@ -18,7 +18,8 @@ services:
     init: true
     environment:
       FALKORDB_HOST: graph
-      GRAPHOPS_WORKSPACE: judges-demo
+      GRAPHOPS_WORKSPACE: ${GRAPHOPS_WORKSPACE:-judges-demo}
+      GRAPHOPS_LAB_PORT: ${GRAPHOPS_LAB_PORT:-8865}
       GRAPHOPS_EVENT_PROVIDER: ${GRAPHOPS_EVENT_PROVIDER:-groq}
       GRAPHOPS_EVENT_MODEL: ${GRAPHOPS_EVENT_MODEL:-qwen/qwen3.8-27b}
       GROQ_API_KEY: ${GROQ_API_KEY:-}

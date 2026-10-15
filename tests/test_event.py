@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import socket
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 import uuid
@@ -44,6 +45,7 @@ class EventIntegration(unittest.TestCase):
         worker.emit=lambda value:None
         worker.navigator=Navigator(self.store)
         worker.active=None
+        worker.active_task_id=None;worker.stop_requested=threading.Event();worker.last_diagnostics=None;worker._readiness_cache=None
         return worker
 
     def test_start_automatically_runs_fresh_resolver_session(self):

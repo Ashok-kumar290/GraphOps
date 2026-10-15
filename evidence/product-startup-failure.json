@@ -1,0 +1,7 @@
+{
+  "success": false,
+  "stage": "startup",
+  "error": "ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX: parameter property in Node strip-only runtime",
+  "fixed_by": "Explicit class field assignment and TypeScript erasableSyntaxOnly",
+  "model_inference": false
+}

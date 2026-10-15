@@ -4,10 +4,10 @@
   "task_reads": 5000,
   "workers": 32,
   "lost_records": 0,
-  "workload_seconds": 4.876,
+  "workload_seconds": 4.825,
   "latency_ms": {
-    "median": 15.915,
-    "p95": 30.345
+    "median": 18.86,
+    "p95": 36.015
   },
   "checkpoint_races": 50,
   "single_winner_races": 50,

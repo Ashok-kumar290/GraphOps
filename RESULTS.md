@@ -9,15 +9,35 @@ production capacity, general agent reliability, or a promise of hosted speed.
 
 | Check | Measured result | What it exercises |
 |---|---|---|
-| Event integration suite | 28/28 passed | Actual FalkorDB, Go HTTP, MCP sessions, role limits, path/runbook guards, idempotence, memory, revisions, checkpoint concurrency; simulated model protocol cases; automatic recovery and optional pause |
+| Event and product integration suite | 39/39 passed | Actual FalkorDB, Go HTTP, MCP sessions, role limits, graph/runbook guards, idempotence, memory, revisions, source import conflicts, search, history, reports, stop/resume, and backup restoration; model protocol cases are simulated |
+| Complete Docker product acceptance | 33/33 passed with actual Qwen3:8b inference | Access and request errors, actual model/MCP verification, imported and revised company sources, automatic recovery, blocked procedures, worker supervision, app restart, stop/resume, database restart, backup/restore, history/audits, logout |
+| UI component tests | 9/9 passed | React handlers and rendered DOM with mocked HTTP/EventSource: default automatic mode, pause, stop, selected-service questions, connection recovery, source imports, readiness distinctions, graph relationships and older history selection; not browser visual QA |
 | Running app, default automatic LLM workflow | 2/2 passed | A single API start completed investigation, fresh resolver, recovery and ticket closure for payments (19.772 s) and orders (18.451 s); gateway/target HTTP 200 and unrelated analytics HTTP 503 |
-| Graph workload | 5,000 events + 2,500 memory writes + 5,000 task reads; zero lost records | 32 concurrent workers; 4.876 seconds workload time; median request 15.915 ms, p95 30.345 ms |
+| Graph workload | 5,000 events + 2,500 memory writes + 5,000 task reads; zero lost records | 32 concurrent workers; 4.825 seconds workload time; median request 18.860 ms, p95 36.015 ms |
 | Checkpoint races | 50/50 races had one winner | 32 writes compete for each checkpoint version |
 | CLI continuation | Passed in two separate processes | Persisted handoff, fresh resolver, measured recovery, closed ticket, three memories |
 | Docker package | Passed with scripted baseline | Access rejection/login, static page, SSE, app restart, persisted handoff, new resolver, recovery, ticket and memory |
 | Docker package with actual Qwen3:8b inference | Passed | Authenticated API, streamed events, investigator handoff, app restart, fresh resolver, verified recovery and ticket; memory remained available |
 | Rejected lab requests | 50/50 returned HTTP 403 after fix | Rejection transport under repeated process startup |
 | UI build | TypeScript check and Vite build passed | Compile/build only; browser visual inspection is pending |
+| Windows launcher and current local app | Passed | `start.ps1` starts the stack; live graph/lab/model/MCP checks pass; company answer retrieves and cites the imported synthetic 72-hour refund policy |
+
+The complete product acceptance ran in an isolated Docker project with its own
+graph and lab volumes. Automatic payments recovery took 9.263 seconds and orders
+recovery 8.242 seconds in the latest warm local run. The company agent retrieved an
+updated imported policy (96 hours) and the current Payments Response owner, with
+known source locations. This is one controlled run, not a throughput guarantee.
+
+The first product acceptance attempt failed before startup: a TypeScript
+constructor parameter property was incompatible with Node's strip-only runtime.
+It was replaced with an explicit field assignment; `erasableSyntaxOnly` now
+checks the restriction during compilation. The corrected Docker package passed
+all 33 checks. The failed startup report is retained in the evidence directory.
+
+A separate local build check failed when two builds were inadvertently launched
+concurrently: `npm ci` encountered a locked esbuild executable while Vite read
+the partially replaced dependencies. The launcher build was rerun alone. Avoid
+running another build while `start.ps1` is installing or compiling assets.
 
 The integration suite previously failed an unauthorized-request assertion
 because the HTTP client received a connection reset rather than the 403 response.

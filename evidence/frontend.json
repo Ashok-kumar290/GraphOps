@@ -1,0 +1,19 @@
+{
+  "tests": 9,
+  "passed": 9,
+  "success": true,
+  "environment": "Vitest + jsdom; mocked HTTP and EventSource",
+  "browser_visual_review": false,
+  "model_inference": false,
+  "cases": [
+    "History selection retains older question metadata outside the current snapshot",
+    "Run agent sends an automatic LLM workflow by default",
+    "Pause at handoff explicitly selects investigation only",
+    "Stop control targets the active job even while another incident is selected",
+    "Company question carries the selected service",
+    "A restored connection clears its stale error",
+    "The source editor imports a synthetic policy and refreshes its parent",
+    "System status distinguishes availability from a verified MCP roundtrip",
+    "Knowledge graph renders only connected source nodes and actual relationships"
+  ]
+}

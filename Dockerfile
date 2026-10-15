@@ -14,8 +14,8 @@ FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803
 RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 libatomic1 && rm -rf /var/lib/apt/lists/*
 COPY --from=web-build /usr/local/bin/node /usr/local/bin/node
 WORKDIR /app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.lock ./
+RUN pip install --no-cache-dir -r requirements.lock
 COPY graphops/ ./graphops/
 COPY web/server.ts ./web/server.ts
 COPY web/package.json ./web/package.json

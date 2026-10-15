@@ -1,0 +1,158 @@
+{
+  "mode": "llm",
+  "model_inference": true,
+  "public_deployment": false,
+  "checks": [
+    {
+      "name": "access_required",
+      "passed": true
+    },
+    {
+      "name": "bad_access_token_rejected",
+      "passed": true
+    },
+    {
+      "name": "authenticated_workspace",
+      "passed": true
+    },
+    {
+      "name": "malformed_json_400",
+      "passed": true
+    },
+    {
+      "name": "json_array_400",
+      "passed": true
+    },
+    {
+      "name": "oversized_body_413",
+      "passed": true
+    },
+    {
+      "name": "ui_html",
+      "passed": true
+    },
+    {
+      "name": "missing_asset_404",
+      "passed": true
+    },
+    {
+      "name": "sse_connected",
+      "passed": true
+    },
+    {
+      "name": "graph_lab_model_available",
+      "passed": true
+    },
+    {
+      "name": "live_model_and_mcp_verification",
+      "passed": true,
+      "diagnostics": {
+        "checked_at": "2026-10-15T06:45:06.905676+00:00",
+        "task": "INC-26A38EA6",
+        "mcp": {
+          "success": true,
+          "session": "7e567d33-62ac-430c-ba4a-4a7908ad8173"
+        },
+        "model": {
+          "success": true,
+          "provider": "ollama",
+          "model": "qwen3:8b"
+        },
+        "success": true
+      }
+    },
+    {
+      "name": "source_imported",
+      "passed": true
+    },
+    {
+      "name": "source_search",
+      "passed": true
+    },
+    {
+      "name": "source_conflict_409",
+      "passed": true
+    },
+    {
+      "name": "immutable_source_revision",
+      "passed": true
+    },
+    {
+      "name": "company_answer_from_current_owned_sources",
+      "passed": true,
+      "summary": "The owner of the payments service is **Payments Response**, as indicated in the ownership document with the source **owned:event/ownership-update**.\n\nThe current refund review window is **96 hours**, as stated in the synthetic refund policy document with the source **owned:document/owned-93c1af12189a6b3068c7**.",
+      "citation_check": "known_source_locations"
+    },
+    {
+      "name": "automatic_config",
+      "passed": true,
+      "seconds": 9.263
+    },
+    {
+      "name": "report_config",
+      "passed": true
+    },
+    {
+      "name": "automatic_worker",
+      "passed": true,
+      "seconds": 8.242
+    },
+    {
+      "name": "report_worker",
+      "passed": true
+    },
+    {
+      "name": "retired_procedure_blocks_action",
+      "passed": true
+    },
+    {
+      "name": "resume_after_published_procedure",
+      "passed": true
+    },
+    {
+      "name": "optional_pause",
+      "passed": true
+    },
+    {
+      "name": "worker_supervisor_reconnects",
+      "passed": true
+    },
+    {
+      "name": "handoff_survives_app_restart",
+      "passed": true
+    },
+    {
+      "name": "fresh_resolver_after_restart",
+      "passed": true
+    },
+    {
+      "name": "stop_at_checkpoint",
+      "passed": true
+    },
+    {
+      "name": "resume_stopped_run",
+      "passed": true
+    },
+    {
+      "name": "complete_workspace_backup",
+      "passed": true
+    },
+    {
+      "name": "graph_restart_preserves_state",
+      "passed": true
+    },
+    {
+      "name": "backup_restores_into_new_workspace",
+      "passed": true
+    },
+    {
+      "name": "history_and_change_log",
+      "passed": true
+    },
+    {
+      "name": "logout_locks_workspace",
+      "passed": true
+    }
+  ],
+  "success": true
+}

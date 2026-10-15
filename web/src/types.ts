@@ -14,6 +14,8 @@ export type Doc = {
   revision: string;
   source: string;
   data: Record<string, unknown>;
+  text_length?: number;
+  text_truncated?: boolean;
 };
 export type Company = {
   service: string;
@@ -55,6 +57,7 @@ export type Incident = {
   blocker?: string;
   ticket_closed?: boolean;
   question?: boolean;
+  diagnostic?: boolean;
   outcome?: {
     success: boolean;
     action: string;
@@ -95,6 +98,10 @@ export type Workspace = {
   company: Record<string, Company>;
   model: { provider: string; model: string; configured: boolean };
   busy: boolean;
+  stopping: boolean;
+  active_task?: string;
+  diagnostics?: any;
+  access_required?: boolean;
   scenarios: { id: string; label: string }[];
   observed_at: string;
 };

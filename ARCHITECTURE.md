@@ -93,6 +93,12 @@ decision and chat sources. Documents point to immutable Revision nodes. Current
 document pointers may change, while previous revision payloads remain available.
 Ownership and procedure edits are limited to the synthetic company graph.
 
+Text/Markdown imports create versioned reference documents attached to services.
+Optimistic revision checks prevent stale edits. Agents can search current source
+text and read paged documents through MCP. Imported content cannot change the
+approved action policy. A source citation must match a retrieved location before
+a company answer finishes; claim entailment remains outside this validation.
+
 Ticket completion is selected by the backend from the handoff target and only
 allowed after measured recovery. This is a local versioned document update;
 there is no Slack/Jira/GitHub integration or message sent to a real person.
@@ -110,5 +116,11 @@ the browser stores access in an HttpOnly SameSite cookie. The VM template enable
 Secure cookies behind Caddy HTTPS. Database and lab ports are private. A single
 server-fixed graph scope prevents clients choosing another workspace, but this
 is not per-user authorization. One agent job and at most 20 SSE viewers are
-allowed. Production multi-user operation needs an identity and authorization
-design, durable queues, operational metrics and backup/restore validation.
+allowed. Node restarts a failed Python worker; incidents still require explicit
+resume from their persisted checkpoints. System diagnostics distinguish model
+availability from actual inference and MCP verification. Logical backups include
+graph and controlled-service state, with restoration restricted to a new
+workspace. Restored semantic health facts require new verification.
+
+Production multi-user operation needs an identity and authorization design,
+durable queues, operational metrics and production disaster-recovery exercises.

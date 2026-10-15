@@ -15,6 +15,10 @@ is accepted by the published rules. Review the actual form once submissions open
 - [x] TypeScript interface/API, Python agents/MCP, concurrent Go lab.
 - [x] Docker package checked across an app restart.
 - [x] Local setup, architecture and essential Cypher documentation.
+- [x] Company source imports/search, immutable revisions and selected-service answers.
+- [x] Stop/resume, history, incident reports, live diagnostics and workspace backup/restore.
+- [x] Full Docker product acceptance: 33 checks with actual local model inference.
+- [x] Backend integration and UI component checks; remote CI workflow prepared.
 
 ## Before submitting
 

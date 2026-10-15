@@ -1,0 +1,6 @@
+{
+  "success": false,
+  "cause": "Two local builds were inadvertently run concurrently; npm ci could not replace the in-use esbuild executable and the parallel Vite build observed partial dependencies.",
+  "correction": "Run the startup build by itself; do not run a separate build concurrently.",
+  "application_runtime_failure": false
+}

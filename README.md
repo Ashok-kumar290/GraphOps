@@ -61,7 +61,25 @@ The local candidate's measured results and failures are recorded in
 ## Windows development
 
 Requirements: Python 3.13+, Node 24, Docker Desktop. Go can be built in Docker;
-a local Go installation is optional. Start a FalkorDB instance on localhost:6379
+a local Go installation is optional. For the normal local start:
+
+```powershell
+.\start.ps1
+```
+
+This installs missing Python dependencies, starts an existing local FalkorDB
+or creates a persistent one, starts Ollama, downloads the selected local model
+if missing, builds changed assets, and launches **http://localhost:8080**.
+The first model download needs an internet connection. Keep the terminal open;
+Ctrl+C stops the app. Graph and controlled-service state remain on disk.
+For a hosted provider, first use the hidden configuration prompt:
+
+```powershell
+.\.venv\Scripts\python.exe -m graphops.cli configure --provider groq
+```
+
+The launcher also recognizes the parent workspace's Python environment.
+The manual development route follows. Start a FalkorDB instance on localhost:6379
 (the parent preparation environment already provides one). A fresh standalone
 development database can be started with:
 
@@ -85,13 +103,34 @@ Python worker, actual MCP subprocesses, graph store and HTTP services:
 
 ```powershell
 .\.venv\Scripts\python.exe -m graphops.cli investigate --scenario config --mode llm
+.\.venv\Scripts\python.exe -m graphops.cli run --scenario worker --mode llm
 .\.venv\Scripts\python.exe -m graphops.cli resume INC-RETURNED_ID
 .\.venv\Scripts\python.exe -m graphops.cli memory payments
 .\.venv\Scripts\python.exe -m graphops.cli ask "Who owns payments and which decision supports recovery?"
+.\.venv\Scripts\python.exe -m graphops.cli doctor
 ```
 
 Each CLI invocation creates a fresh process and reloads persisted context.
 Use `--mode scripted` explicitly when checking the baseline.
+
+## Product workflows
+
+- **Workspace:** automatic incident recovery, optional saved handoff, stop at a
+  checkpoint, resume, evidence inspection, and downloadable incident reports.
+- **Company knowledge:** connected ownership and expertise, editable ownership
+  and approved procedure status, source search, text/Markdown imports, source
+  revisions, and questions grounded in the selected service's current sources.
+- **Memory navigator:** inspect and filter past episodes, reusable procedures,
+  current facts, unverified records, conflicts, and source validity checks.
+- **Run history:** search persisted incidents, questions and system checks;
+  load older runs and inspect the workspace change log.
+- **System & backups:** graph/lab/model readiness, a real model and MCP check,
+  and a full logical workspace backup. Restore into a new workspace with the CLI.
+
+Synthetic company records are included. Imported reference documents can inform
+answers but cannot authorize recovery or replace an approved procedure. A known
+citation is checked against retrieved sources; claim entailment is not verified.
+See [product operation and API](PRODUCT.md) for limits and recovery instructions.
 
 ## Judge walkthrough
 
@@ -136,6 +175,10 @@ With FalkorDB and the compiled lab available, from this directory:
 .\.venv\Scripts\python.exe -m tests.check_package
 .\.venv\Scripts\python.exe -m tests.check_package --mode llm
 .\.venv\Scripts\python.exe -m tests.check_live_app
+.\.venv\Scripts\python.exe -m tests.check_product
+cd web
+npm test
+npm run build
 ```
 
 The model evaluation uses real inference. The integration suite uses real

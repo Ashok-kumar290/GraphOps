@@ -29,11 +29,20 @@ import {
   Workflow,
   X,
   Zap,
+  Settings2,
+  Download,
+  LogOut,
 } from "lucide-react";
-import type { Workspace, Event as RunEvent, Memory, Doc } from "./types";
+import type { Workspace, Event as RunEvent, Memory, Doc, Incident } from "./types";
 import "./style.css";
+import {
+  SourceManager,
+  SystemPanel,
+  RunHistory,
+  KnowledgeGraph,
+} from "./ProductPanels";
 
-type View = "workspace" | "memory" | "company" | "history";
+type View = "workspace" | "memory" | "company" | "history" | "system";
 type Evidence = { title: string; value: unknown };
 const time = (s: string) =>
   new Date(s).toLocaleTimeString([], {
@@ -63,7 +72,7 @@ async function api(path: string, body?: unknown) {
   return data;
 }
 
-function App() {
+export function App() {
   const [data, setData] = useState<Workspace | null>(null),
     [view, setView] = useState<View>("workspace");
   const [taskId, setTaskId] = useState(
@@ -74,7 +83,10 @@ function App() {
     [mode, setMode] = useState("llm"),
     [pauseAfterHandoff, setPauseAfterHandoff] = useState(false),
     [error, setError] = useState(""),
+    [connectionError, setConnectionError] = useState(""),
     [pending, setPending] = useState(false);
+  const [memoryQuery, setMemoryQuery] = useState(""),
+    [memoryKind, setMemoryKind] = useState("all");
   const [inspector, setInspector] = useState<Evidence | null>(null),
     [question, setQuestion] = useState(""),
     [owner, setOwner] = useState("");
@@ -96,11 +108,15 @@ function App() {
       if (mounted.current) {
         setData(next);
         setLocked(false);
+        setConnectionError("");
       }
     } catch (e: any) {
       if (mounted.current) {
-        if (e.status === 401) setLocked(true);
-        else setError(e.message);
+        if (e.status === 401) {
+          setLocked(true);
+          setData(null);
+          setInspector(null);
+        } else setConnectionError(e.message);
       }
     } finally {
       refreshing.current = false;
@@ -122,6 +138,8 @@ function App() {
         setStage(`${item.role} is selecting its next step`);
       else if (item.stage === "handoff_saved")
         setStage("Resolver is loading the saved handoff");
+      else if (item.stage === "stopping")
+        setStage("Stopping after the current request or operation");
       else if (item.tool) setStage(nice(item.tool));
       else if (item.stage === "finished") setStage("Checkpoint saved");
       if (debounce.current) clearTimeout(debounce.current);
@@ -140,6 +158,13 @@ function App() {
     try {
       const result = await api(path, body);
       if (result.task) setTaskId(result.task);
+      if (path === "/api/access") setToken("");
+      if (path === "/api/logout") {
+        setData(null);
+        setInspector(null);
+        setLocked(true);
+        return;
+      }
       await refresh();
     } catch (e: any) {
       setError(e.message);
@@ -159,8 +184,19 @@ function App() {
         ...p.unverified,
       ])
     : [];
-  const inspect = (title: string, value: unknown) =>
+  const inspect = (title: string, value: unknown) => {
     setInspector({ title, value });
+    const doc = value as Doc;
+    if (doc?.text_truncated && doc.id && doc.revision)
+      void api(
+        "/api/sources?id=" +
+          encodeURIComponent(doc.id) +
+          "&revision=" +
+          encodeURIComponent(doc.revision),
+      )
+        .then((full) => setInspector({ title, value: full }))
+        .catch((e) => setError(e.message));
+  };
   useEffect(() => {
     if (!inspector) return;
     const previous = document.activeElement as HTMLElement | null;
@@ -189,10 +225,32 @@ function App() {
       previous?.focus();
     };
   }, [inspector]);
-  const choose = (id: string) => {
+  const choose = (id: string, historyTask?: Incident) => {
     setTaskId(id);
-    setView("workspace");
+    const task = historyTask || data?.tasks.find((t) => t.id === id);
+    if (task?.target) setService(task.target);
+    setView(
+      task?.diagnostic ? "system" : task?.question ? "company" : "workspace",
+    );
   };
+  async function download(path: string, name: string) {
+    setError("");
+    try {
+      const value = await api(path);
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(value, null, 2)], {
+          type: "application/json",
+        }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
 
   return (
     <div className="app-shell">
@@ -219,6 +277,7 @@ function App() {
               { id: "memory", label: "Memory navigator", icon: Layers3 },
               { id: "company", label: "Company knowledge", icon: Users },
               { id: "history", label: "Run history", icon: Clock3 },
+              { id: "system", label: "System & backups", icon: Settings2 },
             ] as const
           ).map((item) => (
             <button
@@ -287,6 +346,27 @@ function App() {
               <span className="tag-separator" />
               {data?.model.model || "Checking configuration"}
             </span>
+            {busy && data?.active_task && (
+              <button
+                className="button secondary"
+                disabled={pending || data.stopping}
+                onClick={() =>
+                  void command("/api/cancel", { task: data.active_task })
+                }
+              >
+                {data.stopping ? "Stopping..." : "Stop at checkpoint"}
+              </button>
+            )}
+            {data?.access_required && (
+              <button
+                className="plain-icon"
+                title="Lock workspace"
+                aria-label="Lock workspace"
+                onClick={() => void command("/api/logout", {})}
+              >
+                <LogOut size={16} />
+              </button>
+            )}
             <span className="team-avatar">G</span>
           </div>
         </header>
@@ -303,7 +383,9 @@ function App() {
                     ? "Memory navigator"
                     : view === "company"
                       ? "Company knowledge"
-                      : "Run history"}
+                      : view === "system"
+                        ? "System & backups"
+                        : "Run history"}
               </h1>
               <p>
                 {view === "workspace"
@@ -312,7 +394,9 @@ function App() {
                     ? "Shared knowledge, with a source and a reason to trust it."
                     : view === "company"
                       ? "The owners, procedures, and decisions behind the work."
-                      : "Persisted investigations and the sessions that moved them forward."}
+                      : view === "system"
+                        ? "Verify every dependency and preserve your workspace."
+                        : "Persisted investigations and the sessions that moved them forward."}
               </p>
             </div>
             <button
@@ -323,11 +407,17 @@ function App() {
               <RefreshCw size={16} />
             </button>
           </div>
-          {error && (
+          {(error || connectionError) && (
             <div className="alert" role="alert">
               <Activity size={16} />
-              <span>{error}</span>
-              <button aria-label="Dismiss error" onClick={() => setError("")}>
+              <span>{error || connectionError}</span>
+              <button
+                aria-label="Dismiss error"
+                onClick={() => {
+                  setError("");
+                  setConnectionError("");
+                }}
+              >
                 <X size={15} />
               </button>
             </div>
@@ -371,6 +461,22 @@ function App() {
               <SquareTerminal size={14} />
               Scripted baseline selected. Tools and measurements are real;
               decisions are deterministic.
+            </div>
+          )}
+          {selected && !selected.question && (
+            <div className="report-action">
+              <button
+                className="button secondary"
+                onClick={() =>
+                  void download(
+                    "/api/reports?task=" + encodeURIComponent(selected.id),
+                    selected.id + ".json",
+                  )
+                }
+              >
+                <Download size={14} />
+                Download incident report
+              </button>
             </div>
           )}
           <div className="workspace-layout">
@@ -656,6 +762,35 @@ function App() {
                       </button>
                     ))}
                   </div>
+                  <div className="memory-filters">
+                    <input
+                      value={memoryQuery}
+                      onChange={(e) => setMemoryQuery(e.target.value)}
+                      placeholder="Filter memory by claim, action or incident"
+                      aria-label="Filter memory"
+                    />
+                    <select
+                      value={memoryKind}
+                      onChange={(e) => setMemoryKind(e.target.value)}
+                      aria-label="Memory type"
+                    >
+                      <option value="all">All types</option>
+                      <option value="episodic">Episodic</option>
+                      <option value="procedural">Procedural</option>
+                      <option value="semantic">Semantic</option>
+                    </select>
+                  </div>
+                  {!!packet?.conflicts.length && (
+                    <button
+                      className="alert"
+                      onClick={() =>
+                        inspect("Conflicting memory claims", packet.conflicts)
+                      }
+                    >
+                      Conflicting claims need fresh verification. Inspect
+                      evidence.
+                    </button>
+                  )}
                   <div className="memory-grid">
                     {(["active", "historical", "unverified"] as const).map(
                       (group) => (
@@ -678,13 +813,22 @@ function App() {
                               {packet?.[group].length || 0}
                             </span>
                           </div>
-                          {packet?.[group].map((m) => (
-                            <MemoryCard
-                              key={m.id}
-                              memory={m}
-                              inspect={inspect}
-                            />
-                          ))}
+                          {packet?.[group]
+                            .filter(
+                              (m) =>
+                                (memoryKind === "all" ||
+                                  m.kind === memoryKind) &&
+                                JSON.stringify(m)
+                                  .toLowerCase()
+                                  .includes(memoryQuery.toLowerCase()),
+                            )
+                            .map((m) => (
+                              <MemoryCard
+                                key={m.id}
+                                memory={m}
+                                inspect={inspect}
+                              />
+                            ))}
                           {!packet?.[group].length && (
                             <p className="quiet-note">
                               No {group} records for this service.
@@ -716,6 +860,20 @@ function App() {
                       </button>
                     ))}
                   </div>
+                  <KnowledgeGraph
+                    data={data}
+                    service={service}
+                    inspect={inspect}
+                  />
+                  <SourceManager
+                    key={service}
+                    api={api}
+                    busy={busy}
+                    inspect={inspect}
+                    service={service}
+                    documents={company?.documents || []}
+                    onChanged={refresh}
+                  />
                   <div className="company-overview panel">
                     <div>
                       <div className="eyebrow">CURRENT OWNER</div>
@@ -777,7 +935,7 @@ function App() {
                   )}
                   {["payments", "orders"].includes(service) && (
                     <section className="panel company-edit">
-                      <h3>Demonstrate changing knowledge</h3>
+                      <h3>Ownership and recovery procedures</h3>
                       <p>
                         These controls update our synthetic company graph. The
                         next agent run reads the new source revision.
@@ -835,18 +993,33 @@ function App() {
                     </section>
                   )}
                   <section className="panel question-box">
-                    <h3>Ask the company agent</h3>
+                    <h3>Ask the company agent about {service}</h3>
+                    <label className="question-mode">
+                      Execution mode
+                      <select
+                        value={mode}
+                        onChange={(e) => setMode(e.target.value)}
+                        disabled={busy}
+                      >
+                        <option value="llm">Agent LLM</option>
+                        <option value="scripted">Scripted baseline</option>
+                      </select>
+                    </label>
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
-                        void command("/api/questions", { question, mode });
+                        void command("/api/questions", {
+                          question,
+                          mode,
+                          service,
+                        });
                       }}
                     >
                       <input
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         aria-label="Company question"
-                        placeholder="Who owns payments, and which decision supports recovery?"
+                        placeholder="Who owns this service, and what procedure applies?"
                         maxLength={1000}
                       />
                       <button
@@ -867,59 +1040,22 @@ function App() {
                 </>
               )}
               {view === "history" && (
-                <section className="panel history-panel">
-                  <div className="panel-header">
-                    <div>
-                      <Clock3 size={16} />
-                      <h2>Persisted runs</h2>
-                    </div>
-                    <span className="count-tag">{data?.tasks.length || 0}</span>
-                  </div>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>INCIDENT</th>
-                        <th>MODE</th>
-                        <th>TARGET</th>
-                        <th>STATUS</th>
-                        <th>STARTED</th>
-                        <th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data?.tasks.map((t) => (
-                        <tr
-                          key={t.id}
-                          onClick={() => choose(t.id)}
-                          tabIndex={0}
-                          onKeyDown={(e) => e.key === "Enter" && choose(t.id)}
-                        >
-                          <td>
-                            <strong>{t.id}</strong>
-                            <small>{t.title}</small>
-                          </td>
-                          <td>{t.mode === "llm" ? "LLM agent" : "Scripted"}</td>
-                          <td>{t.target || "—"}</td>
-                          <td>
-                            <span className={"state-badge " + t.status}>
-                              {nice(t.status)}
-                            </span>
-                          </td>
-                          <td>{time(t.created_at)}</td>
-                          <td>
-                            <ArrowUpRight size={15} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {!data?.tasks.length && (
-                    <Empty
-                      title="No saved incidents yet"
-                      text="Run your first investigation to start the history."
-                    />
-                  )}
-                </section>
+                <RunHistory api={api} inspect={inspect} onChoose={choose} />
+              )}
+              {view === "system" && (
+                <SystemPanel
+                  api={api}
+                  busy={busy}
+                  inspect={inspect}
+                  data={data}
+                  onDiagnose={() => void command("/api/diagnostics", {})}
+                  onBackup={() =>
+                    void download(
+                      "/api/backup",
+                      "graphops-workspace-backup.json",
+                    )
+                  }
+                />
               )}
             </section>
             <aside className="context-column">
@@ -1178,6 +1314,8 @@ function Timeline({
       "tool",
       "tool_error",
       "run_error",
+      "run_stopped",
+      "component_check",
     ].includes(e.kind),
   );
   if (!items.length)
@@ -1460,8 +1598,10 @@ function ServiceGraph({
   );
 }
 
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+const rootElement = document.getElementById("root");
+if (rootElement)
+  createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
