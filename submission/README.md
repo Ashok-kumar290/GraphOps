@@ -14,6 +14,7 @@
 | Participant contribution/review | [PROVENANCE.md](../PROVENANCE.md), [LEARN.md](../LEARN.md); team must complete truthfully |
 | Browser review | Pending; connected browser inventory is empty |
 | Public source repository | No Git remote configured; URL not supplied |
+| Publishing instructions | [PUBLISH.md](PUBLISH.md); event repository only |
 | Live deployment | Not provisioned; complete local setup is provided |
 | Signed-in form | Public panel displays Loading; exact fields/limits unverified |
 

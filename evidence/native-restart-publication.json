@@ -1,0 +1,99 @@
+{
+  "observed_at": "2026-10-15T19:48:41.492209+00:00",
+  "scope": "Native Windows cold restart and connected CLI diagnostics. No full incident replay or browser review performed in this check.",
+  "source_commit_before_documentation_update": "c67b1d2cebcd53355e2ca02278043cb548e0b4ed",
+  "startup": {
+    "command": ".\\start.ps1",
+    "docker_initially_stopped": true,
+    "app_url": "http://127.0.0.1:8080",
+    "worker_ready": true,
+    "worker_connected": true
+  },
+  "diagnostics": {
+    "task": "INC-3F9F9E31",
+    "success": true,
+    "elapsed_seconds": 9.542,
+    "mcp": {
+      "success": true,
+      "session": "25971353-16fb-420a-839d-2ec6b68e9452"
+    },
+    "model": {
+      "success": true,
+      "provider": "ollama",
+      "model": "qwen3:8b"
+    }
+  },
+  "modules": [
+    {
+      "name": "Company knowledge",
+      "status": "ready",
+      "detail": "11 current source documents"
+    },
+    {
+      "name": "Graph",
+      "status": "ready",
+      "detail": "22 entities / 28 relationships"
+    },
+    {
+      "name": "Agent",
+      "status": "idle",
+      "detail": "2 sessions in selected run; 22 tool results in recent window"
+    },
+    {
+      "name": "Actions",
+      "status": "resolved",
+      "detail": "restore_config"
+    },
+    {
+      "name": "Memory",
+      "status": "ready",
+      "detail": "0 active / 24 historical / 0 unverified"
+    },
+    {
+      "name": "Workspace",
+      "status": "idle",
+      "detail": "One shared workspace; one active job"
+    }
+  ],
+  "health": [
+    {
+      "service": "gateway",
+      "http_status": 200,
+      "healthy": true
+    },
+    {
+      "service": "orders",
+      "http_status": 200,
+      "healthy": true
+    },
+    {
+      "service": "payments",
+      "http_status": 200,
+      "healthy": true
+    },
+    {
+      "service": "analytics",
+      "http_status": 503,
+      "healthy": false
+    }
+  ],
+  "processes": [
+    {
+      "name": "Node HTTP API",
+      "running": true
+    },
+    {
+      "name": "Python agent worker",
+      "running": true
+    },
+    {
+      "name": "Go service simulator",
+      "running": true
+    }
+  ],
+  "remaining": {
+    "public_repository": "No remote URL configured",
+    "browser_review": "No connected browser available",
+    "demo_video": "Not recorded/uploaded"
+  }
+}

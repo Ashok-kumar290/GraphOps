@@ -6,6 +6,9 @@ Prepared artifacts: [submission package](submission/README.md),
 These are draft materials; a video, public repository and participant review
 remain pending.
 
+Follow [the publishing instructions](submission/PUBLISH.md) to create the public
+repository, verify its visibility and record the final URL.
+
 See [the supplied rules map](HACKATHON_REQUIREMENTS.md), [module design](MODULES.md)
 and [participant walkthrough](LEARN.md). Participant understanding and meaningful
 contribution are explicit requirements under rules 12-13; the walkthrough is not
