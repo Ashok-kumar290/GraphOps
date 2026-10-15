@@ -15,7 +15,7 @@ unfilled team/link fields are in [submission/](submission/README.md).
 
 | Rule | Requirement | Our implementation / remaining work |
 |---|---|---|
-| 1 | Solo or team of up to four; one team per participant | Participant confirmed team registration. Team roster must be recorded. |
+| 1 | Solo or team of up to four; one team per participant | Participant confirmed registration as TeamDesperateForGTA. Team roster must be recorded. |
 | 2-3 | FalkorDB primary and central; removal must break core product flows | Company retrieval, graph paths, plans, checkpoints, session events and memory depend on FalkorDB. Essential path removal is checked in isolated integration tests. |
 | 4 | Docker, self-hosted or cloud; language/platform choice unrestricted | Docker FalkorDB, TypeScript UI/API, Python agent/MCP and Go simulator. |
 | 5 | Name every entered track | Intended entry: all three tracks listed below. |

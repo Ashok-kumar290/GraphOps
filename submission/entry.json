@@ -8,7 +8,7 @@
     "Company Brain"
   ],
   "team": {
-    "registered_name": null,
+    "registered_name": "TeamDesperateForGTA",
     "members": []
   },
   "links": {
@@ -25,7 +25,7 @@
   "ai_assistance_and_reuse": "PROVENANCE.md",
   "participant_review_record": "LEARN.md",
   "pending": [
-    "Registered team name and actual member contributions",
+    "Team member names and actual contributions",
     "Participant code review and technical walkthrough",
     "Public repository publication and visibility check",
     "Working demo video recording and access check",

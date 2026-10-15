@@ -4,6 +4,7 @@
 
 | Item | Location / current state |
 |---|---|
+| Registered team | TeamDesperateForGTA |
 | Copy-ready project explanation | [FORM_DRAFT.md](FORM_DRAFT.md); adapt to the actual form |
 | Project/team/link fields | [entry.json](entry.json); missing values are `null` |
 | Three-track proof | [TRACK_EVIDENCE.md](TRACK_EVIDENCE.md) |
@@ -18,7 +19,7 @@
 
 ## Team input required
 
-Add the registered team name, member names and actual contributions. Complete
+The registered team name is **TeamDesperateForGTA**. Add member names and actual contributions. Complete
 the code/graph walkthrough and record what each person verified. Supply the
 public source repository and working video links after publication and upload.
 A public live app is preferred by the event page; the rules also permit complete

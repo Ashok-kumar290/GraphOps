@@ -10,6 +10,10 @@ links and participant review remain pending.
 
 GraphOps
 
+## Registered team
+
+TeamDesperateForGTA
+
 ## One-line description
 
 A company copilot that carries sourced context into the next session.
@@ -98,7 +102,7 @@ participant understanding.
 - Public source repository: not supplied.
 - Working demo video: not recorded/uploaded.
 - Live app: not provisioned; complete local setup is in README.md.
-- Registered team name and members: not supplied.
+- Team members and actual contributions: not supplied.
 
 The official rules allow local setup when deployment is unavailable. Review
 the final form before submitting. [Official rules](https://www.wemakedevs.org/hackathons/falkordb/rules)

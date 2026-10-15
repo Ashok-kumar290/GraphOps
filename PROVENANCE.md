@@ -1,6 +1,8 @@
 # Event development record
 
 Event implementation started October 15, 2026, in `event/`.
+The participant supplied the registered team name **TeamDesperateForGTA**.
+Member names and individual contribution records remain to be supplied.
 
 The parent workspace contains a CLI preparation prototype built before the
 event. That prototype is not new event work. The team must disclose that history
