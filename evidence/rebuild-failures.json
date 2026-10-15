@@ -1,0 +1,19 @@
+{
+  "success": false,
+  "stage": "intermediate modular migration",
+  "issues": [
+    {
+      "issue": "Missing SERVICES import in extracted investigation capability",
+      "fix": "Import shared synthetic definitions in the capability module"
+    },
+    {
+      "issue": "Tests still patched the former flat module paths",
+      "fix": "Patch the new implementing modules"
+    },
+    {
+      "issue": "Missing SCENARIOS import in extracted workspace query module",
+      "fix": "Import SCENARIOS from shared synthetic definitions"
+    }
+  ],
+  "scope": "Retained intermediate failures; consult current checks/product reports for final status."
+}

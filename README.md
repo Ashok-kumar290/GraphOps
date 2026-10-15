@@ -1,12 +1,19 @@
 # GraphOps
 
-**An incident agent that follows dependency graphs, resumes across sessions,
-and checks company knowledge before acting.**
+**A company copilot with shared memory.**
 
-GraphOps finds the cause of a checkout failure, saves an evidence-backed handoff,
-and lets a new resolver session validate a procedure, recover an owned service,
-measure HTTP health, and close a synthetic ticket. FalkorDB stores the connected
-context, sessions, sources, plans and memory used in every run.
+Give it company knowledge and a task. It retrieves connected context from
+FalkorDB, chooses supported steps, verifies the result and saves sourced memory
+for another session. The included action demonstration investigates a checkout
+failure, hands off to a fresh resolver, validates a current procedure, recovers
+a simulated service and measures HTTP health.
+
+## Understand the project first
+
+Start with [the six modules](MODULES.md) and [the developer walkthrough](LEARN.md).
+The app opens on **Start here**, which explains the flow and links to each module.
+The current company is synthetic and actions operate on the included Go lab.
+Read [the requirements map](HACKATHON_REQUIREMENTS.md) before submission.
 
 Built for Graph Hacks, October 15–18, 2026. Intended tracks: **Agents That Act on
 Connected Data**, **Agent Memory and Coordination**, **Company Brain**.
@@ -27,7 +34,7 @@ docker compose up --build -d
 ```
 
 Open **http://localhost:8081**, enter the token, and select **Agent · LLM**.
-Click **Run agent** to investigate and recover automatically. The resolver
+Open **Agent tasks**, then click **Run agent** to investigate and recover automatically. The resolver
 starts in a fresh session after loading the saved handoff from FalkorDB.
 Enable **Pause at handoff** only when you want to resume recovery manually.
 The container expects Ollama at `host.docker.internal:11434`. Its model-list

@@ -1,15 +1,12 @@
 import React from "react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { App } from "./main";
-import { SourceManager, SystemPanel, KnowledgeGraph, RunHistory } from "./ProductPanels";
-import type { Workspace } from "./types";
+import { SourceManager } from "./features/company/SourceManager";
+import { SystemPanel } from "./features/system/SystemPanel";
+import { KnowledgeGraph } from "./features/graph/KnowledgeGraph";
+import { RunHistory } from "./features/runs/RunHistory";
+import type { Workspace } from "./shared/contracts";
 
 const makeWorkspace = (): Workspace => ({
   workspace: "ui-test",
@@ -120,9 +117,27 @@ function network(workspace = makeWorkspace()) {
   return fetch;
 }
 
+test("The starting screen explains the product and its six modules", async () => {
+  network();
+  render(<App />);
+  expect(screen.getByRole("heading", {name: "A company copilot that carries useful context into the next session."})).toBeTruthy();
+  for (const name of ["1. Company knowledge", "2. Connected graph", "3. Agent", "4. Actions", "5. Shared memory", "6. Workspace"])
+    expect(screen.getByRole("heading", {name})).toBeTruthy();
+  expect(await screen.findByText("FalkorDB connected")).toBeTruthy();
+});
+
+test("The graph module is available directly from navigation", async () => {
+  network();
+  render(<App />);
+  fireEvent.click(screen.getByRole("button", {name: "Connected graph"}));
+  expect(screen.getByRole("heading", {name: "Relationships guide the agent"})).toBeTruthy();
+  expect(await screen.findByRole("img", {name: "Actual service dependency graph"})).toBeTruthy();
+});
+
 test("Run agent sends an automatic LLM workflow by default", async () => {
   const fetch = network();
   render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Agent tasks" }));
   const run = screen.getByRole("button", { name: "Run agent" });
   await waitFor(() => expect((run as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(run);
@@ -144,6 +159,7 @@ test("Run agent sends an automatic LLM workflow by default", async () => {
 test("Pause at handoff explicitly selects investigation only", async () => {
   const fetch = network();
   render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Agent tasks" }));
   await waitFor(() =>
     expect(
       (screen.getByRole("button", { name: "Run agent" }) as HTMLButtonElement)
@@ -170,6 +186,7 @@ test("Stop control targets the active job even while another incident is selecte
   w.active_task = "INC-ACTIVE";
   const fetch = network(w);
   render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Agent tasks" }));
   fireEvent.click(
     await screen.findByRole("button", { name: "Stop at checkpoint" }),
   );
@@ -188,6 +205,7 @@ test("Stop control targets the active job even while another incident is selecte
 test("Company question carries the selected service", async () => {
   const fetch = network();
   render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Agent tasks" }));
   await screen.findByText("FalkorDB connected");
   fireEvent.click(screen.getByRole("button", { name: "Company knowledge" }));
   fireEvent.click(screen.getByRole("button", { name: "orders" }));
@@ -221,6 +239,7 @@ test("A restored connection clears its stale error", async () => {
     ),
   );
   render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Agent tasks" }));
   expect(await screen.findByRole("alert")).toHaveProperty(
     "textContent",
     expect.stringContaining("Worker reconnecting"),

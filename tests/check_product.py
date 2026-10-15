@@ -95,7 +95,7 @@ def main():
                 except httpx.HTTPError:time.sleep(1)
             check('graph_restart_preserves_state',reconnected and w['selected']['status']=='resolved' and any(d['id']==doc['id'] for d in w['company']['payments']['documents']))
             restored='restored-'+uuid.uuid4().hex[:10]
-            restore_script="import json,sys;from graphops.backup import restore_workspace;print(json.dumps(restore_workspace(json.load(sys.stdin),sys.argv[1],9000)))"
+            restore_script="import json,sys;from graphops.workspace.backup import restore_workspace;print(json.dumps(restore_workspace(json.load(sys.stdin),sys.argv[1],9000)))"
             result=docker('exec','-T','app','python','-c',restore_script,restored,input=json.dumps(backup));restored_result=json.loads(result.stdout.strip())
             result=docker('exec','-T','app','python','-m','graphops.cli','--workspace',restored,'--port','9000','status',input='');restored_state=json.loads(result.stdout)
             check('backup_restores_into_new_workspace',restored_result['nodes']==len(backup['nodes']) and next(h['http_status'] for h in restored_state['health'] if h['service']=='gateway')==200)

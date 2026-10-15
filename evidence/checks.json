@@ -2,7 +2,7 @@
   "tests": 39,
   "passed": 39,
   "failures": [],
-  "duration_seconds": 181.606,
+  "duration_seconds": 186.853,
   "actual_falkordb_go_http_mcp": true,
   "model_inference": false,
   "scope": "Local event implementation; protocol simulation is not model inference"

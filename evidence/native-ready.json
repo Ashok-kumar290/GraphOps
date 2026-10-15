@@ -2,13 +2,14 @@
   "success": true,
   "url": "http://localhost:8080",
   "workspace": "team-demo",
-  "synthetic_sources": 2,
+  "modular_rebuild": true,
+  "synthetic_sources_preserved": true,
   "diagnostics": {
-    "checked_at": "2026-10-15T06:48:36.241012+00:00",
-    "task": "INC-8F4FE175",
+    "checked_at": "2026-10-15T08:17:27.922186+00:00",
+    "task": "INC-C288DCE4",
     "mcp": {
       "success": true,
-      "session": "23ee518b-27c1-4403-a2f0-56b8112449bb"
+      "session": "360a5803-5fb4-47cd-9ad2-778ce9d1d8ad"
     },
     "model": {
       "success": true,
@@ -17,7 +18,7 @@
     },
     "success": true
   },
-  "company_answer": "The owner of the **payments** service is the **Payments Platform**. This information is sourced from the company context, which indicates that the service is owned by the Payments Platform team.\n\nThe **synthetic refund review window** is **72 hours**, as stated in the **synthetic refund review policy**. This policy is referenced in the company's documentation and is available under the **owned-0b343356fe09c35a9409** document.\n\n### Sources:\n- **Owner of payments**:  \n  - Source: `fixture:event/topology-v1`  \n  - Document: `company_context` for the `payments` service.\n\n- **Synthetic refund review window**:  \n  - Source: `owned:document/owned-0b343356fe09c35a9409`  \n  - Document: `owned-0b343356fe09c35a9409` (title: *Synthetic refund review policy*).",
+  "company_answer": "The owner of the payments service is the **Payments Platform**. \n\nThe synthetic refund review window is **72 hours**, as stated in the **Synthetic refund review policy** document. This policy is referenced in the current sources and does not authorize recovery actions, but it outlines the review window for synthetic refunds.\n\nCitations:\n- **Owner**: [Payments Platform](fixture:event/topology-v1)\n- **Refund Review Window**: [Synthetic refund review policy](owned:document/owned-0b343356fe09c35a9409)",
   "citation_check": "known_source_locations",
   "components": {
     "graph": {

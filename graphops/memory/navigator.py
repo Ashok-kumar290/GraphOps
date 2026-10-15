@@ -3,7 +3,7 @@ from collections import OrderedDict
 import copy
 import json
 import time
-from graphops.store import age
+from graphops.core.identity import age
 
 
 class Navigator:
@@ -15,12 +15,12 @@ class Navigator:
         cached = self.cache.get(key)
         if cached and time.monotonic() < cached[0]:
             return {**copy.deepcopy(cached[1]), "cache_hit": True}
-        company = self.store.company(service)
+        company = self.store.company.context(service)
         docs = {d["source"]: d for d in company["documents"]}
         packet = {"service": service, "revision": revision, "active": [], "historical": [],
                   "unverified": [], "conflicts": [], "cache_hit": False}
         lifetime = 10
-        for record in self.store.memories(service)[:12]:
+        for record in self.store.memory.list(service)[:12]:
             group, reason = "active", "matching_configuration"
             if not record["verified"]: group, reason = "unverified", "unverified_claim"
             elif record["kind"] == "episodic": group, reason = "historical", "past_event"

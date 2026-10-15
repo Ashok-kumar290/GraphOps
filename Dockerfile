@@ -18,6 +18,7 @@ COPY requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.lock
 COPY graphops/ ./graphops/
 COPY web/server.ts ./web/server.ts
+COPY web/api/ ./web/api/
 COPY web/package.json ./web/package.json
 COPY --from=web-build /web/dist ./web/dist
 COPY --from=lab-build /lab /usr/local/bin/graphops-lab

@@ -8,7 +8,7 @@ and confirm eligibility with organizers if its reuse creates ambiguity.
 
 ## Reused infrastructure
 
-`graphops/provider.py` is the generic Gemini/OpenAI-compatible HTTP adapter
+`graphops/models/providers.py` (originally `graphops/provider.py`) is the generic Gemini/OpenAI-compatible HTTP adapter
 copied from `../backend/runtime/model.py` on October 15. Its initial contents
 were written before the event. It is infrastructure, not an original event
 contribution. Any later changes are visible in this repository's history.
@@ -31,3 +31,17 @@ the new implementation was added; it does not establish organizer acceptance.
 OpenAI Codex assists with implementation and review. The participant team owns
 requirements, technical decisions, verification and explaining the submission.
 Record each teammate's actual contributions here before submission.
+
+## Modular rebuild during the event
+
+On October 15, the participant explicitly chose **a company copilot with shared
+memory** as the product direction and requested a rebuild into understandable
+modules. Codex implemented the module separation, domain repository interfaces,
+MCP capability composition, API route modules, UI feature pages and walkthrough.
+The existing event algorithms and service simulator were reused within that
+rebuild; this is not a claim that every line was written again from scratch.
+
+The participant had earlier proposed a memory navigator/cache approach and a
+division of language responsibilities. Those ideas belong in the design history;
+their timing must remain accurate. Participant code review, hands-on verification
+and teammate contributions are still to be recorded by the people doing them.

@@ -1,6 +1,6 @@
 # Measured evidence
 
-Aggregate reports exported 2026-10-15T06:49:16.076888+00:00.
+Aggregate reports exported 2026-10-15T08:17:55.060295+00:00.
 
 These are local measurements. Model evaluations use actual inference; integration and package reports identify their execution mode. Failed model candidates are retained. This small evaluation does not establish general reliability. Full event traces remain locally in ignored `.runtime/reports`; hidden reasoning and credentials are not exported.
 
@@ -13,6 +13,7 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [product](product.json)
 - [product-startup-failure](product-startup-failure.json)
 - [build-concurrency-failure](build-concurrency-failure.json)
+- [rebuild-failures](rebuild-failures.json)
 - [frontend](frontend.json)
 - [native-ready](native-ready.json)
 - [evaluation-qwen-candidate](evaluation-qwen-candidate.json)

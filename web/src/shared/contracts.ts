@@ -105,3 +105,7 @@ export type Workspace = {
   scenarios: { id: string; label: string }[];
   observed_at: string;
 };
+
+export type Api = (path: string, body?: unknown) => Promise<any>;
+export type Inspect = (title: string, value: unknown) => void;
+export type View = "home" | "workspace" | "graph" | "memory" | "company" | "history" | "system";

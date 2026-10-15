@@ -1,5 +1,10 @@
 # How GraphOps works
 
+Start with [MODULES.md](MODULES.md) for the product definition, folder map,
+repository interfaces and one task through the six modules. This document
+explains the runtime decisions in more depth. [LEARN.md](LEARN.md) provides a
+hands-on walkthrough for participants.
+
 ```mermaid
 flowchart TD
     UI[React and TypeScript workspace] --> API[Node HTTP API and SSE]

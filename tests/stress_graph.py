@@ -5,18 +5,18 @@ from statistics import median
 import time
 import uuid
 from graphops import settings
-from graphops.store import Store
+from graphops.graph.workspace import WorkspaceGraph
 
 if __name__=='__main__':
-    store=Store('load-'+uuid.uuid4().hex[:12]);store.seed(40000)
-    task=store.create_task('load','Load exercise','scripted')['id']
+    store=WorkspaceGraph('load-'+uuid.uuid4().hex[:12]);store.seed(40000)
+    task=store.runs.create('load','Load exercise','scripted')['id']
     count,workers=5000,32;latencies=[];start=time.perf_counter()
     try:
         def item(i):
             tick=time.perf_counter()
-            store.event(task,'writer-'+str(i%workers),'system','load',{'index':i})
-            store.task(task)
-            if i%2==0:store.remember('load-'+str(i),'payments','semantic','v1','fixture:load',{'claim':'load','value':i})
+            store.runs.append_event(task,'writer-'+str(i%workers),'system','load',{'index':i})
+            store.runs.get(task)
+            if i%2==0:store.memory.save('load-'+str(i),'payments','semantic','v1','fixture:load',{'claim':'load','value':i})
             return (time.perf_counter()-tick)*1000
         with ThreadPoolExecutor(max_workers=workers) as pool:latencies=list(pool.map(item,range(count)))
         duration=time.perf_counter()-start
@@ -25,9 +25,9 @@ if __name__=='__main__':
         winners=[]
         with ThreadPoolExecutor(max_workers=workers) as pool:
             for _ in range(50):
-                version=store.task(task)['version']
+                version=store.runs.get(task)['version']
                 def compete(i):
-                    try:store.update_task(task,{'contender':i},version);return 1
+                    try:store.runs.update(task,{'contender':i},version);return 1
                     except ValueError:return 0
                 winners.append(sum(pool.map(compete,range(workers))))
         report={'event_writes':events,'memory_writes':memories,'task_reads':count,'workers':workers,

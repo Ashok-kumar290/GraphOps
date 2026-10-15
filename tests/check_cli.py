@@ -5,14 +5,14 @@ import subprocess
 import sys
 import uuid
 from graphops import settings
-from graphops.store import Store
+from graphops.graph.workspace import WorkspaceGraph
 from tests.test_event import free_port
 
 
 def main():
     scope='cli-check-'+uuid.uuid4().hex[:12]
     env={**os.environ,'GRAPHOPS_WORKSPACE':scope,'GRAPHOPS_LAB_PORT':str(free_port())}
-    store=Store(scope)
+    store=WorkspaceGraph(scope)
     report={'mode':'scripted','separate_processes':True,'success':False}
     try:
         def run(*args):
@@ -20,11 +20,11 @@ def main():
             if result.returncode:raise RuntimeError(result.stderr[-1000:])
             return result
         run('investigate','--scenario','config','--mode','scripted')
-        task=store.tasks()[0];report['persisted_handoff']=task['status']=='handoff'
+        task=store.runs.list()[0];report['persisted_handoff']=task['status']=='handoff'
         run('resume',task['id'])
-        task=store.task(task['id']);report['resolved']=task['status']=='resolved';report['ticket_closed']=bool(task.get('ticket_closed'))
-        report['memories']=len(store.memories('payments'))
-        report['sessions']=len({e['session'] for e in store.events(task['id']) if e['kind']=='session_started'})
+        task=store.runs.get(task['id']);report['resolved']=task['status']=='resolved';report['ticket_closed']=bool(task.get('ticket_closed'))
+        report['memories']=len(store.memory.list('payments'))
+        report['sessions']=len({e['session'] for e in store.runs.events(task['id']) if e['kind']=='session_started'})
         report['success']=all((report['persisted_handoff'],report['resolved'],report['ticket_closed'],report['memories']==3,report['sessions']==2))
     finally:
         store.graph.delete()

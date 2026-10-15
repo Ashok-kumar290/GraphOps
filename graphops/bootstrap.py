@@ -11,7 +11,7 @@ def main():
         raise SystemExit(0 if all(importlib.util.find_spec(name) for name in ('falkordb','mcp','httpx','jsonschema','dotenv')) else 1)
     from graphops import settings
     if command=='configuration':
-        from graphops.models import configuration
+        from graphops.models.router import configuration
         print(json.dumps({**configuration(),'db_host':os.getenv('FALKORDB_HOST','localhost'),'db_port':int(os.getenv('FALKORDB_PORT','6379'))}))
     elif command=='database':
         from falkordb import FalkorDB

@@ -47,11 +47,11 @@
       "name": "live_model_and_mcp_verification",
       "passed": true,
       "diagnostics": {
-        "checked_at": "2026-10-15T06:45:06.905676+00:00",
-        "task": "INC-26A38EA6",
+        "checked_at": "2026-10-15T08:13:17.801978+00:00",
+        "task": "INC-AC98DA1F",
         "mcp": {
           "success": true,
-          "session": "7e567d33-62ac-430c-ba4a-4a7908ad8173"
+          "session": "a5f6b708-5a64-4973-9d33-e8eccb98e97a"
         },
         "model": {
           "success": true,
@@ -80,13 +80,13 @@
     {
       "name": "company_answer_from_current_owned_sources",
       "passed": true,
-      "summary": "The owner of the payments service is **Payments Response**, as indicated in the ownership document with the source **owned:event/ownership-update**.\n\nThe current refund review window is **96 hours**, as stated in the synthetic refund policy document with the source **owned:document/owned-93c1af12189a6b3068c7**.",
+      "summary": "The owner of the **payments** service is **Payments Response**, as indicated in the ownership document with the source `owned:ownership/payments` and revision `3fd9d127`.\n\nThe current refund review window is **96 hours**, as stated in the synthetic refund policy document with the source `owned:document/owned-93c1af12189a6b3068c7` and revision `23793cbf64c18553`.",
       "citation_check": "known_source_locations"
     },
     {
       "name": "automatic_config",
       "passed": true,
-      "seconds": 9.263
+      "seconds": 9.28
     },
     {
       "name": "report_config",
@@ -95,7 +95,7 @@
     {
       "name": "automatic_worker",
       "passed": true,
-      "seconds": 8.242
+      "seconds": 9.287
     },
     {
       "name": "report_worker",

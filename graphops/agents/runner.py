@@ -9,8 +9,8 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from jsonschema import validate, ValidationError
 from graphops import settings
-from graphops.models import get_model, EmptyModelResponse, configuration
-from graphops.store import uid
+from graphops.models.router import get_model, EmptyModelResponse, configuration
+from graphops.core.identity import uid
 
 
 class StopRequested(RuntimeError):pass
@@ -22,7 +22,7 @@ class Agent:
         self.should_stop=should_stop
 
     def publish(self, task_id, session, role, kind, data):
-        event = self.store.event(task_id, session, role, kind, data)
+        event = self.store.runs.append_event(task_id, session, role, kind, data)
         self.emit({"type": "progress", "task": task_id, "event": event})
         return event
 
@@ -69,9 +69,9 @@ class Agent:
 
                 initial = {"checkpoint": await call("checkpoint", {})}
                 if role == "investigator": initial["incident"] = await call("inspect_incident", {})
-                if role == 'company':initial['company']=await call('company_context',{'service':self.store.task(task_id).get('target') or 'payments'})
+                if role == 'company':initial['company']=await call('company_context',{'service':self.store.runs.get(task_id).get('target') or 'payments'})
                 if role == "resolver":
-                    target = self.store.task(task_id).get("target")
+                    target = self.store.runs.get(task_id).get("target")
                     if target:
                         initial["memory"] = await call("recall_memory", {"service": target})
                         initial["company"] = await call("company_context", {"service": target})
@@ -121,7 +121,7 @@ class Agent:
                         invocations = [p["functionCall"] for p in content["parts"] if "functionCall" in p]
                         if not invocations:
                             text = "\n".join(p.get("text", "") for p in content["parts"] if not p.get("thought"))[:4000]
-                            current = self.store.task(task_id)
+                            current = self.store.runs.get(task_id)
                             if role == "investigator" and current["status"] in {"new", "blocked"}:
                                 contents.append({"role": "user", "parts": [{"text": "No handoff was saved. If evidence supports a cause, call handoff_target with that service. If evidence is healthy, ambiguous or unsupported, call conclude_investigation with the reason. A textual proposal does not complete this task."}]})
                                 continue
@@ -148,7 +148,7 @@ class Agent:
                             response = {"name": invocation["name"], "response": {"result": data}}
                             if "id" in invocation: response["id"] = invocation["id"]
                             replies.append({"functionResponse": response})
-                            current = self.store.task(task_id)
+                            current = self.store.runs.get(task_id)
                             if data.get("terminal"):
                                 result = {"summary": data["reason"], "summary_origin": "backend", "blocked": True}; break
                             if role == "investigator" and current["status"] == "handoff":
@@ -166,7 +166,7 @@ class Agent:
     async def baseline(self, task_id, role, initial, call):
         """Explicit deterministic comparator. Uses the same MCP, graph and HTTP tools."""
         if role == "company":
-            task = self.store.task(task_id)
+            task = self.store.runs.get(task_id)
             data = initial.get('company') or await call("company_context", {"service": task.get("target") or "payments"})
             return {"summary": json.dumps(data), "summary_origin": "scripted"}
         if role == "investigator":
@@ -178,7 +178,7 @@ class Agent:
             await call("recall_memory", {"service": target}); await call("company_context", {"service": target})
             data = await call("handoff_target", {"cause_service": target})
             return {"summary": data.get("reason", f"Measured {target} cause handed off."), "summary_origin": "scripted"}
-        task = self.store.task(task_id)
+        task = self.store.runs.get(task_id)
         if task["status"] == "resolved":
             if not task.get("ticket_closed"): await call("complete_ticket", {})
             return {"summary": "Already recovered; no repeated operation.", "summary_origin": "scripted"}

@@ -7,8 +7,9 @@ from pathlib import Path
 import re
 from falkordb import FalkorDB
 from graphops import settings
-from graphops.lab import SERVICES
-from graphops.store import Store, now
+from graphops.core.synthetic import SERVICES
+from graphops.graph.workspace import WorkspaceGraph
+from graphops.core.identity import now
 
 LABELS={'Meta','Service','Project','Team','Expertise','Document','Revision','Incident','Session','Event','Memory','Plan','Audit'}
 RELATIONS={'USES','OWNS','HAS_EXPERTISE','KNOWS','HAS_DOCUMENT','HAS_REVISION','DEPENDS_ON','HAS_MEMORY','HAS_SESSION','EMITTED','HAS_EVENT','HAS_PLAN'}
@@ -68,7 +69,7 @@ def restore_workspace(data, scope, port):
     if name in db.list_graphs():raise ValueError('Restore requires a new workspace; existing data is never overwritten')
     directory=settings.DATA/scope
     if directory.exists():raise ValueError('Target workspace directory already exists')
-    store=Store(scope);mapping={};created_directory=False
+    store=WorkspaceGraph(scope);mapping={};created_directory=False
     def assignments(props):
         return ','.join(f'{key}:$p{i}' for i,key in enumerate(props)),{f'p{i}':value for i,value in enumerate(props.values())}
     try:
@@ -96,7 +97,7 @@ def restore_workspace(data, scope, port):
         created_directory=True
         path=directory/'lab.json'
         with path.open('x',encoding='utf-8') as handle:json.dump(data['lab'],handle)
-        store.audit('workspace_restored',{'source_workspace':data.get('workspace'),'node_count':len(data['nodes']),'edge_count':len(data['edges'])})
+        store.audit.append('workspace_restored',{'source_workspace':data.get('workspace'),'node_count':len(data['nodes']),'edge_count':len(data['edges'])})
         return {'workspace':scope,'lab_port':port,'nodes':len(data['nodes']),'edges':len(data['edges'])}
     except BaseException:
         # Only this function's newly created target graph is removed on failure.

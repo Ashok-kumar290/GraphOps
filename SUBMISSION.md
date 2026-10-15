@@ -1,5 +1,10 @@
 # Submission preparation
 
+See [the supplied rules map](HACKATHON_REQUIREMENTS.md), [module design](MODULES.md)
+and [participant walkthrough](LEARN.md). Participant understanding and meaningful
+contribution are explicit requirements under rules 12-13; the walkthrough is not
+a completed verification claim.
+
 The intended entry is **GraphOps**, targeting all three agent tracks. The public
 rules require FalkorDB to be central, a public repository, reproducible setup,
 documented graph/query details, and a demo. A deployment or complete local setup
@@ -24,6 +29,8 @@ is accepted by the published rules. Review the actual form once submissions open
 
 - [ ] Confirm organizer acceptance of the disclosed preparation concept/adapter.
 - [ ] Record each teammate's actual contributions in PROVENANCE.md.
+- [ ] Complete the participant walkthrough; explain the schema, essential queries,
+      module interfaces and decisions in your own words.
 - [ ] Publish this event repository to the team's chosen public GitHub repository.
 - [ ] Inspect UI in a real browser, including mobile and keyboard interaction.
 - [x] Run repeated model evaluations; preserve failures and report aggregate results.

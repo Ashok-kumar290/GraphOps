@@ -1,12 +1,14 @@
 {
-  "tests": 9,
-  "passed": 9,
+  "tests": 11,
+  "passed": 11,
   "success": true,
   "environment": "Vitest + jsdom; mocked HTTP and EventSource",
   "browser_visual_review": false,
   "model_inference": false,
   "cases": [
     "History selection retains older question metadata outside the current snapshot",
+    "The starting screen explains the product and its six modules",
+    "The graph module is available directly from navigation",
     "Run agent sends an automatic LLM workflow by default",
     "Pause at handoff explicitly selects investigation only",
     "Stop control targets the active job even while another incident is selected",

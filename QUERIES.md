@@ -1,7 +1,8 @@
 # FalkorDB schema and essential Cypher
 
 Queries below are representative of the actual implementation in
-`graphops/store.py`, `graphops/tools.py` and `graphops/worker.py`. Each server
+`graphops/graph/`, `graphops/company/repository.py`, `graphops/runs/`,
+`graphops/memory/repository.py` and `graphops/actions/tools.py`. Each server
 selects a graph name derived from its trusted workspace configuration. Query
 values are parameters; clients cannot submit arbitrary Cypher through the API.
 

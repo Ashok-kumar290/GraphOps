@@ -9,10 +9,7 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from graphops import settings
 
-SERVICES = ("gateway", "orders", "payments", "analytics")
-DEPENDENCIES = {"gateway": "orders", "orders": "payments"}
-SCENARIOS = {"config": {"label": "Payments configuration", "target": "payments", "action": "restore_config"},
-             "worker": {"label": "Orders worker", "target": "orders", "action": "restart_worker"}}
+from graphops.core.synthetic import SERVICES, DEPENDENCIES, SCENARIOS
 
 
 def request(url, data=None, admin=False):

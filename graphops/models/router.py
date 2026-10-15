@@ -4,7 +4,7 @@ import time
 import json
 import httpx
 from graphops import settings
-from graphops.provider import CompatibleModel, Gemini, ModelError
+from graphops.models.providers import CompatibleModel, Gemini, ModelError
 
 
 class EmptyModelResponse(ModelError):
