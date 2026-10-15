@@ -7,5 +7,10 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 }
 if (-not (Test-Path -LiteralPath $pythonPath)) { throw 'Create .venv and install requirements.txt first.' }
 Push-Location $eventRoot
-try { & $pythonPath -m graphops serve --port $Port; exit $LASTEXITCODE }
+try {
+    $env:GRAPHOPS_PYTHON = $pythonPath
+    $env:PORT = "$Port"
+    & node (Join-Path $eventRoot 'web/server.ts')
+    exit $LASTEXITCODE
+}
 finally { Pop-Location }

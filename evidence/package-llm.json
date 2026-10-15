@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "public_deployment": false,
+  "mode": "llm",
+  "model_inference": true,
+  "unauthenticated_api_status": 401,
+  "authenticated_api_status": 200,
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "configured": true
+  },
+  "page_http": 200,
+  "event_stream_connected": true,
+  "handoff_before_restart": true,
+  "handoff_survived_restart": true,
+  "resolved": true,
+  "ticket_closed": true,
+  "gateway_http": 200,
+  "analytics_http": 503,
+  "memories_after_restart": 9
+}

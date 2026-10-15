@@ -24,7 +24,10 @@ def error_detail(response, key: str | None) -> str:
 
 
 def provider_retry_delay(response, fallback: float) -> float:
-    """Honor Gemini's structured retry hint, bounded to one minute per attempt."""
+    """Honor provider retry hints, bounded to one minute per attempt."""
+    header = response.headers.get("retry-after", "")
+    if re.fullmatch(r"\d+(?:\.\d+)?", header):
+        return min(60, float(header) + .1)
     try:
         details = response.json().get("error", {}).get("details", [])
         for item in details:
@@ -85,7 +88,7 @@ class CompatibleModel:
                     if response.status_code == 429 and "per-day" in detail:
                         raise ModelError("Daily provider quota exhausted; wait for reset or configure available quota")
                     if response.status_code in {429, 500, 502, 503, 504} and attempt < 2:
-                        time.sleep(1 + attempt)
+                        time.sleep(provider_retry_delay(response, 1 + attempt))
                         continue
                     if response.status_code != 200:
                         raise ModelError(f"Model provider HTTP {response.status_code}: {detail or 'check model, credentials and quota'}")

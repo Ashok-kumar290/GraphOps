@@ -1,0 +1,10 @@
+{
+  "mode": "scripted",
+  "separate_processes": true,
+  "success": true,
+  "persisted_handoff": true,
+  "resolved": true,
+  "ticket_closed": true,
+  "memories": 3,
+  "sessions": 2
+}

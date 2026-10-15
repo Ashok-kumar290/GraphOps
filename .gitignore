@@ -1,7 +1,12 @@
 .env
+.env.*
+!.env.example
+!*.env.example
 .venv/
 .runtime/
 __pycache__/
 *.pyc
 *.log
 .pytest_cache/
+web/node_modules/
+web/dist/

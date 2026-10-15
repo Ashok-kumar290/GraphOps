@@ -1,0 +1,71 @@
+{
+  "mode": "llm",
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "configured": true
+  },
+  "actual_falkordb_go_http_mcp": true,
+  "inference": true,
+  "cases": [
+    {
+      "case": "config",
+      "passed": true,
+      "status": "resolved",
+      "action_count": 1,
+      "ticket_closed": true,
+      "prior_memory_retrieved": false,
+      "gateway_http": 200,
+      "analytics_http": 503,
+      "seconds": 21.997
+    },
+    {
+      "case": "worker",
+      "passed": true,
+      "status": "resolved",
+      "action_count": 1,
+      "ticket_closed": true,
+      "prior_memory_retrieved": false,
+      "gateway_http": 200,
+      "analytics_http": 503,
+      "seconds": 19.295
+    },
+    {
+      "case": "changed_runbook",
+      "passed": true,
+      "status": "blocked",
+      "action_count": 0,
+      "ticket_closed": false,
+      "prior_memory_retrieved": false,
+      "gateway_http": 503,
+      "analytics_http": 503,
+      "seconds": 16.186
+    },
+    {
+      "case": "repeated",
+      "passed": false,
+      "error": "Local model returned an empty response",
+      "seconds": 43.45
+    },
+    {
+      "case": "company",
+      "passed": true,
+      "status": "new",
+      "action_count": 0,
+      "ticket_closed": false,
+      "prior_memory_retrieved": false,
+      "gateway_http": 200,
+      "analytics_http": 200,
+      "seconds": 12.582
+    }
+  ],
+  "passed": 4,
+  "planned": 5,
+  "claim_entailment_evaluated": false,
+  "request_measurements": {
+    "nonempty_responses": 34,
+    "median_ms": 1089.0,
+    "maximum_ms": 6429,
+    "empty_response_retries": 0
+  }
+}

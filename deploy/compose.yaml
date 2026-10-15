@@ -1,0 +1,60 @@
+name: graphops
+services:
+  graph:
+    image: falkordb/falkordb@sha256:107455e862a824e45e8e9f5a7fbfdf5e00a08b14e13eae2577c72fd9e3f59ba6
+    environment:
+      REDIS_ARGS: "--save 60 1"
+    volumes:
+      - graph-data:/var/lib/falkordb/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+  app:
+    build:
+      context: ..
+    init: true
+    environment:
+      FALKORDB_HOST: graph
+      GRAPHOPS_WORKSPACE: judges-demo
+      GRAPHOPS_EVENT_PROVIDER: ${GRAPHOPS_EVENT_PROVIDER:-groq}
+      GRAPHOPS_EVENT_MODEL: ${GRAPHOPS_EVENT_MODEL:-qwen/qwen3.8-27b}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GRAPHOPS_ACCESS_TOKEN: ${GRAPHOPS_ACCESS_TOKEN:?Set a random access token of at least 24 characters}
+      GRAPHOPS_SECURE_COOKIE: "1"
+    volumes:
+      - lab-data:/app/.runtime
+    depends_on:
+      graph:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    restart: unless-stopped
+  edge:
+    image: caddy:2-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f
+    environment:
+      GRAPHOPS_DOMAIN: ${GRAPHOPS_DOMAIN:?Set the public DNS hostname pointing to this VM}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - certificates:/data
+      - caddy-config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  graph-data:
+  lab-data:
+  certificates:
+  caddy-config:

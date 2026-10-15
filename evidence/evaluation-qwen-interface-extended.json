@@ -1,0 +1,54 @@
+{
+  "mode": "llm",
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3.5:4b",
+    "configured": true
+  },
+  "actual_falkordb_go_http_mcp": true,
+  "inference": true,
+  "cases": [
+    {
+      "case": "changed_runbook",
+      "passed": true,
+      "status": "blocked",
+      "action_count": 0,
+      "ticket_closed": false,
+      "prior_memory_retrieved": false,
+      "gateway_http": 503,
+      "analytics_http": 503,
+      "seconds": 23.44
+    },
+    {
+      "case": "repeated",
+      "passed": false,
+      "status": "handoff",
+      "action_count": 1,
+      "ticket_closed": false,
+      "prior_memory_retrieved": true,
+      "gateway_http": 503,
+      "analytics_http": 503,
+      "seconds": 61.069
+    },
+    {
+      "case": "company",
+      "passed": true,
+      "status": "new",
+      "action_count": 0,
+      "ticket_closed": false,
+      "prior_memory_retrieved": false,
+      "gateway_http": 200,
+      "analytics_http": 200,
+      "seconds": 10.392
+    }
+  ],
+  "passed": 2,
+  "planned": 3,
+  "claim_entailment_evaluated": false,
+  "request_measurements": {
+    "nonempty_responses": 26,
+    "median_ms": 2110.0,
+    "maximum_ms": 4057,
+    "empty_response_retries": 0
+  }
+}

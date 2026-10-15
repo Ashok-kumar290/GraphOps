@@ -1,0 +1,16 @@
+{
+  "event_writes": 5000,
+  "memory_writes": 2500,
+  "task_reads": 5000,
+  "workers": 32,
+  "lost_records": 0,
+  "workload_seconds": 4.876,
+  "latency_ms": {
+    "median": 15.915,
+    "p95": 30.345
+  },
+  "checkpoint_races": 50,
+  "single_winner_races": 50,
+  "success": true,
+  "limitation": "Local Docker database measurements; not production capacity or model throughput"
+}

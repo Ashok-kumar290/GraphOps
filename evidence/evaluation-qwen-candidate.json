@@ -1,0 +1,50 @@
+{
+  "mode": "llm",
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3.5:4b",
+    "configured": true
+  },
+  "actual_falkordb_go_http_mcp": true,
+  "inference": true,
+  "cases": [
+    {
+      "case": "config",
+      "passed": false,
+      "error": "Agent step budget reached; resume from the persisted checkpoint",
+      "seconds": 12.901
+    },
+    {
+      "case": "worker",
+      "passed": false,
+      "status": "blocked",
+      "action_count": 0,
+      "ticket_closed": false,
+      "prior_memory_retrieved": false,
+      "gateway_http": 503,
+      "analytics_http": 503,
+      "seconds": 25.913
+    },
+    {
+      "case": "changed_runbook",
+      "passed": false,
+      "error": "Agent step budget reached; resume from the persisted checkpoint",
+      "seconds": 16.713
+    },
+    {
+      "case": "repeated",
+      "passed": false,
+      "error": "Agent step budget reached; resume from the persisted checkpoint",
+      "seconds": 15.571
+    }
+  ],
+  "passed": 0,
+  "planned": 4,
+  "claim_entailment_evaluated": false,
+  "request_measurements": {
+    "nonempty_responses": 31,
+    "median_ms": 814,
+    "maximum_ms": 5877,
+    "empty_response_retries": 0
+  }
+}

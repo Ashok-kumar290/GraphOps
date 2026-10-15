@@ -13,6 +13,9 @@ copied from `../backend/runtime/model.py` on October 15. Its initial contents
 were written before the event. It is infrastructure, not an original event
 contribution. Any later changes are visible in this repository's history.
 
+During the event, its retry handling was extended to honor bounded numeric
+`Retry-After` headers from compatible providers; protocol tests cover that change.
+
 The existing Python environment and Docker image are development infrastructure.
 The parent `.env` can be loaded locally without copying or tracking credentials.
 
