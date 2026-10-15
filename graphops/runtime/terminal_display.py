@@ -25,7 +25,9 @@ def event_record(event):
         if tool=='execute_recovery':detail+=f" | measured success={result.get('success')} | target HTTP {result.get('before',{}).get('http_status')} -> {result.get('after',{}).get('http_status')} | gateway HTTP {result.get('incident',{}).get('http_status')}"
         elif tool=='handoff_target':detail+=f" | target={result.get('target') or result.get('service') or 'blocked'}"
         elif tool=='observe_service':detail+=f" | {result.get('service')} HTTP {result.get('http_status')}"
-        elif tool=='prepare_recovery':detail+=f" | ready={result.get('ready')} plan={result.get('plan_id','none')}"
+        elif tool=='prepare_recovery':
+            detail+=f" | ready={result.get('ready')} plan={result.get('plan_id','none')}"
+            if not result.get('ready') and result.get('reason'):detail+=' | '+result['reason']
     elif kind=='session_started':detail=f"session={event['session']} mode={data.get('mode')}"
     elif kind=='session_finished':detail=data.get('summary','Session finished')
     elif kind=='memory_saved':detail=f"{data.get('service')}: saved episodic, procedural and semantic evidence"

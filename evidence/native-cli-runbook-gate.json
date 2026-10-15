@@ -1,0 +1,47 @@
+{
+  "checked_on": "2026-10-15",
+  "scope": "Local synthetic company and controlled Go HTTP services",
+  "platform": "Windows PowerShell",
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "actual_model_inference": true,
+  "actual_falkordb_go_http_mcp": true,
+  "task": "INC-A65144C0",
+  "scenario": "config",
+  "retired_runbook_revision": "41a7595c",
+  "memory_after_retirement": {
+    "service": "payments",
+    "configuration_revision": "config-broken-v1",
+    "active": 0,
+    "historical": 12,
+    "procedures_labeled_procedure_changed": 4
+  },
+  "blocked_attempt": {
+    "duration_seconds": 30.734,
+    "status": "blocked",
+    "reason": "Current graph, runbook or configuration does not support a validated recovery. No action taken.",
+    "simulator_action_count_before": 12,
+    "simulator_action_count_after": 12,
+    "execute_recovery_events": 0,
+    "resolver_session": "653e1e2b-ac94-43c4-97a9-1168a876c9ff"
+  },
+  "resume_after_restoration": {
+    "runbook_revision": "a71e2a3c",
+    "duration_seconds": 27.258,
+    "status": "resolved",
+    "resolver_session": "7fed152e-9a3a-4628-bd20-8d735e94a52c",
+    "simulator_action_count_after": 13,
+    "target_http_after": 200,
+    "gateway_http_after": 200,
+    "ticket_closed": true,
+    "report_preserves_blocked_and_successful_events": true
+  },
+  "cli_improvement": "Rejected plan progress now includes its validation reason",
+  "focused_regression_checks": {
+    "tests": 20,
+    "passed": 20,
+    "duration_seconds": 7.532,
+    "scope": "Terminal units and real PowerShell launcher checks against a local HTTP stub; these regression checks do not perform model inference"
+  },
+  "limits": "One local runbook-retirement rehearsal. Does not prove general reliability or eliminate hallucinations. Supported actions remain limited to the synthetic simulator."
+}

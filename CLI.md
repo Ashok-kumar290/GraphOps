@@ -52,6 +52,28 @@ The simulator must not have an unresolved prior failure. Use `status` and
 The unrelated analytics failure intentionally remains HTTP 503 during a drill;
 gateway and the selected target must recover without changing that service.
 
+## Show that company knowledge controls actions
+
+Start with a healthy checkout and an idle worker. This rehearsal retires the
+synthetic payments runbook. The incident should become **blocked**, with no
+recovery operation. Saved procedures should be historical with
+`procedure_changed`. Restore the runbook and resume the same incident:
+
+```powershell
+.\graphops.ps1 company --service payments --retire-runbook
+$accepted = .\graphops.ps1 run --scenario config --detach --json | ConvertFrom-Json
+.\graphops.ps1 watch $accepted.task
+.\graphops.ps1 memory payments
+.\graphops.ps1 company --service payments --restore-runbook
+.\graphops.ps1 resume $accepted.task
+```
+
+The blocked watch intentionally returns exit code 2. Inspect the validation
+reason in its progress. Recovery should succeed only after a current supported
+runbook is available. The resumed run retains its earlier blocked events, so
+the report shows both decisions. This is a controlled demonstration; it does
+not authorize any production changes.
+
 ## Monitor jobs and processes
 
 ```powershell

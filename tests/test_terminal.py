@@ -136,6 +136,14 @@ class TerminalUnit(unittest.TestCase):
         event={'kind':'memory_saved','role':'resolver','time':'2026-10-15T00:00:00','data':{'service':'payments'}}
         self.assertIn('[Memory/resolver]',event_record(event))
 
+    def test_rejected_plan_shows_reason_in_progress(self):
+        event={'id':'e1','kind':'tool','role':'resolver','time':'2026-10-15T00:00:00',
+               'data':{'tool':'prepare_recovery','result':{'ready':False,'reason':'Current procedure requires review.'}}}
+        text=event_record(event)
+        self.assertIn('[Actions/resolver]',text)
+        self.assertIn('ready=False',text)
+        self.assertIn('Current procedure requires review.',text)
+
 
 class TerminalIntegration(unittest.TestCase):
     setUp=fixtures.EventIntegration.setUp
