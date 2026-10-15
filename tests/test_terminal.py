@@ -106,6 +106,32 @@ class TerminalUnit(unittest.TestCase):
         result=follow_task(Client(),Display(output=io.StringIO()),'INC-X')
         self.assertFalse(result['success'])
 
+    def test_interrupted_watch_shows_resume_and_does_not_claim_success(self):
+        for status in ('new','resolved'):
+            with self.subTest(status=status):
+                class Client:
+                    def get(self,path,**params):
+                        if path=='/api/monitor':return {'selected':{'id':'INC-X','status':status,'job':'interrupted'}}
+                        return {'events':[],'cursor':'','has_more':False}
+                output=io.StringIO()
+                result=follow_task(Client(),Display(output=output),'INC-X')
+                self.assertFalse(result['success'])
+                self.assertIn('[INC-X] INTERRUPTED',output.getvalue())
+                self.assertIn('Resume with:',output.getvalue())
+                self.assertTrue(result['resume_command'].endswith('resume INC-X'))
+
+    def test_requested_stop_is_success_and_keeps_json_parseable(self):
+        class Client:
+            def get(self,path,**params):
+                if path=='/api/monitor':return {'selected':{'id':'INC-X','status':'new','job':'interrupted','last_error':'Stopped at checkpoint'}}
+                return {'events':[],'cursor':'','has_more':False}
+        output=io.StringIO()
+        result=follow_task(Client(),Display(json_mode=True,output=output),'INC-X',stopped=True)
+        self.assertTrue(result['success'])
+        records=[json.loads(line) for line in output.getvalue().splitlines()]
+        self.assertEqual(records[-1]['type'],'complete')
+        self.assertEqual(records[-1]['resume_command'],result['resume_command'])
+
     def test_memory_event_is_labeled(self):
         event={'kind':'memory_saved','role':'resolver','time':'2026-10-15T00:00:00','data':{'service':'payments'}}
         self.assertIn('[Memory/resolver]',event_record(event))

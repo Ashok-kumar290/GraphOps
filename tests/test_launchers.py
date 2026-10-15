@@ -34,6 +34,10 @@ class LauncherPaths(unittest.TestCase):
             def do_GET(self):
                 if self.path.startswith('/api/reports?'):
                     self.reply({'schema': 'launcher-test', 'task': 'TEST'})
+                elif self.path.startswith('/api/monitor?'):
+                    self.reply({'selected': {'id': 'TEST', 'status': 'new', 'job': 'interrupted'}})
+                elif self.path.startswith('/api/run-events?'):
+                    self.reply({'events': [], 'cursor': '', 'has_more': False})
                 else:
                     self.send_error(404)
 
@@ -59,12 +63,13 @@ class LauncherPaths(unittest.TestCase):
         self.server.server_close()
         self.thread.join(timeout=5)
 
-    def invoke(self, launcher, directory, *arguments):
+    def invoke(self, launcher, directory, *arguments, expected_exit=0):
         result = subprocess.run(
             ['powershell', '-NoProfile', '-File', str(launcher), '--url', self.url, *arguments],
             cwd=directory, capture_output=True, text=True, timeout=30,
         )
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.returncode, expected_exit, result.stdout + result.stderr)
+        return result
 
     def test_relative_export_uses_caller_directory(self):
         for launcher in self.launchers:
@@ -80,3 +85,10 @@ class LauncherPaths(unittest.TestCase):
                 self.invoke(launcher, directory, 'import', 'policy.md', '--title', 'Caller policy')
                 self.assertEqual(self.imports[-1]['text'], 'Synthetic caller policy.')
                 self.assertEqual(self.imports[-1]['filename'], 'policy.md')
+
+    def test_interrupted_watch_preserves_exit_code_and_resume_hint(self):
+        for launcher in self.launchers:
+            with self.subTest(launcher=launcher), tempfile.TemporaryDirectory(prefix='GraphOps caller ') as directory:
+                result = self.invoke(launcher, directory, 'watch', 'TEST', expected_exit=2)
+                self.assertIn('[TEST] INTERRUPTED', result.stdout)
+                self.assertIn('Resume with:', result.stdout)

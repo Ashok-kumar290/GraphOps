@@ -1,0 +1,40 @@
+{
+  "checked_on": "2026-10-15",
+  "scope": "Local synthetic company and controlled Go services",
+  "platform": "Windows PowerShell",
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "actual_model_inference": true,
+  "task": "INC-E100B2F1",
+  "scenario": "config",
+  "detach": "Returned the accepted task ID while the server continued",
+  "stop": {
+    "result": "Stopped at checkpoint with saved graph events",
+    "job": "interrupted",
+    "incident_status": "new",
+    "wait_seconds": 2.36
+  },
+  "reconnect": "A separate CLI process replayed saved events and observed the interrupted checkpoint",
+  "resume": {
+    "duration_seconds": 32.605,
+    "investigator_session": "182b1dc2-6388-4498-b440-bdfe0421311a",
+    "resolver_session": "cc972b81-a818-4f1f-94f5-2f29b8d1c38e",
+    "target": "payments",
+    "action": "restore_config",
+    "target_http_before": 503,
+    "target_http_after": 200,
+    "gateway_http_after": 200,
+    "status": "resolved",
+    "memory_saved": true,
+    "report_exported": true
+  },
+  "issue_found": "Interrupted watch displayed the incident's NEW status as its completion label",
+  "fix": "Show INTERRUPTED and a resume command; an interrupted job cannot be reported as successful unless a stop was requested",
+  "regression_checks": {
+    "tests": 19,
+    "passed": 19,
+    "duration_seconds": 9.309,
+    "scope": "Terminal unit checks and real Windows launcher invocations against a local HTTP stub; these checks do not perform live inference"
+  },
+  "limitations": "One local interruption rehearsal. Does not prove recovery from every crash or network failure. Analytics intentionally remains unhealthy."
+}

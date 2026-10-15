@@ -107,11 +107,15 @@ def follow_task(client,display,task_id,timeout=600,interval=1,after='',stopped=F
                 f"[{task_id}] status={task['status']} job={task['job']}")
             last_status=status
         if task['job']!='running':
-            success=not task.get('last_error') and task['status'] in {'resolved','answered','checked','handoff'}
-            if stopped and task['job']=='interrupted':success=True
+            interrupted=task['job']=='interrupted'
+            success=not interrupted and not task.get('last_error') and task['status'] in {'resolved','answered','checked','handoff'}
+            if stopped and interrupted:success=True
             result={'task':task,'success':success,'cursor':cursor,'elapsed_seconds':round(time.monotonic()-started,3)}
-            display.emit('complete',result,f"[{task_id}] {'STOPPED' if stopped and task['job']=='interrupted' else task['status'].upper()} | {result['elapsed_seconds']}s"+
+            label=('STOPPED' if stopped else 'INTERRUPTED') if interrupted else task['status'].upper()
+            if interrupted:result['resume_command']=('.\\graphops.ps1' if os.name=='nt' else 'python -m graphops.cli')+' resume '+task_id
+            display.emit('complete',result,f"[{task_id}] {label} | {result['elapsed_seconds']}s"+
                 (f" | {task['last_error']}" if task.get('last_error') else ''))
+            if interrupted and not display.json_mode:display.emit('next_step',{'command':result['resume_command']},'Resume with: '+result['resume_command'])
             if not success and task.get('blocker'):display.emit('blocker',{'message':task['blocker']},task['blocker'])
             return result
         time.sleep(interval)

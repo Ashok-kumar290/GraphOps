@@ -109,6 +109,11 @@ automatic retry of an ambiguous failed mutation; inspect status/history before
 resubmitting. Exit code 0 means a supported completion/handoff or requested stop,
 2 means a blocked/interrupted task, 1 means a command/connection error, and 130
 means the terminal was interrupted.
+An interrupted watch prints `INTERRUPTED` and a resume command, even when the
+incident's saved business status is still `new` or already `resolved`. The JSON
+completion record includes `resume_command`. A requested stop returns success
+once the worker has reached its interruption checkpoint; it does not mean the
+incident has been resolved.
 
 ## Work with every module
 
