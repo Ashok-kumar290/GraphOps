@@ -1,0 +1,32 @@
+{
+  "original_head": "b169ef7dd49c5395d14eb32b2f61c87cc8c15dfe",
+  "rewritten_head": "c18672300163e3068b1f7a5faca252b07896767f",
+  "author_commits_corrected": 19,
+  "commits_preserved": 20,
+  "source_tree_unchanged": true,
+  "messages_and_dates_preserved": true,
+  "mapping": {
+    "606ae3e7df445dfa9db394b17bd170621f05a679": "2e4d7b44569d78e9eba4365ec21685bee1cf5daf",
+    "9fd7a2e4ea80d30aa18de8fc019a24e78ec4bf43": "59633618adcfb43ce44ff16fe9efeb7133385155",
+    "0c68016cc0ec8f967a16d7fd1f93b0da32817b55": "952b76b79f8babed5dbe84b8451e2e940b087878",
+    "30653a0640cb6ca9174ed8c9b156be5b50353e09": "7a4c77c8011d6315bb4ef5e7468fc9c736f55d51",
+    "e2828adf6438ce534e994d4c943f28616938446e": "f189afd6c3a5f59a8f382ff1cbf9a8d3193b3009",
+    "0ed1d3517c4dc6da1967b410f6f1bc10a78b8845": "45de758f4cad7f1ecf451e350d3ab40df711bce0",
+    "8aaa272391aecdcb2a22e25fd0cacf5c037662f7": "4818608a744d682c018a457050b658b24e9f8faa",
+    "f8e9947649a3e5e53fb49577a0d359fb3e39a8df": "400da585dc401dc1494795d9e1d2ade88db7b8d4",
+    "524044cc14fb3eff1be86c6b7a4bea4496a7b877": "55a126de39afc98a9784a2a12a2939e4105f6be2",
+    "8edbd363e11a8e05ee760e1b46d42abc3e9e8dda": "ba4516a5d53f222d6683a81c8a25a36fd31d5b3f",
+    "d8d35021f1dde18fa4368270206dc96b37a42957": "d93d62bf1ac786018b4f43b366542592796157d2",
+    "5a855261097b1d2a720d65b21d4fc831e501b3c9": "f43d447904bae4f1fcec7f62406ddfb8b20c26b2",
+    "805631228beedc2cf24e1e6a068cbfb96bea114e": "84dbdcaeae4cd1771ee6a698f58bc1fda523aa04",
+    "c67b1d2cebcd53355e2ca02278043cb548e0b4ed": "d7b115c38314180dac15fe2d796f0d348654e89c",
+    "7d5e98024e19e10c33db5cfe736fd685368b3bcf": "06af5bf9a437969785814877f1a929af8a4a1df7",
+    "f73f839dedd2990e912fa734d92dc462f88cadd5": "d28a12791bed3015459829acb6b106375fd538af",
+    "36a46bb80256e8af7ee91e978a2a1835b1426735": "36a46bb80256e8af7ee91e978a2a1835b1426735",
+    "561e19b0e84c8549c360152cc1509e53b64de589": "a0e25c22f2709c4c9d98874f37db0b824218d6ff",
+    "28fee3771ab2090865b11990270b52d56b9d19ac": "b3b5345744c9709039654f626d266019106ac0af",
+    "b169ef7dd49c5395d14eb32b2f61c87cc8c15dfe": "c18672300163e3068b1f7a5faca252b07896767f"
+  },
+  "reason": "Correct inherited local Git author/committer settings to the repository owner after the participant reported the attributed account was not involved.",
+  "scope": "Commit metadata correction on October 16, 2026. The mapping preserves traceability of earlier source commit IDs in measured evidence. It does not verify participant contributions."
+}

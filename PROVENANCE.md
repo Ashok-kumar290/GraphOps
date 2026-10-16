@@ -4,6 +4,18 @@ Event implementation started October 15, 2026, in `event/`.
 The participant supplied the registered team name **TeamDesperateForGTA**.
 Member names and individual contribution records remain to be supplied.
 
+## Git attribution correction
+
+On October 16, inherited local Git settings were found to attribute event
+commits to an account the participant confirmed was not involved. The affected
+author and committer identities were corrected to the repository owner, Ashok
+Kumar, using the owner's GitHub noreply address. The original source trees,
+messages and dates were preserved, including the initial GitHub license commit.
+Earlier evidence may name the previous commit IDs; the
+[commit ID mapping](evidence/history-attribution-map.json) links them to the
+corrected history. This metadata correction does not verify individual team
+contributions or replace the AI assistance disclosure below.
+
 The parent workspace contains a CLI preparation prototype built before the
 event. That prototype is not new event work. The team must disclose that history
 and confirm eligibility with organizers if its reuse creates ambiguity.
