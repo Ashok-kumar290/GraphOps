@@ -35,7 +35,7 @@ return (
                     <div className="memory-context-heading"><div><span className="eyebrow">WHAT A NEW SESSION CAN USE</span><h2 id="memory-context-heading">A small packet with sources and limits</h2></div><button className="button secondary" disabled={!packet} onClick={() => inspect("Navigator packet for " + service, packet)}><Braces size={14}/> Inspect navigator packet</button></div>
                     <p>The resolver reads this service's navigator packet alongside the saved checkpoint and current company sources. Each record keeps its source, revision and applicability label.</p>
                     <dl className="memory-context-counts">
-                      <div><dt>Current candidates</dt><dd>{packet?.active.length || 0}</dd><small>Check against fresh evidence before acting.</small></div>
+                      <div><dt>Current candidates</dt><dd>{packet?.active.length || 0}</dd><small>{packet?.active.length ? "Check against fresh evidence before acting." : `None right now: health facts move to Historical after ${packet?.policy?.health_fact_max_age_seconds ?? 30}s, and a past fix returns here only when the same fault does.`}</small></div>
                       <div><dt>Historical context</dt><dd>{packet?.historical.length || 0}</dd><small>Past events and records that need revalidation.</small></div>
                       <div><dt>Unverified claims</dt><dd>{packet?.unverified.length || 0}</dd><small>Kept separate from verified records.</small></div>
                     </dl>
@@ -121,7 +121,7 @@ return (
                             ))}
                           {!visible(group).length && (
                             <p className="quiet-note">
-                              {packet?.[group].length ? "No records match the current filters." : `No ${group} records for this service.`}
+                              {packet?.[group].length ? "No records match the current filters." : group === "active" ? "Nothing current. Saved records stay under Historical until fresh evidence matches them again." : `No ${group} records for this service.`}
                             </p>
                           )}
                         </section>

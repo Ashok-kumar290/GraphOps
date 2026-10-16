@@ -1900,7 +1900,7 @@ footer > span {
     overflow: hidden;
   }
   .provider-tag .tag-separator {
-    display: none;
+    margin: 0;
   }
   .team-avatar {
     display: none;
@@ -2219,3 +2219,9 @@ footer > span {
   .timeline-event time, .live-label { font-size: 10px; }
   .run-inputs select, .panel-header h2, .button { font-size: 12px; }
 }
+
+/* Company knowledge: repeated revisions of one document collapse behind its card. */
+.revision-group { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.revision-more summary { cursor: pointer; font-size: 11px; color: var(--muted); padding: 4px 2px; }
+.revision-more summary:hover, .revision-more summary:focus-visible { color: var(--mint); }
+.revision-more .document-grid { grid-template-columns: 1fr; padding: 8px 0 0; }

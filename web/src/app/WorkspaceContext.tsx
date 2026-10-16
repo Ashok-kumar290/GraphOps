@@ -5,9 +5,23 @@ import { nice } from "../shared/format";
 import { WALKTHROUGH_STEPS, type Walkthrough, type WalkthroughStep } from "../features/walkthrough/model";
 type Evidence = { title: string; value: unknown };
 
+// Each page has a URL fragment so refresh, Back and shared links keep the page.
+const VIEW_HASH: Record<View, string> = {home: "", workspace: "agent", graph: "graph", memory: "memory", company: "company", history: "history", system: "system"};
+const viewFromHash = (): View =>
+  (Object.keys(VIEW_HASH) as View[]).find(v => VIEW_HASH[v] && VIEW_HASH[v] === location.hash.slice(1)) || "home";
+
 function useWorkspaceController() {
 const [data, setData] = useState<Workspace | null>(null),
-    [view, setView] = useState<View>("home");
+    [view, setView] = useState<View>(viewFromHash);
+useEffect(() => {
+  const onHash = () => setView(viewFromHash());
+  addEventListener("hashchange", onHash);
+  return () => removeEventListener("hashchange", onHash);
+}, []);
+useEffect(() => {
+  const hash = VIEW_HASH[view];
+  if (location.hash.slice(1) !== hash) history.pushState(null, "", hash ? "#" + hash : location.pathname + location.search);
+}, [view]);
 const [walkthrough, setWalkthrough] = useState<Walkthrough | null>(null);
 
 const [taskId, setTaskId] = useState(

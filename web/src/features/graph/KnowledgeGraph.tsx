@@ -80,12 +80,28 @@ export function KnowledgeGraph({
             >
               <path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#6d9990" />
             </marker>
+            <marker
+              id="knowledge-arrow-back"
+              markerWidth="7"
+              markerHeight="7"
+              refX="1"
+              refY="3.5"
+              orient="auto"
+            >
+              <path d="M7 0 L0 3.5 L7 7" fill="none" stroke="#6d9990" />
+            </marker>
           </defs>
           {edges
-            .filter((e) => positions.has(e.from) && positions.has(e.to))
+            .filter((e) => (e.from === root.key || e.to === root.key) && positions.has(e.from) && positions.has(e.to))
             .map((e, i) => {
-              const a = positions.get(e.from)!,
-                b = positions.get(e.to)!;
+              const from = positions.get(e.from)!,
+                to = positions.get(e.to)!,
+                forward = from[0] < to[0],
+                // Draw every curve left-to-right between facing node edges; the arrow keeps the true direction.
+                a: [number, number] = forward ? from : to,
+                b: [number, number] = forward ? to : from,
+                outer = e.from === root.key ? to : from,
+                labelX = outer[0] < 430 ? outer[0] + 158 : outer[0] - 163;
               return (
                 <g
                   key={i}
@@ -96,12 +112,13 @@ export function KnowledgeGraph({
                   onKeyDown={event => {if (event.key === "Enter" || event.key === " ") {event.preventDefault(); inspect("Sourced graph relationship", e);}}}
                 >
                   <path
-                    d={`M${a[0] + 100},${a[1]} C${(a[0] + b[0]) / 2},${a[1]} ${(a[0] + b[0]) / 2},${b[1]} ${b[0] - 105},${b[1]}`}
-                    markerEnd="url(#knowledge-arrow)"
+                    d={`M${a[0] + (forward ? 100 : 105)},${a[1]} C${(a[0] + b[0]) / 2},${a[1]} ${(a[0] + b[0]) / 2},${b[1]} ${b[0] - (forward ? 105 : 100)},${b[1]}`}
+                    markerEnd={forward ? "url(#knowledge-arrow)" : undefined}
+                    markerStart={forward ? undefined : "url(#knowledge-arrow-back)"}
                   />
                   <text
-                    x={(a[0] + b[0]) / 2}
-                    y={(a[1] + b[1]) / 2 - 6}
+                    x={labelX}
+                    y={outer[1] - 7}
                     textAnchor="middle"
                     className="relationship"
                   >

@@ -7,6 +7,15 @@ import { DocumentCard } from "./DocumentCard";
 import { SourceManager } from "./SourceManager";
 import { KnowledgeGraph } from "../graph/KnowledgeGraph";
 import { CompanyQuestion } from "./CompanyQuestion";
+import type { Doc } from "../../shared/contracts";
+
+// One card per document; repeated revisions (one per closed ticket) collapse behind it.
+function groupRevisions(docs: Doc[]): Doc[][] {
+  const groups = new Map<string, Doc[]>();
+  for (const doc of docs) groups.set(doc.id, [...(groups.get(doc.id) || []), doc]);
+  return [...groups.values()];
+}
+
 export function CompanyPage() {
 const {
   data,
@@ -98,12 +107,22 @@ return (
                         <span className="pill subdued">HISTORICAL</span>
                       </div>
                       <div className="document-grid">
-                        {company.historical_documents.map((doc) => (
-                          <DocumentCard
-                            key={doc.id + ":" + doc.revision}
-                            doc={doc}
-                            inspect={inspect}
-                          />
+                        {groupRevisions(company.historical_documents).map(([first, ...earlier]) => (
+                          <div className="revision-group" key={first.id}>
+                            <DocumentCard doc={first} inspect={inspect} />
+                            {earlier.length > 0 && (
+                              <details className="revision-more">
+                                <summary>
+                                  {earlier.length} more revision{earlier.length > 1 ? "s" : ""} of {first.title}
+                                </summary>
+                                <div className="document-grid">
+                                  {earlier.map((doc) => (
+                                    <DocumentCard key={doc.id + ":" + doc.revision} doc={doc} inspect={inspect} />
+                                  ))}
+                                </div>
+                              </details>
+                            )}
+                          </div>
                         ))}
                       </div>
                     </section>
