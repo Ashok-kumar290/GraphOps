@@ -4,6 +4,7 @@ import { nice } from "../../shared/format";
 import { useWorkspace } from "../../app/WorkspaceContext";
 import { Metric } from "../../shared/ui";
 import { Timeline } from "../runs/Timeline";
+import { AgentLanes, rowsFromEvents } from "../../shared/AgentLanes";
 import { ServiceGraph } from "../graph/ServiceGraph";
 import { IncidentStory } from "./IncidentStory";
 export function AgentPage() {
@@ -258,6 +259,18 @@ return (
                           ? "Inspect recovery"
                           : "Resume in new session"}
                       </button>
+                    </section>
+                  )}
+                  {selected && !selected.question && (data?.events.length || 0) > 0 && (
+                    <section className="panel lanes-panel" aria-labelledby="lanes-heading">
+                      <div className="panel-header">
+                        <div>
+                          <Activity size={16} />
+                          <h2 id="lanes-heading">Agents in this run</h2>
+                        </div>
+                        <span className="pill subdued">TRACKED</span>
+                      </div>
+                      <AgentLanes rows={rowsFromEvents(data?.events || [])} label={`Agent sessions for ${selected.id}`} />
                     </section>
                   )}
                   <section className="panel timeline-panel">

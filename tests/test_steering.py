@@ -209,3 +209,39 @@ class FollowUpIntegration(unittest.TestCase):
         self.assertEqual(self.store.runs.get(chain[1])["status"], "resolved")
         self.assertEqual(self.store.runs.get(chain[1])["follow_up_of"], chain[0])
         self.assertEqual(self.lab.state()["action_count"], 2)
+
+
+class ProviderRejectionUnit(unittest.TestCase):
+    def test_provider_tool_refusals_are_correctable_and_empty_replies_retryable(self):
+        from graphops.models.providers import InvalidToolCall, EmptyModelResponse
+        replies = iter([
+            httpx.Response(400, json={"error": {"message": "Tool call validation failed: attempted to call tool 'handoff_target' which was not in request.tools"}}),
+            httpx.Response(400, json={"error": {"message": "Tool choice is required, but model did not call a tool"}}),
+            httpx.Response(200, json={"choices": [{"message": {"role": "assistant", "content": ""}}]})])
+        model = CompatibleModel("m", "k", "https://example.test/v1")
+        real = httpx.Client
+        with patch("graphops.models.providers.httpx.Client", lambda **kw: real(transport=httpx.MockTransport(lambda r: next(replies)))):
+            for expected in (InvalidToolCall, InvalidToolCall, EmptyModelResponse):
+                with self.assertRaises(expected):
+                    model.generate("s", [{"role": "user", "parts": [{"text": "go"}]}], [])
+
+    def test_runner_recovers_after_a_refused_tool_call(self):
+        temp = tempfile.TemporaryDirectory(prefix="graphops-refusal-test-")
+        port = free_port(); lab = Lab(Path(temp.name), port).start()
+        store = WorkspaceGraph("test-" + uuid.uuid4().hex[:16]); store.seed(port)
+        try:
+            lab.inject("config")
+            task = store.runs.create("config", "Investigate checkout", "llm")["id"]
+            from graphops.models.providers import InvalidToolCall
+            class RefusedThenValid:
+                calls = 0
+                def generate(self, system, contents, declarations):
+                    self.calls += 1
+                    if self.calls == 1: raise InvalidToolCall("attempted to call tool 'execute_recovery' which was not in request.tools")
+                    return {"role": "model", "parts": [{"functionCall": {"name": "handoff_target", "args": {"cause_service": "payments"}}}]}
+            with patch("graphops.agents.runner.get_model", return_value=RefusedThenValid()):
+                asyncio.run(Agent(store, port).run(task, "investigator", mode="llm"))
+            self.assertEqual(store.runs.get(task)["status"], "handoff")
+            self.assertTrue(any(e["kind"] == "invalid_tool_call_rejected" for e in store.runs.events(task)))
+        finally:
+            lab.close(); temp.cleanup(); store.graph.delete()

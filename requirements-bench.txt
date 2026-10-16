@@ -1,0 +1,4 @@
+# Benchmark-only: baseline agents built with an existing framework. Not needed to run GraphOps.
+langgraph==1.2.12
+langchain-ollama==1.1.0
+langchain-openai==1.7.2

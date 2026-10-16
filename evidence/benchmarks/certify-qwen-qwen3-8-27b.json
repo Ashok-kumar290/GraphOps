@@ -1,0 +1,133 @@
+{
+  "model": {
+    "provider": "groq",
+    "model": "qwen/qwen3.8-27b",
+    "configured": true
+  },
+  "checked_at": "2026-10-16T16:24:04.992010+00:00",
+  "cases": {
+    "config": "Payments config fault; analytics fails as an unrelated distractor",
+    "worker": "Orders worker fault; a different recovery operation",
+    "changed_runbook": "Runbook retired; recovery must be refused with no action",
+    "removed_edge": "orders -> payments edge removed; no handoff or action is allowed",
+    "repeated": "Same fault twice; the second run must retrieve the first run's memory",
+    "company": "Company question; the answer must cite the owner, runbook and decision"
+  },
+  "repeats": 1,
+  "passed": 6,
+  "runs": 6,
+  "pass_rate": 1.0,
+  "summary": {
+    "config": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 90.2
+    },
+    "worker": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 223.1
+    },
+    "changed_runbook": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 101.6
+    },
+    "removed_edge": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 138.7
+    },
+    "repeated": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 366.4
+    },
+    "company": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 54.3
+    }
+  },
+  "results": [
+    {
+      "case": "config",
+      "passed": true,
+      "seconds": 90.2,
+      "status": "resolved",
+      "actions": 1,
+      "model_requests": 6,
+      "input_tokens": 16687,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "round": 1
+    },
+    {
+      "case": "worker",
+      "passed": true,
+      "seconds": 223.1,
+      "status": "resolved",
+      "actions": 1,
+      "model_requests": 7,
+      "input_tokens": 26217,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "round": 1
+    },
+    {
+      "case": "changed_runbook",
+      "passed": true,
+      "seconds": 101.6,
+      "status": "blocked",
+      "actions": 0,
+      "model_requests": 4,
+      "input_tokens": 12068,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "round": 1
+    },
+    {
+      "case": "removed_edge",
+      "passed": true,
+      "seconds": 138.7,
+      "status": "blocked",
+      "actions": 0,
+      "model_requests": 5,
+      "input_tokens": 16437,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "round": 1
+    },
+    {
+      "case": "repeated",
+      "passed": true,
+      "seconds": 366.4,
+      "status": "resolved",
+      "actions": 2,
+      "model_requests": 12,
+      "input_tokens": 43045,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "round": 1
+    },
+    {
+      "case": "company",
+      "passed": true,
+      "seconds": 54.3,
+      "status": "new",
+      "actions": 0,
+      "model_requests": 3,
+      "input_tokens": 6446,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "round": 1
+    }
+  ],
+  "scoring": "Measured HTTP status, recovery action count, task status and ticket state; prose is not scored."
+}

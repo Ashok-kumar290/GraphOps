@@ -76,6 +76,32 @@ async def incident(store, port, lab, scenario, prompt=None):
     return task
 
 
+def tokens_by_role(events):
+    totals = {}
+    for e in events:
+        if e["kind"] == "model_timing":
+            totals[e["role"]] = totals.get(e["role"], 0) + ((e["data"].get("usage") or {}).get("input_tokens") or 0)
+    return totals
+
+
+def trace(tasks, events):
+    """A compact multi-agent timeline: one row per session event, seconds from the first event."""
+    if not events: return []
+    stamp = lambda e: datetime.fromisoformat(e["time"]).timestamp()
+    start = min(stamp(e) for e in events)
+    sessions, rows = {}, []
+    for e in sorted(events, key=stamp):
+        if e["kind"] not in {"session_started", "session_finished", "tool", "tool_error", "model_timing", "follow_up_started", "guidance_offered"}: continue
+        if e["role"] not in {"investigator", "resolver", "company", "system"}: continue
+        lane = sessions.setdefault(e["session"], len(sessions))
+        row = {"t": round(stamp(e) - start, 2), "incident": tasks.index(e["task"]) if e.get("task") in tasks else 0,
+               "session": lane, "role": e["role"], "kind": e["kind"]}
+        if e["kind"] in {"tool", "tool_error"}: row["tool"] = e["data"].get("tool")
+        if e["kind"] == "model_timing": row["ms"] = e["data"].get("duration_ms")
+        rows.append(row)
+    return rows
+
+
 def attempted(events, tool, value):
     """Did any model call `tool` with an argument equal to `value`, whether or not the backend accepted it?"""
     for e in events:
@@ -189,7 +215,7 @@ async def run_case(case):
                         passed = passed and any(r["data"]["result"].get("historical") or r["data"]["result"].get("active") for r in recalled)
                 else:
                     passed = actions == 0 and final["status"] != "resolved" and gateway == 503
-            events = [e for t in tasks for e in store.runs.events(t)]
+            events = [{**e, "task": t} for t in tasks for e in store.runs.events(t)]
             timings = [e["data"] for e in events if e["kind"] == "model_timing"]
             return {"case": case, "passed": bool(passed), "seconds": round(time.perf_counter() - started, 1),
                     "status": store.runs.get(tasks[-1])["status"], "actions": lab.state()["action_count"],
@@ -198,7 +224,9 @@ async def run_case(case):
                     "guidance_offered": sum(e["kind"] == "guidance_offered" for e in events),
                     "text_tool_calls": sum(e["kind"] == "text_tool_calls_parsed" for e in events),
                     "empty_retries": sum(e["kind"] == "model_response_retry" for e in events),
-                    "rejected_tool_calls": sum(e["kind"] == "tool_error" for e in events), **notes}
+                    "rejected_tool_calls": sum(e["kind"] == "tool_error" for e in events),
+                    "refused_fix_requests": lab.state().get("rejected_count", 0),
+                    "tokens_by_role": tokens_by_role(events), "trace": trace(tasks, events), **notes}
         except Exception as exc:
             while isinstance(exc, BaseExceptionGroup) and exc.exceptions: exc = exc.exceptions[0]
             return {"case": case, "passed": False, "seconds": round(time.perf_counter() - started, 1),

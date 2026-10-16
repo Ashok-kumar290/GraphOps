@@ -5,11 +5,9 @@ import json
 import httpx
 from urllib.parse import urlsplit
 from graphops import settings
-from graphops.models.providers import CompatibleModel, Gemini, ModelError
+from graphops.models.providers import CompatibleModel, Gemini, ModelError, EmptyModelResponse
 
 
-class EmptyModelResponse(ModelError):
-    """An inference finished without text or tools; no effect was requested."""
 
 
 def configuration():

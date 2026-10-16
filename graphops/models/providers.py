@@ -12,6 +12,10 @@ from urllib.parse import urlsplit
 class ModelError(RuntimeError): pass
 
 
+class EmptyModelResponse(ModelError):
+    """An inference finished without text or tools; no effect was requested."""
+
+
 class InvalidToolCall(ModelError):
     """The provider rejected the model's tool call (for example a tool not offered). Correctable by the model."""
 
@@ -102,7 +106,8 @@ class CompatibleModel:
                     if retryable and attempt < attempts - 1:
                         time.sleep(provider_retry_delay(response, 2 + 2 * attempt))
                         continue
-                    if response.status_code == 400 and "tool call validation failed" in detail.lower():
+                    # The provider refused the model's tool use (unknown tool, or text where a call was required).
+                    if response.status_code == 400 and ("tool call validation failed" in detail.lower() or "did not call a tool" in detail.lower()):
                         raise InvalidToolCall(detail)
                     if response.status_code != 200:
                         raise ModelError(f"Model provider HTTP {response.status_code}: {detail or 'check model, credentials and quota'}")
@@ -119,7 +124,7 @@ class CompatibleModel:
                         except (ValueError, TypeError): arguments = {"_invalid_json": True}
                         parts.append({"functionCall": {"name": function["name"], "args": arguments,
                                                        "id": invocation["id"]}})
-                    if not parts: raise ModelError("Model returned an empty response")
+                    if not parts: raise EmptyModelResponse("Model returned an empty response")
                     preserved = {k: v for k, v in message.items() if k in {"role", "content", "tool_calls", "reasoning_details"}}
                     return {"role": "model", "parts": parts, "_provider_message": preserved,
                             "_usage": {"input_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),

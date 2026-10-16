@@ -1,6 +1,7 @@
 import React from "react";
 import data from "./benchmarks.json";
 import { HARD_PROBLEMS, FIXES, SOURCES, MEMORY } from "./content";
+import { AgentLanes, type LaneRow } from "../../shared/AgentLanes";
 
 type Result = { passed: boolean; seconds?: number; error?: string; status?: string; actions?: number; model_requests?: number;
   model_tried_injected_target?: boolean; model_tried_poisoned_target?: boolean; [key: string]: unknown };
@@ -9,7 +10,35 @@ type Model = { id: string; label: string; where: string; featured: boolean; pass
 
 const models = data.models as Model[];
 const cases = data.cases;
-const SECTIONS = [["performance", "Performance"], ["hard-problems", "Hard problems"], ["security", "Security"],
+type Arch = { id: string; label: string; detail: string; featured: boolean; passed: number; runs: number; refused: number;
+  tokens: number; median_seconds: number | null; core: number; hard: number; results: Record<string, Result> };
+const architectures = ((data as { architectures?: Arch[] }).architectures || []);
+const traces = ((data as { traces?: Record<string, LaneRow[]> }).traces || {});
+
+/** Horizontal bars, one per architecture, value labelled at the bar end. */
+function Bars({ title, rows, max, unit, note }: { title: string; rows: { label: string; value: number; featured: boolean; text?: string }[]; max: number; unit: string; note?: string }) {
+  const W = 480, rowH = 40, L = 150, R = 76, T = 6, H = T + rows.length * rowH + 4;
+  const w = (v: number) => (W - L - R) * Math.min(v, max) / (max || 1);
+  return (
+    <figure className="r-figure r-bars">
+      <figcaption className="r-bars-title">{title}</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={title}>
+        {rows.map((r, i) => (
+          <g key={r.label}>
+            <title>{`${r.label}: ${r.text ?? r.value}${unit}`}</title>
+            <text x={L - 10} y={T + i * rowH + 24} textAnchor="end" className={r.featured ? "r-bar-label featured" : "r-bar-label"}>{r.label}</text>
+            <rect x={L} y={T + i * rowH + 9} width={W - L - R} height={22} rx={4} className="r-bar-track" />
+            <rect x={L} y={T + i * rowH + 9} width={Math.max(w(r.value), 3)} height={22} rx={4} className={r.featured ? "r-bar featured" : "r-bar"} />
+            <text x={L + Math.max(w(r.value), 3) + 8} y={T + i * rowH + 24} className="r-bar-value">{r.text ?? r.value}</text>
+          </g>))}
+      </svg>
+      {note && <p className="r-note">{note}</p>}
+    </figure>
+  );
+}
+
+const SECTIONS = [["performance", "Performance"], ["agents", "Compared with existing agents"], ["tracked", "Multiple agents, tracked"],
+  ["hard-problems", "Hard problems"], ["security", "Security"],
   ["memory", "Shared memory"], ["fixes", "Solved during development"], ["run", "Run it yourself"]] as const;
 
 function Cell({ result }: { result?: Result }) {
@@ -112,9 +141,72 @@ export function ResultsPage() {
             </tbody>
           </table>
         </div>
-        <p className="r-note">{data.scoring} One run per case per model; “—” means the case has not run for that model yet.</p>
+        <p className="r-note">{data.scoring} One run per case per model; “—” means the case has not run for that model yet.
+          {models.filter(m => (m as Model & { quota_skipped?: string[] }).quota_skipped?.length).map(m =>
+            ` ${m.label}: ${(m as Model & { quota_skipped?: string[] }).quota_skipped!.length} case(s) stopped by the provider's free-tier daily token limit are shown as not run.`)}</p>
         <SpeedChart />
       </section>
+
+      {architectures.length > 1 && (
+        <section id="r-agents" className="r-section">
+          <h2>Compared with existing agents</h2>
+          <p className="r-prose">
+            <b>Same model, same cases, different architecture.</b> We ran LangGraph's prebuilt ReAct agent, the most common way to
+            build a tool-using agent, on the same twelve cases with the same model ({models.find(m => m.featured)?.label}) and the same
+            scoring. One version gets ordinary operations tools: health checks, documents, memory and fixes. A second also gets a
+            read-only FalkorDB query tool, to separate the value of having the graph from the value of GraphOps's checks around it.
+            Both receive the same instructions to follow current runbooks and to treat documents and memory as data.
+          </p>
+          <div className="r-bars-grid">
+            <Bars title="Core cases passed (of 6)" max={6} unit=" of 6" rows={architectures.map(a => ({ label: a.label, value: a.core, featured: a.featured }))} />
+            <Bars title="Hard cases passed (of 6)" max={6} unit=" of 6" rows={architectures.map(a => ({ label: a.label, value: a.hard, featured: a.featured }))} />
+            <Bars title="Unsafe fix requests reaching services" max={Math.max(...architectures.map(a => a.refused), 1)} unit=" refused by the service"
+                  rows={architectures.map(a => ({ label: a.label, value: a.refused, featured: a.featured }))}
+                  note="Wrong service, wrong action, or a fault that no longer matched. The simulated services refused them; real systems may not." />
+            <Bars title="Median seconds per case" max={Math.max(...architectures.map(a => a.median_seconds || 0), 1)} unit=" s"
+                  rows={architectures.map(a => ({ label: a.label, value: a.median_seconds || 0, featured: a.featured, text: `${Math.round(a.median_seconds || 0)} s` }))}
+                  note="GraphOps runs each agent session in its own MCP tool process and hands off between sessions, which adds a few seconds." />
+            <Bars title="Model input tokens per case" max={Math.max(...architectures.map(a => a.tokens / (a.runs || 1)), 1)} unit=" tokens"
+                  rows={architectures.map(a => ({ label: a.label, value: a.tokens / (a.runs || 1), featured: a.featured, text: Math.round(a.tokens / (a.runs || 1)).toLocaleString("en-US") }))}
+                  note="The price of the checks: every GraphOps session re-reads graph evidence and current procedures before it acts." />
+          </div>
+          <div className="r-table-wrap">
+            <table className="r-table">
+              <thead><tr><th scope="col"><span className="sr-only">Case</span></th>
+                {architectures.map(a => <th scope="col" key={a.id} className={a.featured ? "featured" : ""}>{a.label}<small>{a.detail}</small></th>)}</tr></thead>
+              <tbody>
+                {cases.map(c => (
+                  <tr key={c.id}><th scope="row"><b>{c.category}</b><small>{c.title}</small></th>
+                    {architectures.map(a => {
+                      const r = a.results[c.id];
+                      return <td key={a.id} className={a.featured ? "featured" : ""}><Cell result={r} />
+                        {r && (r.refused_fix_requests as number) > 0 && <small className="r-refused">{r.refused_fix_requests as number} unsafe fix request{(r.refused_fix_requests as number) > 1 ? "s" : ""}</small>}</td>;
+                    })}</tr>))}
+                <tr className="r-total"><th scope="row"><b>Passed</b></th>
+                  {architectures.map(a => <td key={a.id} className={a.featured ? "featured" : ""}><b>{a.passed}/{a.runs}</b></td>)}</tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="r-note">Baselines: LangGraph {"create_react_agent"} (langgraph 1.2.12) with the same local model. One run per case.
+            The “graph governs action” case expects no action when the dependency edge is gone; an agent without the graph cannot see that change.</p>
+        </section>
+      )}
+
+      {(traces.double_fault || traces.config) && (
+        <section id="r-tracked" className="r-section">
+          <h2>Multiple agents, tracked</h2>
+          <p className="r-prose">
+            <b>Every agent session is recorded in FalkorDB.</b> An investigator finds the cause and saves a handoff; a separate resolver
+            session, with its own model conversation and tool process, reads that handoff and acts. When one fix is not enough, the
+            orchestrator opens a follow-up and two more agents take over. Each lane below is one session from a real run.
+          </p>
+          {traces.double_fault && <><h3 className="r-subhead">Two root causes: four agents across two linked incidents</h3>
+            <AgentLanes rows={traces.double_fault} label="Agent sessions for the two-root-cause case" /></>}
+          {traces.concurrent_resolvers && <><h3 className="r-subhead">Two resolvers racing on one handoff</h3>
+            <AgentLanes rows={traces.concurrent_resolvers} label="Agent sessions for the racing resolvers case" /></>}
+          <p className="r-note">The same view appears on the Agent tasks page for every incident you run.</p>
+        </section>
+      )}
 
       <section id="r-hard-problems" className="r-section">
         <h2>Hard problems</h2>

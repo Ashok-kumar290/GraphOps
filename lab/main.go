@@ -36,6 +36,7 @@ type State struct {
 	Operations map[string]Effect `json:"operations"`
 	Count      int               `json:"action_count"`
 	Generation int               `json:"generation"`
+	Rejected   int               `json:"rejected_count"` // recovery requests refused: wrong service, action or state
 }
 type Lab struct {
 	mu     sync.RWMutex
@@ -182,6 +183,9 @@ func (l *Lab) service(service string) http.Handler {
 		current := l.state.Services[service]
 		supported := (service == "payments" && body.Action == "restore_config") || (service == "orders" && body.Action == "restart_worker")
 		if !supported || current.Revision != body.Expected || current.Fault != body.Action {
+			next := l.clone()
+			next.Rejected++
+			_ = l.save(next)
 			respond(w, 409, map[string]string{"error": "Action preconditions do not match"})
 			return
 		}

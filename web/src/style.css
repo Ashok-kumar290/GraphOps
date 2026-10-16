@@ -2319,3 +2319,44 @@ footer > span {
 .r-sources a { color: var(--ink-2); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (max-width: 700px) { .r-problem { padding-right: 0; } .results h1 { font-size: 40px; } .r-section { margin-top: 64px; } }
+
+/* Agent lanes: one lane per tracked agent session. */
+.lanes-panel .lanes { padding: 8px 17px 14px; }
+.lanes { margin: 0; display: grid; gap: 8px; }
+.lanes svg { width: 100%; height: auto; display: block; }
+.lanes text { font-family: var(--f-sans); }
+.lanes-name { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.lanes-meta { font-size: 11px; fill: var(--ink-3); }
+.lanes-axis { font-size: 11px; fill: var(--ink-3); }
+.lanes-grid { stroke: var(--rule); }
+.lanes-span { fill: var(--surface-2); stroke: var(--rule-strong); }
+.lane.role-investigator .lanes-model { fill: var(--info); }
+.lane.role-resolver .lanes-model { fill: var(--accent); }
+.lane.role-company .lanes-model { fill: var(--violet); }
+.lanes-tool { stroke: var(--ink); stroke-width: 1.5; }
+.lanes-tool.error { stroke: var(--bad); stroke-width: 2.5; stroke-dasharray: 3 2; }
+.lanes-handoff { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.lanes-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-3); }
+.lanes-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lanes-key { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+.lanes-key.span { background: var(--surface-2); border: 1px solid var(--rule-strong); }
+.lanes-key.model { background: linear-gradient(90deg, var(--info) 50%, var(--accent) 50%); }
+.lanes-key.tool { width: 2px; height: 12px; background: var(--ink); }
+.lanes-key.error { width: 3px; height: 12px; background: repeating-linear-gradient(180deg, var(--bad) 0 3px, transparent 3px 5px); }
+.lanes-key.handoff { height: 0; border-top: 2px dashed var(--ink-3); }
+.lanes-empty { padding: 12px 17px; color: var(--ink-3); font-size: 13px; }
+
+/* Results: architecture comparison bars and agent lanes. */
+.r-bars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 28px 40px; }
+.r-bars { gap: 6px; }
+.r-bars-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.r-figure .r-bar-track { fill: var(--surface-2); }
+.r-figure .r-bar { fill: var(--ink-3); }
+.r-figure .r-bar.featured { fill: var(--accent); }
+.r-figure .r-bar-label { fill: var(--ink-2); font-size: 13px; }
+.r-figure .r-bar-label.featured { fill: var(--ink); font-weight: 600; }
+.r-figure .r-bar-value { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.r-refused { display: block; color: var(--bad); font-size: 12px; margin-top: 3px; }
+.r-subhead { font-size: 17px; margin-top: 8px !important; }
+.r-section .lanes { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+@media (max-width: 700px) { .r-bars-grid { grid-template-columns: 1fr; } }
