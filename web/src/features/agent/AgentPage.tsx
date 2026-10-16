@@ -5,6 +5,7 @@ import { useWorkspace } from "../../app/WorkspaceContext";
 import { Metric } from "../../shared/ui";
 import { Timeline } from "../runs/Timeline";
 import { ServiceGraph } from "../graph/ServiceGraph";
+import { IncidentStory } from "./IncidentStory";
 export function AgentPage() {
 const {
   data,
@@ -110,6 +111,7 @@ return (
                       </span>
                     </label>
                   </section>
+                  <IncidentStory />
                   <div className="metrics">
                     <Metric
                       label="CHECKOUT HEALTH"

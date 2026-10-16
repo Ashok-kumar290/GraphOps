@@ -129,6 +129,13 @@ there is no Slack/Jira/GitHub integration or message sent to a real person.
 
 ## Serving and deployment
 
+The homepage derives its checkout example from directed graph records. The
+incident summary in `web/src/features/agent/journey.ts` derives its stages from
+the selected incident, scoped session/tool events and matching sourced memories.
+It distinguishes a historical memory-write event from records present in the
+current bounded packet. `features/runs/presentation.ts` gives tool events readable
+descriptions while keeping the original payload available for inspection.
+
 TypeScript owns HTTP, static files and streaming. A persistent Python process
 handles requests over stdio, with model work offloaded to a thread so UI
 snapshots remain available. The Go lab runs separate concurrent listeners for

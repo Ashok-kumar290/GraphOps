@@ -1,0 +1,172 @@
+{
+  "observed_at": "2026-10-16T07:28:57.080612+00:00",
+  "source_base_commit": "3a76e05337dc2f42444f892c1982727e975f5c40",
+  "change": "Checkout-first homepage, incident-scoped plain-language progress, readable activity and actual tool errors.",
+  "ui_checks": {
+    "passed": 39,
+    "total": 39,
+    "success": true,
+    "scope": "React DOM and pure progress/presentation rules; HTTP and EventSource mocked; not browser visual QA."
+  },
+  "build": {
+    "success": true,
+    "command": "npm run build",
+    "scope": "TypeScript and Vite production build"
+  },
+  "served_assets": {
+    "html_http_status": 200,
+    "assets": [
+      {
+        "path": "/assets/index-XlVkVsMk.js",
+        "http_status": 200,
+        "bytes": 304075
+      },
+      {
+        "path": "/assets/index-CENwytD9.css",
+        "http_status": 200,
+        "bytes": 37787
+      }
+    ],
+    "new_homepage_and_story_in_served_bundle": true,
+    "test_fixture_strings_absent": true,
+    "browser_review": false
+  },
+  "live_workflow": {
+    "scope": "Live local API and frontend evidence logic; no browser interaction",
+    "model_inference": true,
+    "browser_review": false,
+    "checks": [
+      {
+        "name": "existing_history_cannot_complete_new_guide",
+        "passed": true
+      },
+      {
+        "name": "fresh_company_answer_cites_retrieved_sources",
+        "passed": true,
+        "task": "INC-6CFB524F",
+        "citations": [
+          "fixture:event/topology-v1"
+        ]
+      },
+      {
+        "name": "graph_step_has_actual_dependency_path",
+        "passed": true
+      },
+      {
+        "name": "handoff_advances_investigation_without_claiming_recovery",
+        "passed": true,
+        "task": "INC-FED4B7D8"
+      },
+      {
+        "name": "plain_language_story_waits_for_a_fresh_resolver",
+        "passed": true,
+        "story": {
+          "complete": false,
+          "steps": [
+            {
+              "title": "Find the cause",
+              "done": true
+            },
+            {
+              "title": "Continue in a fresh session",
+              "done": false
+            },
+            {
+              "title": "Validate the procedure",
+              "done": false
+            },
+            {
+              "title": "Recover and check checkout",
+              "done": false
+            },
+            {
+              "title": "Save shared memory",
+              "done": false
+            }
+          ],
+          "active": 1
+        }
+      },
+      {
+        "name": "fresh_resolver_measures_recovery",
+        "passed": true,
+        "investigators": [
+          "cf5cbb76-f05b-48ab-a8f0-d54ab83abdc9"
+        ],
+        "resolvers": [
+          "ebc21932-1e73-4cc4-82ae-2499e4862103"
+        ]
+      },
+      {
+        "name": "memory_step_uses_only_this_incident",
+        "passed": true,
+        "records": 3
+      },
+      {
+        "name": "all_five_frontend_steps_have_live_evidence",
+        "passed": true,
+        "steps": {
+          "company": true,
+          "graph": true,
+          "investigate": true,
+          "recover": true,
+          "memory": true
+        }
+      },
+      {
+        "name": "plain_language_story_matches_measured_result",
+        "passed": true,
+        "story": {
+          "complete": true,
+          "steps": [
+            {
+              "title": "Find the cause",
+              "done": true
+            },
+            {
+              "title": "Continue in a fresh session",
+              "done": true
+            },
+            {
+              "title": "Validate the procedure",
+              "done": true
+            },
+            {
+              "title": "Recover and check checkout",
+              "done": true
+            },
+            {
+              "title": "Save shared memory",
+              "done": true
+            }
+          ],
+          "active": 4
+        }
+      }
+    ],
+    "success": true,
+    "workspace": "team-demo",
+    "model": {
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "configured": true
+    },
+    "question_task": "INC-6CFB524F",
+    "incident_task": "INC-FED4B7D8",
+    "elapsed_seconds": 36.694
+  },
+  "browser_review": {
+    "completed": false,
+    "reason": "Connected browser/app inventory empty"
+  },
+  "initial_check_failure": {
+    "failed": 1,
+    "total": 27,
+    "reason": "An existing homepage test asserted the intentionally replaced headline. Updated it to check the new explanation and expandable module details."
+  },
+  "limitations": [
+    "Synthetic company and controlled service actions.",
+    "Source-location checks do not establish full claim entailment.",
+    "No desktop/mobile screenshot or browser keyboard review performed."
+  ]
+}

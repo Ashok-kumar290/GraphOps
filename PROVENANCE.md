@@ -79,3 +79,10 @@ local source-archive helper. During package review, direct graph-edge-removal
 checks were added for handoff and prepared-plan execution; the current 63-check
 backend suite passed. The source package is a local review artifact, not a
 claim of public publication, video completion or participant verification.
+
+On October 16, following the participant's feedback that the product was hard
+to understand, Codex simplified the homepage around the checkout example, moved
+module details into an expandable section, added an incident-scoped progress
+summary and made activity descriptions readable. Tool errors now display their
+recorded message. DOM/pure-rule checks and live API/agent checks cover those
+changes; browser layout review and participant understanding remain unverified.

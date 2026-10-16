@@ -15,11 +15,13 @@ from graphops.runtime.terminal_client import ProductClient
 
 BRIDGE = """
 import {walkthroughEvidence} from './web/src/features/walkthrough/model.ts';
+import {incidentJourney} from './web/src/features/agent/journey.ts';
 let input=''; for await (const chunk of process.stdin) input+=chunk;
 const {workspace,guide}=JSON.parse(input), evidence=walkthroughEvidence(workspace,guide);
+const journey=incidentJourney(workspace,workspace.selected?.question ? undefined : workspace.selected);
 console.log(JSON.stringify({done:evidence.done,complete:evidence.complete,path:evidence.path,
   citations:evidence.citations,investigators:evidence.investigators,resolvers:evidence.resolvers,
-  memory_count:evidence.memories.length}));
+  memory_count:evidence.memories.length,story:{complete:journey.complete,steps:journey.steps.map(s=>({title:s.title,done:s.done})),active:journey.active}}));
 """
 
 
@@ -92,6 +94,8 @@ def main():
             save('handoff.json', client.get('/api/reports', task=incident))
             check('handoff_advances_investigation_without_claiming_recovery', state['selected']['status'] == 'handoff' and
                   proof['done']['investigate'] and not proof['done']['recover'] and not proof['done']['memory'], task=incident)
+            check('plain_language_story_waits_for_a_fresh_resolver', proof['story']['steps'][0]['done'] and
+                  not proof['story']['steps'][1]['done'] and not proof['story']['complete'], story=proof['story'])
 
             client.post('/api/resume', {'task': incident})
             state = wait(incident)
@@ -104,6 +108,8 @@ def main():
                   investigators=proof['investigators'], resolvers=proof['resolvers'])
             check('memory_step_uses_only_this_incident', proof['done']['memory'], records=proof['memory_count'])
             check('all_five_frontend_steps_have_live_evidence', proof['complete'], steps=proof['done'])
+            check('plain_language_story_matches_measured_result', proof['story']['complete'] and
+                  all(step['done'] for step in proof['story']['steps']), story=proof['story'])
             report['success'] = True
         except Exception as exc:
             report['error'] = str(exc)[:900]

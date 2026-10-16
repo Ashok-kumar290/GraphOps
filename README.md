@@ -15,6 +15,11 @@ The app opens on **Start here**. Select **Start guided walkthrough** for one flo
 through a cited company answer, graph evidence, an investigator handoff, a fresh
 resolver and the resulting shared memory. See [the five-step walkthrough](WALKTHROUGH.md).
 The current company is synthetic and actions operate on the included Go lab.
+The homepage explains the checkout example before exposing the module details.
+Agent tasks includes a plain-language incident summary: find the cause, continue
+in a fresh session, validate the procedure, recover checkout and save memory.
+Each recorded step comes from the selected incident's state or evidence. The
+activity log retains inspectable tool results and displays actual error messages.
 Read [the requirements map](HACKATHON_REQUIREMENTS.md) before submission.
 Recording and submission drafts are in [DEMO.md](DEMO.md) and
 [the submission package](submission/README.md).

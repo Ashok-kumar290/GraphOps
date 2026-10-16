@@ -1,6 +1,6 @@
 # Measured development results
 
-Measurements are from October 15, 2026, on the developer's Windows laptop with
+Measurements are from October 15–16, 2026, on the developer's Windows laptop with
 31.7 GB RAM and an RTX 4060 Laptop GPU with 8 GB VRAM. FalkorDB runs in local
 Docker. These results apply to this controlled synthetic lab. They are not
 production capacity, general agent reliability, or a promise of hosted speed.
@@ -9,6 +9,7 @@ production capacity, general agent reliability, or a promise of hosted speed.
 
 | Check | Measured result | What it exercises |
 |---|---|---|
+| [Product explanation and incident story](evidence/frontend-product-clarity.json) | 39/39 UI/logic checks; 9/9 live workflow checks in 36.694 s; production build passed | Checkout-first homepage derives its path from graph records; incident progress uses scoped session, validation, recovery and memory evidence. Live Qwen3:8b handoff stays pending until the fresh resolver runs. Actual HTTP assets served successfully. Browser layout review remains pending |
 | [Recorded event, product and terminal suite](evidence/checks-current.json) | 63/63 passed in 201.632 seconds | Actual FalkorDB, Go HTTP, MCP sessions, role limits, graph/runbook guards, idempotence, memory, revisions, source conflicts, stop/resume, backup restoration, Windows launchers, process metrics and replay beyond 500 events; model protocol cases are simulated |
 | [Stricter CLI completion and two live rehearsals](evidence/judge-cli-rehearsal.json) | 24/24 targeted terminal checks; both live drills passed | Actual Qwen3:8b company answer and incident recovery: payments 31.170 s, orders 29.672 s. Seven completion checks require this incident's graph path, distinct sessions, measured recovery, ticket, three sourced memories and idle workspace. Four new unit checks reject substituted or incomplete evidence; targeted checks do not invoke a live model |
 | [Required graph-edge removal](evidence/graph-dependency-proof.json) | 2/2 targeted checks passed | A missing edge stays removed across initialization and blocks handoff; removing the path after preparing a valid plan rejects execution; zero recovery operations in both isolated fixtures |

@@ -120,7 +120,11 @@ function network(workspace = makeWorkspace()) {
 test("The starting screen explains the product and its six modules", async () => {
   network();
   render(<App />);
-  expect(screen.getByRole("heading", {name: "A company copilot that carries useful context into the next session."})).toBeTruthy();
+  expect(screen.getByRole("heading", {name: "Fix a checkout failure. Keep the evidence for the next session."})).toBeTruthy();
+  const modules = screen.getByText("Explore the six modules behind the demonstration");
+  expect((modules.parentElement as HTMLDetailsElement).open).toBe(false);
+  fireEvent.click(modules);
+  expect((modules.parentElement as HTMLDetailsElement).open).toBe(true);
   for (const name of ["1. Company knowledge", "2. Connected graph", "3. Agent", "4. Actions", "5. Shared memory", "6. Workspace"])
     expect(screen.getByRole("heading", {name})).toBeTruthy();
   expect(await screen.findByText("FalkorDB connected")).toBeTruthy();

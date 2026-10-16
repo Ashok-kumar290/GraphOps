@@ -11,6 +11,45 @@ beforeEach(() => {
 afterEach(() => {cleanup(); vi.unstubAllGlobals();});
 const response = (value: unknown) => new Response(JSON.stringify(value), {status: 200, headers: {"Content-Type": "application/json"}});
 
+test("The homepage uses actual graph edges and does not invent a missing checkout path", async () => {
+  const data = workspaceFixture(); data.graph.edges = [];
+  vi.stubGlobal("fetch", vi.fn(async () => response(data)));
+  render(<App/>);
+  await screen.findByText("FalkorDB connected");
+  const path = screen.getByLabelText("Checkout dependencies from FalkorDB");
+  expect(path.textContent).toContain("no checkout-to-payments path");
+  expect(within(path).queryByText("Checkout gateway")).toBeNull();
+});
+
+test("The incident story explains recorded recovery and opens only that run's memory", async () => {
+  const data = workspaceFixture(), task = incidentFixture();
+  data.selected = task; data.tasks = [task]; data.events = incidentEventsFixture();
+  data.memory.payments.historical = ["episodic", "procedural", "semantic"].map(kind => memoryFixture(kind));
+  const fetch = vi.fn(async () => response(data)); vi.stubGlobal("fetch", fetch);
+  render(<App/>);
+  await screen.findByText("FalkorDB connected");
+  fireEvent.click(screen.getByRole("button", {name: "Agent tasks"}));
+  const story = screen.getByRole("region", {name: "What happened in this run?"});
+  expect(within(story).getByText("Recovery and memory recorded")).toBeTruthy();
+  expect(within(story).getByText(/Recorded result: payments HTTP 503 → 200; checkout HTTP 200/)).toBeTruthy();
+  fireEvent.click(within(story).getByRole("button", {name: "Inspect this incident's memory"}));
+  expect((screen.getByRole("textbox", {name: "Filter memory"}) as HTMLInputElement).value).toBe(task.id);
+  expect(fetch.mock.calls.every(call => (call as any[])[1]?.method !== "POST")).toBe(true);
+});
+
+test("The incident story explains an interrupted ticket without declaring completion", async () => {
+  const data = workspaceFixture(), task = incidentFixture(); task.job = "interrupted"; task.ticket_closed = false;
+  data.selected = task; data.tasks = [task]; data.events = incidentEventsFixture();
+  vi.stubGlobal("fetch", vi.fn(async () => response(data)));
+  render(<App/>);
+  await screen.findByText("FalkorDB connected");
+  fireEvent.click(screen.getByRole("button", {name: "Agent tasks"}));
+  const story = screen.getByRole("region", {name: "What happened in this run?"});
+  expect(within(story).getByText("Paused at a checkpoint")).toBeTruthy();
+  expect(within(story).getByText(/Ticket completion pending/)).toBeTruthy();
+  expect(within(story).queryByText("Recovery and memory recorded")).toBeNull();
+});
+
 test("Starting a walkthrough prepares a question without submitting an action", async () => {
   const data = workspaceFixture(), fetch = vi.fn(async () => response(data));
   vi.stubGlobal("fetch", fetch);

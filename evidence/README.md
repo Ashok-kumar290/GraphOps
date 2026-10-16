@@ -40,3 +40,4 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [Cold restart and connected live model/MCP diagnostics](native-restart-publication.json)
 - [Two live CLI rehearsals with incident-specific completion evidence](judge-cli-rehearsal.json)
 - [Commit ID mapping after correcting inherited Git attribution](history-attribution-map.json)
+- [Product explanation, incident story and live workflow verification](frontend-product-clarity.json)

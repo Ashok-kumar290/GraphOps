@@ -2,7 +2,8 @@ import React from "react";
 import { Empty } from "../../shared/ui";
 import { ArrowUpRight, Check, GitBranch, Search, Zap } from "lucide-react";
 import type { Event as RunEvent } from "../../shared/contracts";
-import { time, nice, short } from "../../shared/format";
+import { time } from "../../shared/format";
+import { presentEvent } from "./presentation";
 export function Timeline({
   events,
   inspect,
@@ -19,6 +20,7 @@ export function Timeline({
       "run_error",
       "run_stopped",
       "component_check",
+      "memory_saved",
     ].includes(e.kind),
   );
   if (!items.length)
@@ -31,30 +33,9 @@ export function Timeline({
   return (
     <div className="timeline">
       {items.map((e) => {
-        const tool = e.data.tool || "",
-          result = e.data.result || {},
-          isSession = e.kind === "session_started",
+        const isSession = e.kind === "session_started",
           isSummary = e.kind === "session_finished";
-        const title = isSession
-          ? `${e.role} session started`
-          : isSummary
-            ? `${e.role} checkpoint saved`
-            : e.kind === "run_error"
-              ? "Run interrupted"
-              : nice(tool || e.kind);
-        let description = isSession
-          ? `${e.data.mode === "llm" ? "LLM agent" : "Scripted baseline"} · ${short(e.session)}`
-          : isSummary
-            ? e.data.summary
-            : result.reason ||
-              result.service ||
-              (result.success === true
-                ? "Recovery verified with live measurements"
-                : result.ready === true
-                  ? "Current evidence validated"
-                  : result.state === "closed"
-                    ? "Synthetic ticket completed"
-                    : "Sourced evidence recorded");
+        const {title, description, success} = presentEvent(e);
         return (
           <button
             className={"timeline-event " + (isSession ? "session-event" : "")}
@@ -64,7 +45,7 @@ export function Timeline({
             <span
               className={
                 "timeline-symbol " +
-                (result.success || result.state === "closed" ? "success" : "")
+                (success ? "success" : "")
               }
             >
               {isSession ? (

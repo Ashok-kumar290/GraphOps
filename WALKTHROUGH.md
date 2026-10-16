@@ -9,6 +9,11 @@ If checkout is already unhealthy, open its unfinished incident and resume it
 first. A new walkthrough starts with healthy checkout and an idle worker. The
 company and services in this demonstration are synthetic.
 
+The homepage introduces checkout, orders and payments using the actual directed
+graph path and current HTTP observations. **Explore the six modules** opens the
+architecture details when needed. If the graph path is missing, the homepage
+reports it instead of drawing a replacement path.
+
 ## 1. Ask the company
 
 The guide prepares a payments ownership/procedure question. Select **Ask**.
@@ -35,6 +40,11 @@ The guide prepares **Payments configuration**, **Agent LLM** and **Pause at
 handoff**. Select **Investigate only**. Watch actual observations, graph tools
 and the supported cause. Wait for the saved handoff, then continue.
 
+The **What happened in this run?** summary above the detailed activity log
+explains each stage. Recorded stages use this incident's saved state and events.
+At handoff, the fresh-session stage remains pending until a distinct resolver
+session actually starts. A blocked or interrupted stage stays visibly unfinished.
+
 If validation blocks work, inspect the reason and current company procedure.
 Do not treat a blocker or an interrupted run as completed recovery.
 
@@ -51,6 +61,11 @@ The memory view filters to this incident. Inspect its episode, procedure and
 health fact, including source, revision and applicability. An expired fact moves
 to historical memory; it remains evidence of a past observation. Filter counts
 show matching / retrieved records, and **Clear filters** restores the full packet.
+
+The incident summary also links directly to this run's memory. A saved-memory
+event can document an earlier write after records leave the bounded retrieval
+packet; the summary states how many matching records are currently retrievable.
+The guided memory step still requires the matching records to be retrieved.
 
 Download this incident's report. Finish the walkthrough after all five steps
 have evidence. Older incidents cannot complete a newly started guide.
