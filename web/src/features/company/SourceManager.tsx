@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pencil, Upload } from "lucide-react";
 import { FileText, Search } from "lucide-react";
 import type { Doc, Api, Inspect } from "../../shared/contracts";
@@ -26,6 +26,10 @@ export function SourceManager({
     [working, setWorking] = useState(false),
     [message, setMessage] = useState(""),
     [error, setError] = useState("");
+  const alive = useRef(true), inFlight = useRef(false), queryRef = useRef(query);
+  useEffect(() => {alive.current = true; return () => {alive.current = false;};}, []);
+  const begin = () => {if (inFlight.current) return false; inFlight.current = true; setWorking(true); setError(""); return true;};
+  const end = () => {inFlight.current = false; if (alive.current) setWorking(false);};
   const clear = () => {
     setEditing(null);
     setTitle("");
@@ -35,8 +39,7 @@ export function SourceManager({
   };
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setWorking(true);
-    setError("");
+    if (busy || !title.trim() || !text.trim() || !begin()) return;
     setMessage("");
     try {
       const result = await api("/api/sources", {
@@ -47,6 +50,7 @@ export function SourceManager({
         document_type: kind,
         ...(editing ? { id: editing.id, base_revision: editing.revision } : {}),
       });
+      if (!alive.current) return;
       setMessage(
         `${result.unchanged ? "Source unchanged" : "Source saved"} · revision ${result.document.revision}`,
       );
@@ -54,15 +58,16 @@ export function SourceManager({
       setHits(null);
       await onChanged();
     } catch (e: any) {
-      setError(e.message);
+      if (alive.current) setError(e.message);
     } finally {
-      setWorking(false);
+      end();
     }
   }
   async function open(doc: Doc, edit = false) {
-    setError("");
+    if (edit && busy || !begin()) return;
     try {
-      const full = await api("/api/sources?id=" + encodeURIComponent(doc.id));
+      const full = await api("/api/sources?id=" + encodeURIComponent(doc.id) + (!edit && doc.revision ? "&revision=" + encodeURIComponent(doc.revision) : ""));
+      if (!alive.current) return;
       if (edit) {
         setEditing(full);
         setTitle(full.title);
@@ -74,11 +79,11 @@ export function SourceManager({
         );
       } else inspect(full.title, full);
     } catch (e: any) {
-      setError(e.message);
-    }
+      if (alive.current) setError(e.message);
+    } finally {end();}
   }
   return (
-    <section className="panel product-panel source-manager">
+    <section className="panel product-panel source-manager" aria-label="Company source library" aria-busy={working}>
       <div className="panel-header">
         <div>
           <Upload size={16} />
@@ -93,35 +98,34 @@ export function SourceManager({
       <form
         onSubmit={async (e) => {
           e.preventDefault();
-          setError("");
+          if (!query.trim() || !begin()) return;
+          const searched = query;
           try {
-            setHits(
-              (
-                await api(
+            const result = await api(
                   "/api/search?q=" +
-                    encodeURIComponent(query) +
+                    encodeURIComponent(searched) +
                     "&service=" +
                     encodeURIComponent(service),
-                )
-              ).documents,
-            );
+                );
+            if (alive.current && searched === queryRef.current) setHits(result.documents);
           } catch (e: any) {
-            setError(e.message);
-          }
+            if (alive.current && searched === queryRef.current) setError(e.message);
+          } finally {end();}
         }}
         className="product-search"
       >
         <input
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {setQuery(e.target.value); queryRef.current = e.target.value; setHits(null);}}
           placeholder="Search current source content"
           aria-label="Search company sources"
           maxLength={120}
         />
-        <button className="button secondary" disabled={!query.trim()}>
+        <button className="button secondary" disabled={working || !query.trim()}>
           <Search size={14} />
           Search
         </button>
+        <button type="button" className="button secondary" disabled={!query && !hits} onClick={() => {setQuery(""); queryRef.current = ""; setHits(null); setError("");}}>Clear search</button>
       </form>
       {hits && (
         <div className="source-results">
@@ -130,6 +134,7 @@ export function SourceManager({
               <button
                 key={doc.id}
                 className="source-result"
+                disabled={working}
                 onClick={() => void open(doc)}
               >
                 <FileText size={15} />
@@ -152,6 +157,7 @@ export function SourceManager({
           {error}
         </div>
       )}
+      {working && <p role="status">Loading or saving source data...</p>}
       {message && (
         <p className="product-notice" role="status">
           {message}
@@ -208,11 +214,13 @@ export function SourceManager({
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              setError("");
+              const input = e.target;
+              if (busy || !begin()) return;
               try {
                 if (file.size > 65536)
                   throw new Error("Choose a text file under 64 KB.");
                 const value = await file.text();
+                if (!alive.current) return;
                 if (value.length > 16000 || value.includes("\0"))
                   throw new Error(
                     "Source must be plain text with at most 16000 characters.",
@@ -221,9 +229,8 @@ export function SourceManager({
                 if (!editing) setFilename(file.name);
                 if (!title) setTitle(file.name.replace(/\.[^.]+$/, ""));
               } catch (e: any) {
-                setError(e.message);
-              }
-              e.target.value = "";
+                if (alive.current) setError(e.message);
+              } finally {input.value = ""; end();}
             }}
           />
         </label>
@@ -260,7 +267,7 @@ export function SourceManager({
             <button
               type="button"
               className="button secondary"
-              onClick={clear}
+              onClick={() => {clear(); setMessage(""); setError("");}}
               disabled={working}
             >
               Cancel edit
@@ -272,7 +279,7 @@ export function SourceManager({
           >
             <Upload size={14} />
             {working
-              ? "Saving…"
+              ? "Please wait..."
               : editing
                 ? "Save new revision"
                 : "Import source"}
@@ -283,7 +290,7 @@ export function SourceManager({
         .filter((d) => d.kind === "reference")
         .map((doc) => (
           <div className="source-version-row" key={doc.id}>
-            <button onClick={() => void open(doc)}>
+            <button disabled={working} onClick={() => void open(doc)}>
               <FileText size={14} />
               {doc.title}
               <small>rev {doc.revision}</small>

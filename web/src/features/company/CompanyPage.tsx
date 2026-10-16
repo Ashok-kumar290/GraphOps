@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Clock3, FileText, Users } from "lucide-react";
 
 import { useWorkspace } from "../../app/WorkspaceContext";
@@ -16,10 +16,11 @@ const {
   setOwner,
   refresh,
   command,
-  busy,
+  controlsDisabled: busy,
   company,
   inspect
 } = useWorkspace();
+useEffect(() => {setOwner("");}, [service]);
 return (
                 <>
                   <div className="service-tabs">
@@ -115,13 +116,15 @@ return (
                         next agent run reads the new source revision.
                       </p>
                       <form
-                        onSubmit={(e) => {
+                        onSubmit={async (e) => {
                           e.preventDefault();
-                          void command("/api/company", {
+                          if (busy || !owner.trim()) return;
+                          const result = await command("/api/company", {
                             service,
                             operation: "owner",
                             owner,
                           });
+                          if (result) setOwner("");
                         }}
                       >
                         <input
@@ -130,6 +133,7 @@ return (
                           onChange={(e) => setOwner(e.target.value)}
                           placeholder="New owner team"
                           maxLength={80}
+                          disabled={busy}
                         />
                         <button
                           className="button secondary"

@@ -25,6 +25,8 @@ See [the memory comparison](MEMORY_COMPARISON.md) for a reproducible fresh-conte
 fact-recall experiment and its scoring limits.
 Recording and submission drafts are in [DEMO.md](DEMO.md) and
 [the submission package](submission/README.md).
+See [the frontend control checklist](FRONTEND_CHECKLIST.md) for page-by-page
+behavior, interaction coverage and remaining real-browser review.
 
 Built for Graph Hacks, October 15–18, 2026. Intended tracks: **Agents That Act on
 Connected Data**, **Agent Memory and Coordination**, **Company Brain**.
@@ -217,6 +219,7 @@ With FalkorDB and the compiled lab available, from this directory:
 .\.venv\Scripts\python.exe -m tests.check_package --mode llm
 .\.venv\Scripts\python.exe -m tests.check_live_app
 .\.venv\Scripts\python.exe -m tests.check_product
+.\.venv\Scripts\python.exe -m tests.check_frontend
 cd web
 npm test
 npm run build

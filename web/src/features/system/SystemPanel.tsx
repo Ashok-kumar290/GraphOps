@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Activity, Play, Download } from "lucide-react";
 import type { Workspace, Api, Inspect } from "../../shared/contracts";
 
@@ -16,19 +16,24 @@ export function SystemPanel({
   onBackup: () => void;
 } & Props) {
   const [status, setStatus] = useState<any>(null),
-    [error, setError] = useState("");
+    [error, setError] = useState(""), [loading, setLoading] = useState(false);
+  const requestId = useRef(0);
   async function refresh() {
+    const id = ++requestId.current;
+    setLoading(true);
     try {
-      setStatus(await api("/api/readiness"));
+      const next = await api("/api/readiness");
+      if (id !== requestId.current) return;
+      setStatus(next);
       setError("");
     } catch (e: any) {
-      setError(e.message);
-    }
+      if (id === requestId.current) setError(e.message);
+    } finally {if (id === requestId.current) setLoading(false);}
   }
   useEffect(() => {
     void refresh();
     const timer = setInterval(() => void refresh(), 10000);
-    return () => clearInterval(timer);
+    return () => {clearInterval(timer); requestId.current++;};
   }, [data?.diagnostics?.checked_at]);
   return (
     <div className="product-sections">
@@ -38,8 +43,8 @@ export function SystemPanel({
             <Activity size={16} />
             <h2>System readiness</h2>
           </div>
-          <button className="button secondary" onClick={() => void refresh()}>
-            Refresh status
+          <button className="button secondary" disabled={loading} onClick={() => void refresh()}>
+            {loading ? "Refreshing status..." : "Refresh status"}
           </button>
         </div>
         <p>

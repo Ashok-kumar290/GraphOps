@@ -89,9 +89,7 @@ export function ServiceGraph({
               role="button"
               aria-label={`Inspect ${n.id}`}
               onClick={() => onSelect(n.id)}
-              onKeyDown={(e) =>
-                (e.key === "Enter" || e.key === " ") && onSelect(n.id)
-              }
+              onKeyDown={(e) => {if (e.key === "Enter" || e.key === " ") {e.preventDefault(); onSelect(n.id);}}}
               transform={`translate(${p[0]},${p[1]})`}
             >
               <rect

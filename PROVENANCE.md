@@ -103,3 +103,12 @@ driver in a unique Docker project. Docker now forwards the local model batch
 setting; native first-time dependency installation uses the transitive lockfile.
 This automated rehearsal does not attest participant understanding, browser
 layout, native first-install behavior or a publicly hosted deployment.
+
+At the participant's request to verify the entire frontend, Codex audited page
+controls, fixed selection/access response races, connection-state handling,
+duplicate submissions, source/history requests, downloads and graph keyboard
+controls, and added an explicit control checklist. New DOM checks exercise those
+states. A separate React integration driver operates the UI with real HTTP,
+cookies, SSE, FalkorDB, Go, MCP and local Qwen inference in an isolated Docker
+workspace. It captures JSON download delivery at the Blob/anchor boundary.
+Actual browser layout, OS file picking and save-dialog behavior remain unverified.

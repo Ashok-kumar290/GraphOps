@@ -37,11 +37,10 @@ export function KnowledgeGraph({
       <g
         role="button"
         tabIndex={0}
+        aria-label={`Inspect ${n.kind} ${n.title || n.id}`}
         key={n.key}
         onClick={() => inspect("Connected " + n.kind, n)}
-        onKeyDown={(e) =>
-          e.key === "Enter" && inspect("Connected " + n.kind, n)
-        }
+        onKeyDown={(e) => {if (e.key === "Enter" || e.key === " ") {e.preventDefault(); inspect("Connected " + n.kind, n);}}}
         className={"knowledge-node " + (n.key === root.key ? "root" : "")}
         transform={`translate(${x},${y})`}
       >
@@ -90,7 +89,11 @@ export function KnowledgeGraph({
               return (
                 <g
                   key={i}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Inspect ${e.kind.replaceAll("_", " ")} relationship ${i + 1}`}
                   onClick={() => inspect("Sourced graph relationship", e)}
+                  onKeyDown={event => {if (event.key === "Enter" || event.key === " ") {event.preventDefault(); inspect("Sourced graph relationship", e);}}}
                 >
                   <path
                     d={`M${a[0] + 100},${a[1]} C${(a[0] + b[0]) / 2},${a[1]} ${(a[0] + b[0]) / 2},${b[1]} ${b[0] - 105},${b[1]}`}

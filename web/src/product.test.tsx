@@ -134,7 +134,7 @@ test("The graph module is available directly from navigation", async () => {
   network();
   render(<App />);
   fireEvent.click(screen.getByRole("button", {name: "Connected graph"}));
-  expect(screen.getByRole("heading", {name: "Relationships guide the agent"})).toBeTruthy();
+  expect(await screen.findByRole("heading", {name: "Relationships guide the agent"})).toBeTruthy();
   expect(await screen.findByRole("img", {name: "Actual service dependency graph"})).toBeTruthy();
 });
 
@@ -142,7 +142,7 @@ test("Run agent sends an automatic LLM workflow by default", async () => {
   const fetch = network();
   render(<App />);
   fireEvent.click(screen.getByRole("button", { name: "Agent tasks" }));
-  const run = screen.getByRole("button", { name: "Run agent" });
+  const run = await screen.findByRole("button", { name: "Run agent" });
   await waitFor(() => expect((run as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(run);
   await waitFor(() =>

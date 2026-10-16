@@ -7,14 +7,15 @@ export function SystemPage() {
 const {
   data,
   command,
-  busy,
+  controlsDisabled,
+  downloading,
   inspect,
   download
 } = useWorkspace();
 return (
                 <SystemPanel
                   api={api}
-                  busy={busy}
+                  busy={controlsDisabled || !!downloading}
                   inspect={inspect}
                   data={data}
                   onDiagnose={() => void command("/api/diagnostics", {})}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FileText, Search, ShieldCheck } from "lucide-react";
 import type { Workspace, Incident, Api, Inspect } from "../../shared/contracts";
 import { time } from "../../shared/format";
@@ -14,25 +14,32 @@ export function RunHistory({
 }) {
   const [query, setQuery] = useState(""),
     [result, setResult] = useState<any>(null),
-    [error, setError] = useState("");
-  async function load(before = "", append = false) {
+    [error, setError] = useState(""),
+    [loading, setLoading] = useState(false);
+  const requestId = useRef(0), appliedQuery = useRef("");
+  async function load(before = "", append = false, term = query) {
+    const id = ++requestId.current;
+    setLoading(true);
     try {
       const next = await api(
         "/api/history?q=" +
-          encodeURIComponent(query) +
+          encodeURIComponent(term) +
           (before ? "&before=" + encodeURIComponent(before) : ""),
       );
+      if (id !== requestId.current) return;
+      appliedQuery.current = term;
       setResult((old: any) => ({
         ...next,
-        tasks: append ? [...old.tasks, ...next.tasks] : next.tasks,
+        tasks: append ? [...new Map([...(old?.tasks || []), ...next.tasks].map(task => [task.id, task])).values()] : next.tasks,
       }));
       setError("");
     } catch (e: any) {
-      setError(e.message);
-    }
+      if (id === requestId.current) setError(e.message);
+    } finally {if (id === requestId.current) setLoading(false);}
   }
   useEffect(() => {
     void load();
+    return () => {requestId.current++;};
   }, []);
   return (
     <div className="product-sections">
@@ -57,13 +64,15 @@ export function RunHistory({
             placeholder="Search incident ID, title or target"
             maxLength={120}
           />
-          <button className="button secondary">
+          <button className="button secondary" disabled={loading}>
             <Search size={14} />
             Search
           </button>
+          <button type="button" className="button secondary" disabled={loading || !query && !appliedQuery.current} onClick={() => {setQuery(""); void load("",false,"");}}>Clear search</button>
         </form>
-        {error && <div className="alert">{error}</div>}
-        <table>
+        {loading && <p role="status">Loading saved runs...</p>}
+        {error && <div className="alert" role="alert">{error}</div>}
+        <div className="history-table-scroll"><table>
           <thead>
             <tr>
               <th>RUN</th>
@@ -77,13 +86,11 @@ export function RunHistory({
             {result?.tasks.map((task: Incident) => (
               <tr
                 key={task.id}
-                tabIndex={0}
-                onClick={() => onChoose(task.id, task)}
-                onKeyDown={(e) => e.key === "Enter" && onChoose(task.id, task)}
               >
                 <td>
-                  <strong>{task.id}</strong>
+                  <button className="history-run" onClick={() => onChoose(task.id, task)}><strong>{task.id}</strong>
                   <small>{task.title}</small>
+                  </button>
                 </td>
                 <td>
                   {task.diagnostic
@@ -102,12 +109,13 @@ export function RunHistory({
               </tr>
             ))}
           </tbody>
-        </table>
-        {!result?.tasks.length && <p>No matching runs.</p>}
+        </table></div>
+        {!loading && result && !result.tasks.length && <p>No matching runs.</p>}
         {result?.next_cursor && (
           <button
             className="button secondary"
-            onClick={() => void load(result.next_cursor, true)}
+            disabled={loading}
+            onClick={() => void load(result.next_cursor, true, appliedQuery.current)}
           >
             Load older runs
           </button>

@@ -21,8 +21,11 @@ const {
   error,
   setError,
   connectionError,
-  setConnectionError,
   pending,
+  notice,
+  setNotice,
+  downloading,
+  unavailable,
   inspector,
   setInspector,
   locked,
@@ -116,7 +119,7 @@ return (
         <div className="sidebar-bottom">
           <div className="live-connection">
             <span className={"status-dot " + (data && !connectionError ? "resolved" : "blocked")} />
-            {connectionError ? "Connection interrupted" : data ? "FalkorDB connected" : "Connecting to FalkorDB"}
+            {locked ? "Workspace locked" : connectionError ? "Connection interrupted" : data ? "FalkorDB connected" : "Connecting to FalkorDB"}
           </div>
           <div className="local-note">
             <Box size={13} />
@@ -143,7 +146,7 @@ return (
             {busy && data?.active_task && (
               <button
                 className="button secondary"
-                disabled={pending || data.stopping}
+                disabled={pending || data.stopping || unavailable}
                 onClick={() =>
                   void command("/api/cancel", { task: data.active_task })
                 }
@@ -156,6 +159,7 @@ return (
                 className="plain-icon"
                 title="Lock workspace"
                 aria-label="Lock workspace"
+                disabled={pending}
                 onClick={() => void command("/api/logout", {})}
               >
                 <LogOut size={16} />
@@ -180,21 +184,22 @@ return (
               <RefreshCw size={16} />
             </button>
           </div>
-          {(error || connectionError) && (
+          {connectionError && <div className="alert" role="alert"><Activity size={16}/><span>{connectionError} Displayed records may be stale. Reconnect before making changes.</span><button className="button secondary" onClick={() => void refresh()}>Reconnect workspace</button></div>}
+          {error && (
             <div className="alert" role="alert">
               <Activity size={16} />
-              <span>{error || connectionError}</span>
+              <span>{error}</span>
               <button
                 aria-label="Dismiss error"
                 onClick={() => {
                   setError("");
-                  setConnectionError("");
                 }}
               >
                 <X size={15} />
               </button>
             </div>
           )}
+          {notice && <div className="product-notice workspace-notice" role="status"><span>{notice}</span><button className="plain-icon" aria-label="Dismiss notification" onClick={() => setNotice("")}><X size={15}/></button></div>}
           {showRunAlerts && selected?.last_error && (
             <div className="alert" role="alert">
               <Activity size={16} />
@@ -222,25 +227,30 @@ return (
               </div>
               <input
                 type="password"
+                aria-label="Workspace access token"
+                autoComplete="off"
+                required
+                disabled={pending}
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="Access token"
               />
-              <button className="button primary">Unlock workspace</button>
+              <button className="button primary" disabled={pending || !token.trim()}>{pending ? "Unlocking..." : "Unlock workspace"}</button>
             </form>
           )}
-          {mode === "scripted" && (
+          {!locked && mode === "scripted" && (
             <div className="baseline-notice">
               <SquareTerminal size={14} />
               Scripted baseline selected. Tools and measurements are real;
               decisions are deterministic.
             </div>
           )}
-          <WalkthroughGuide />
-          {view === "workspace" && selected && !selected.question && (
+          {!locked && <WalkthroughGuide />}
+          {!locked && view === "workspace" && selected && !selected.question && (
             <div className="report-action">
               <button
                 className="button secondary"
+                disabled={unavailable || !!downloading}
                 onClick={() =>
                   void download(
                     "/api/reports?task=" + encodeURIComponent(selected.id),
@@ -253,8 +263,9 @@ return (
               </button>
             </div>
           )}
-          <div className={"workspace-layout " + (view === "home" ? "overview-layout" : "")}>
+          {!locked && <div className={"workspace-layout " + (view === "home" ? "overview-layout" : "")}>
             <section className="workspace-main">
+{!data && view !== "home" ? <section className="panel product-panel" role="status"><h2>Waiting for the workspace</h2><p>Connect to load this module's records and controls.</p></section> : <>
 {view === "home" && <HomePage />}
 {view === "graph" && <GraphPage />}
               {view === "workspace" && <AgentPage />}
@@ -262,9 +273,10 @@ return (
               {view === "company" && <CompanyPage />}
               {view === "history" && <HistoryPage />}
               {view === "system" && <SystemPage />}
+              </>}
             </section>
-            {view !== "home" && <ContextSidebar />}
-          </div>
+            {view !== "home" && data && <ContextSidebar />}
+          </div>}
           <footer>
             <span>
               <Network size={12} />

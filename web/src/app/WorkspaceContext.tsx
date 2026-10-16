@@ -21,6 +21,7 @@ const [scenario, setScenario] = useState("config"),
     [error, setError] = useState(""),
     [connectionError, setConnectionError] = useState(""),
     [pending, setPending] = useState(false);
+const [notice, setNotice] = useState(""), [downloading, setDownloading] = useState("");
 
 const [memoryQuery, setMemoryQuery] = useState(""),
     [memoryKind, setMemoryKind] = useState("all");
@@ -35,48 +36,61 @@ const [locked, setLocked] = useState(false),
 
 const ref = useRef(taskId),
     mounted = useRef(true),
-    refreshing = useRef(false),
+    refreshing = useRef<Promise<void> | null>(null),
+    refreshAgain = useRef(false),
+    accessEpoch = useRef(0),
+    authenticating = useRef(false),
+    commandInFlight = useRef(false),
+    downloadInFlight = useRef(false),
     debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-const refresh = useCallback(async () => {
-    if (refreshing.current) return;
-    refreshing.current = true;
-    try {
-      const next = await api(
-        "/api/workspace" +
-          (ref.current ? "?task=" + encodeURIComponent(ref.current) : ""),
-      );
-      if (mounted.current) {
-        setData(next);
-        setLocked(false);
-        setConnectionError("");
-      }
-    } catch (e: any) {
-      if (mounted.current) {
-        if (e.status === 401) {
-          setLocked(true);
-          setData(null);
-          setInspector(null);
-        } else setConnectionError(e.message);
-      }
-    } finally {
-      refreshing.current = false;
-    }
+const refresh = useCallback((): Promise<void> => {
+    // Serialize reads, but remember a newer selection/refresh instead of dropping it.
+    // An access transition also invalidates responses authorized before that change.
+    if (authenticating.current) return Promise.resolve();
+    if (refreshing.current) { refreshAgain.current = true; return refreshing.current; }
+    const load = async () => {
+      do {
+        refreshAgain.current = false;
+        const requestedTask = ref.current, epoch = accessEpoch.current;
+        try {
+          const next = await api("/api/workspace" +
+            (requestedTask ? "?task=" + encodeURIComponent(requestedTask) : ""));
+          if (mounted.current && epoch === accessEpoch.current && !authenticating.current) {
+            if (requestedTask !== ref.current) { refreshAgain.current = true; continue; }
+            setData(next);
+            setLocked(false);
+            setConnectionError("");
+          }
+        } catch (e: any) {
+          if (mounted.current && epoch === accessEpoch.current && requestedTask === ref.current && !authenticating.current) {
+            if (e.status === 401) {
+              setLocked(true);
+              setData(null);
+              setInspector(null);
+            } else setConnectionError(e.message);
+          }
+        }
+      } while (refreshAgain.current && mounted.current && !authenticating.current);
+    };
+    refreshing.current = load().finally(() => {refreshing.current = null;});
+    return refreshing.current;
   }, []);
 
 useEffect(() => {
     ref.current = taskId;
     if (taskId) localStorage.setItem("graphops-task", taskId);
+    else localStorage.removeItem("graphops-task");
     void refresh();
   }, [taskId, refresh]);
 
 useEffect(() => {
     mounted.current = true;
-    void refresh();
     const interval = setInterval(() => void refresh(), 3000);
     const events = new EventSource("/api/events");
     events.onmessage = (message) => {
-      const item = JSON.parse(message.data);
+      let item;
+      try { item = JSON.parse(message.data); } catch { return; }
       if (item.stage === "model")
         setStage(`${item.role} is selecting its next step`);
       else if (item.stage === "handoff_saved")
@@ -97,8 +111,20 @@ useEffect(() => {
   }, [refresh, locked]);
 
 const command = async (path: string, body: unknown) => {
+    // The ref closes the interval before React renders the disabled button.
+    if (commandInFlight.current) return null;
+    const access = path === "/api/access" || path === "/api/logout";
+    if (!access && (!data || locked || connectionError)) {
+      setError("Reconnect to the workspace before submitting a command."); return null;
+    }
+    if (!access && data?.busy && path !== "/api/cancel") {
+      setError("Finish or stop the active job before starting another change."); return null;
+    }
+    commandInFlight.current = true;
+    if (access) {accessEpoch.current++; authenticating.current = true;}
     setPending(true);
     setError("");
+    setNotice("");
     try {
       const result = await api(path, body);
       if (result.task) {
@@ -112,21 +138,33 @@ const command = async (path: string, body: unknown) => {
       }
       if (path === "/api/access") setToken("");
       if (path === "/api/logout") {
+        ref.current = "";
+        setTaskId("");
+        setWalkthrough(null);
         setData(null);
         setInspector(null);
         setLocked(true);
-        return;
+        return result;
       }
+      if (path === "/api/company") setNotice("Company change saved.");
+      if (access) authenticating.current = false;
       await refresh();
+      return result;
     } catch (e: any) {
       setError(e.message);
+      return null;
     } finally {
+      authenticating.current = false;
+      commandInFlight.current = false;
       setPending(false);
     }
   };
 
 const busy = pending || !!data?.busy,
-    selected = data?.selected;
+    unavailable = !data || locked || !!connectionError,
+    controlsDisabled = busy || unavailable,
+    // Hide an old run's controls while the requested run is still loading.
+    selected = taskId && data?.selected?.id !== taskId ? undefined : data?.selected;
 
 useEffect(() => {
   if (!data) return;
@@ -218,6 +256,7 @@ useEffect(() => {
   }, [inspector]);
 
 const choose = (id: string, historyTask?: Incident) => {
+    ref.current = id;
     setTaskId(id);
     const task = historyTask || data?.tasks.find((t) => t.id === id);
     if (task?.target) setService(task.target);
@@ -227,7 +266,11 @@ const choose = (id: string, historyTask?: Incident) => {
   };
 
 async function download(path: string, name: string) {
+    if (downloadInFlight.current || unavailable) return;
+    downloadInFlight.current = true;
+    setDownloading(name);
     setError("");
+    setNotice("");
     try {
       const value = await api(path);
       const url = URL.createObjectURL(
@@ -238,13 +281,17 @@ async function download(path: string, name: string) {
       const link = document.createElement("a");
       link.href = url;
       link.download = name;
-      link.click();
-      URL.revokeObjectURL(url);
+      document.body.appendChild(link);
+      try {link.click();} finally {link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);}
+      setNotice("Download prepared: " + name);
     } catch (e: any) {
       setError(e.message);
+    } finally {
+      downloadInFlight.current = false;
+      setDownloading("");
     }
   }
-return { data, view, setView, taskId, setTaskId, service, setService, scenario, setScenario, mode, setMode, pauseAfterHandoff, setPauseAfterHandoff, error, setError, connectionError, setConnectionError, pending, memoryQuery, setMemoryQuery, memoryKind, setMemoryKind, inspector, setInspector, question, setQuestion, owner, setOwner, locked, token, setToken, stage, refresh, command, busy, selected, selectedHealth, company, packet, allMemory, inspect, choose, download, walkthrough, startWalkthrough, openWalkthroughStep, leaveWalkthrough: () => {setWalkthrough(null); if (memoryQuery === walkthrough?.incidentId) setMemoryQuery("");} };
+return { data, view, setView, taskId, setTaskId, service, setService, scenario, setScenario, mode, setMode, pauseAfterHandoff, setPauseAfterHandoff, error, setError, connectionError, pending, notice, setNotice, downloading, unavailable, controlsDisabled, memoryQuery, setMemoryQuery, memoryKind, setMemoryKind, inspector, setInspector, question, setQuestion, owner, setOwner, locked, token, setToken, stage, refresh, command, busy, selected, selectedHealth, company, packet, allMemory, inspect, choose, download, walkthrough, startWalkthrough, openWalkthroughStep, leaveWalkthrough: () => {setWalkthrough(null); if (memoryQuery === walkthrough?.incidentId) setMemoryQuery("");} };
 }
 type Controller = ReturnType<typeof useWorkspaceController>;
 const Context = createContext<Controller | null>(null);

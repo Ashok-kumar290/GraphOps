@@ -266,7 +266,7 @@ return (
                         <Activity size={16} />
                         <h2>Agent activity</h2>
                         <span className="count-tag">
-                          {data?.events.length || 0}
+                        {selected ? data?.events.length || 0 : 0}
                         </span>
                       </div>
                       <span className={"live-label " + (busy ? "working" : "")}>
