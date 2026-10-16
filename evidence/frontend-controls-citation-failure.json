@@ -1,0 +1,80 @@
+{
+  "success": false,
+  "workspace": "frontend-f45e488903",
+  "port": 8084,
+  "model": "qwen3:8b",
+  "provider": "ollama",
+  "real_http_sse_graph_go_mcp_model": true,
+  "browser_visual_review": false,
+  "download_delivery": "DOM anchor and JSON Blob captured; OS save dialog not tested",
+  "started_at": "2026-10-16T15:15:12.676049+00:00",
+  "exit_code": 1,
+  "tests": 10,
+  "passed": 9,
+  "failed": 1,
+  "checks": [
+    {
+      "name": "Access form rejects a bad token, unlocks the isolated app, and home links navigate",
+      "passed": true,
+      "duration_ms": 697.4332999999999
+    },
+    {
+      "name": "Company controls import, search, inspect and revise a real source, then update ownership",
+      "passed": true,
+      "duration_ms": 1409.5581
+    },
+    {
+      "name": "The rendered company question gets a real model answer and opens its cited evidence",
+      "passed": false,
+      "duration_ms": 7192.5383
+    },
+    {
+      "name": "Graph service selectors, graph nodes and relationship controls inspect real graph records",
+      "passed": true,
+      "duration_ms": 714.7595999999994
+    },
+    {
+      "name": "The five-step guide runs an LLM question, handoff, fresh resolver, recovery and memory through UI controls",
+      "passed": true,
+      "duration_ms": 21825.872000000003
+    },
+    {
+      "name": "The orders scenario completes automatically and its activity and operation inspectors work",
+      "passed": true,
+      "duration_ms": 12513.727899999998
+    },
+    {
+      "name": "Retiring a company procedure blocks the real agent; publishing and resuming completes recovery",
+      "passed": true,
+      "duration_ms": 22903.973299999998
+    },
+    {
+      "name": "Stop at checkpoint and resume controls continue the same incident",
+      "passed": true,
+      "duration_ms": 13419.396900000007
+    },
+    {
+      "name": "System refresh, live diagnostics and backup controls return verified data",
+      "passed": true,
+      "duration_ms": 1966.4904999999999
+    },
+    {
+      "name": "History searches, source-change audit inspection, run routing and workspace locking work",
+      "passed": true,
+      "duration_ms": 1293.1042000000016
+    }
+  ],
+  "containers_stopped": true,
+  "duration_seconds": 102.315,
+  "failure_detail": {
+    "check": "company answer cited evidence button",
+    "assertion": "Expected a button for the policy source; none was rendered.",
+    "cause": "The answer used the correct retrieved document ID and revision, while the parser collected only source URI strings.",
+    "model_document_id": "owned-03bd3a51ad2804a9b4d6",
+    "model_document_revision": "35e77d0babf4a9c6",
+    "pre_fix_citations": [
+      "owned:event/ownership-update"
+    ],
+    "correction": "Resolve explicit adjacent document ID/revision pairs against retrieved records; expose source and captured version without changing the model answer. Entailment remains unverified."
+  }
+}

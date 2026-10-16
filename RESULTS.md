@@ -9,6 +9,8 @@ production capacity, general agent reliability, or a promise of hosted speed.
 
 | Check | Measured result | What it exercises |
 |---|---|---|
+| [Frontend control audit](evidence/frontend-controls.json) | 79/79 DOM/component/rule checks; 83/83 backend checks; production build passed | Seven pages, navigation/guide, duplicate submits, connection/access races, source files/revisions, history pagination, memory filters/conflicts, named downloads, timeout errors and keyboard graph controls. API edge cases are controlled responses. Full [control checklist](FRONTEND_CHECKLIST.md); browser/OS file and save behavior remain pending |
+| [Live React frontend rehearsal](evidence/frontend-controls-live.json) | Final run 10/10 in 104.831 s including Docker build/start/cleanup | Actual rendered React controls with real HTTP/cookies/SSE, FalkorDB, Go, MCP and Qwen3:8b. Company source/answer flows, complete guide, both recovery operations, procedure blocking, stop/resume, diagnostics, reports/backup, history and locking. Downloads captured at Blob/anchor boundary. Earlier runs: [10/10](evidence/frontend-controls-live-initial.json), then [9/10 citation-button failure](evidence/frontend-controls-citation-failure.json), retained and addressed; no general model reliability or timing claim |
 | [Fresh committed-source Docker rehearsal](evidence/fresh-setup.json) | 51/51 product checks, including 24 actual CLI commands; 177.315 s including build/start/cleanup | Source commit `b691e56`, no copied local configuration or generated assets, unique graph/lab volumes, Qwen3:8b with explicit batch 32. Both recoveries, company sources, procedure retirement, worker/app/graph restarts, memory metadata and backup restoration passed. Docker dependency caches and the installed model were reused; host Python drove checks. Not a native first-install or browser review |
 | [Setup regression](evidence/setup-regression.json) | 78/78 backend checks in 211.237 s; 40/40 UI checks; normal app ready | Three new source/configuration isolation guards; actual graph/Go HTTP/MCP regression, simulated model protocol cases. Separate native app readiness check found three owned processes and HTTP 200 for gateway/orders/payments, with unrelated analytics HTTP 503 |
 | [Memory module regression and live diagnostic](evidence/memory-module-checks.json) | 75/75 backend checks in 207.228 s; 40/40 UI checks; build passed | Actual graph/Go HTTP/MCP regression with simulated model protocol cases; policy metadata, candidate flags, cached-packet isolation, JSON schema and batch validation. Separate live Qwen3:8b/MCP diagnostic passed in 4.343 s. Current assets served; browser review pending |
@@ -88,6 +90,15 @@ bounded request body before rejecting; 50 checks and the full suite passed
 afterward. Earlier failure reports remain locally available.
 
 ## Actual model evaluation
+
+The later frontend rehearsal caught a citation-format gap: a model used the
+correct retrieved policy document ID and revision, plus an ownership source URI.
+Only the URI became a link. The backend now resolves explicit adjacent document
+ID/revision pairs against retrieved records and preserves their exact versions in
+answer metadata. The frontend exposes those source buttons with revision labels.
+Tests reject stale, invented, prefix-matched or unpaired revisions. This is source
+reference resolution; it does not establish claim entailment. The failed repeat
+and subsequent passing rehearsal both remain recorded.
 
 Each evaluation uses real inference, fresh graph scopes, actual stdio MCP,
 actual Go HTTP, and measured action counts. A repeated-incident case performs

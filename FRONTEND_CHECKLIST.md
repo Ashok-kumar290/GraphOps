@@ -3,10 +3,16 @@
 Seven pages expose six product modules. Their controls use the same workspace as
 the connected CLI. Recovery actions operate on the synthetic Go lab.
 
-**Functional verification:** 78 DOM/component/rule checks, plus a separate ten-flow
+**Functional verification:** 79 DOM/component/rule checks, plus a separate ten-flow
 React rehearsal using real HTTP, cookies, SSE, FalkorDB, Go, MCP and Qwen3:8b.
 See [measurements and evidence](RESULTS.md). A finite rehearsal does not guarantee
 every future model answer.
+
+The rehearsals include a retained 9/10 run: an answer cited the correct document
+ID/revision, but the URI-only parser omitted its source button. Exact retrieved
+ID/revision resolution and version-specific inspector links now cover that case.
+The subsequent live run passed 10/10. See [the failure](evidence/frontend-controls-citation-failure.json)
+and [the final rehearsal](evidence/frontend-controls-live.json).
 
 **Pending:** real-browser desktop/mobile layout and pointer/keyboard review, OS
 file-picker interaction and browser download/save delivery. Browser inventory was
@@ -59,6 +65,9 @@ unavailable. DOM checks do not replace that review.
 - Give requests a 35-second timeout and readable transport/JSON errors. Mutations
   are not automatically retried: acceptance may precede a lost response.
 - Prepare named downloads once, show feedback and release their object URLs.
+- Resolve explicit document ID/revision citations to their retrieved source and
+  preserve that version in the inspector. Unmatched versions are not resolved;
+  claim entailment is still unverified.
 - Support keyboard graph controls, a scrollable history table, and wrapping
   narrow-screen forms/header controls. Visual review remains pending.
 

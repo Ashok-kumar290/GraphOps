@@ -1,0 +1,69 @@
+{
+  "success": true,
+  "workspace": "frontend-804f35d977",
+  "port": 8084,
+  "model": "qwen3:8b",
+  "provider": "ollama",
+  "real_http_sse_graph_go_mcp_model": true,
+  "browser_visual_review": false,
+  "download_delivery": "DOM anchor and JSON Blob captured; OS save dialog not tested",
+  "started_at": "2026-10-16T15:21:07.580001+00:00",
+  "exit_code": 0,
+  "tests": 10,
+  "passed": 10,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "Access form rejects a bad token, unlocks the isolated app, and home links navigate",
+      "passed": true,
+      "duration_ms": 633.4192
+    },
+    {
+      "name": "Company controls import, search, inspect and revise a real source, then update ownership",
+      "passed": true,
+      "duration_ms": 1288.2397
+    },
+    {
+      "name": "The rendered company question gets a real model answer and opens its cited evidence",
+      "passed": true,
+      "duration_ms": 5672.1837000000005
+    },
+    {
+      "name": "Graph service selectors, graph nodes and relationship controls inspect real graph records",
+      "passed": true,
+      "duration_ms": 530.6786000000011
+    },
+    {
+      "name": "The five-step guide runs an LLM question, handoff, fresh resolver, recovery and memory through UI controls",
+      "passed": true,
+      "duration_ms": 22939.310699999998
+    },
+    {
+      "name": "The orders scenario completes automatically and its activity and operation inspectors work",
+      "passed": true,
+      "duration_ms": 12652.586600000002
+    },
+    {
+      "name": "Retiring a company procedure blocks the real agent; publishing and resuming completes recovery",
+      "passed": true,
+      "duration_ms": 22003.650500000003
+    },
+    {
+      "name": "Stop at checkpoint and resume controls continue the same incident",
+      "passed": true,
+      "duration_ms": 15529.810800000007
+    },
+    {
+      "name": "System refresh, live diagnostics and backup controls return verified data",
+      "passed": true,
+      "duration_ms": 2414.5400999999983
+    },
+    {
+      "name": "History searches, source-change audit inspection, run routing and workspace locking work",
+      "passed": true,
+      "duration_ms": 1936.1203000000096
+    }
+  ],
+  "containers_stopped": true,
+  "duration_seconds": 104.831
+}

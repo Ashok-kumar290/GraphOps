@@ -40,6 +40,9 @@ is accepted by the published rules. Review the actual form once submissions open
 - [x] Guided frontend with run-specific evidence, cited company answers,
       graph inspection, a saved handoff, fresh resolver and matching incident memory.
 - [x] Backend integration and UI component checks; remote CI workflow prepared.
+- [x] Frontend control audit and actual React-to-backend model workflows;
+      [control checklist](FRONTEND_CHECKLIST.md) distinguishes verified behavior
+      from pending real-browser and OS file/save review.
 
 ## Before submitting
 

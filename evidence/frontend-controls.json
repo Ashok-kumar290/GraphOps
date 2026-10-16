@@ -1,0 +1,429 @@
+{
+  "date": "2026-10-16",
+  "scope": "React DOM/component/rule tests; HTTP and EventSource controlled for edge cases; actual live workflows recorded separately",
+  "tests": 79,
+  "passed": 79,
+  "failed": 0,
+  "success": true,
+  "checks": [
+    {
+      "name": "Navigation opens Company knowledge and focuses the page title",
+      "passed": true
+    },
+    {
+      "name": "Navigation opens Connected graph and focuses the page title",
+      "passed": true
+    },
+    {
+      "name": "Navigation opens Agent tasks and focuses the page title",
+      "passed": true
+    },
+    {
+      "name": "Navigation opens Memory navigator and focuses the page title",
+      "passed": true
+    },
+    {
+      "name": "Navigation opens System & backups and focuses the page title",
+      "passed": true
+    },
+    {
+      "name": "Navigation opens Run history and focuses the page title",
+      "passed": true
+    },
+    {
+      "name": "Home module link 1. Company knowledge opens its page",
+      "passed": true
+    },
+    {
+      "name": "Home module link 2. Connected graph opens its page",
+      "passed": true
+    },
+    {
+      "name": "Home module link 3. Agent opens its page",
+      "passed": true
+    },
+    {
+      "name": "Home module link 4. Actions opens its page",
+      "passed": true
+    },
+    {
+      "name": "Home module link 5. Shared memory opens its page",
+      "passed": true
+    },
+    {
+      "name": "Home module link 6. Workspace opens its page",
+      "passed": true
+    },
+    {
+      "name": "Ownership and both procedure controls send the selected service and acknowledge success",
+      "passed": true
+    },
+    {
+      "name": "A slow workspace refresh cannot overwrite a newly selected run",
+      "passed": true
+    },
+    {
+      "name": "Logging out rejects late snapshots and clears the persisted selection",
+      "passed": true
+    },
+    {
+      "name": "Unlock shows failures, prevents empty submission, then loads the workspace",
+      "passed": true
+    },
+    {
+      "name": "A disconnected workspace keeps mutations disabled until an actual successful refresh",
+      "passed": true
+    },
+    {
+      "name": "Duplicate command submissions share one operation while awaiting the server",
+      "passed": true
+    },
+    {
+      "name": "Download controls fetch real payloads once and prepare named JSON files",
+      "passed": true
+    },
+    {
+      "name": "Source edit uses the current revision, supports cancel, and preserves a conflicting draft",
+      "passed": true
+    },
+    {
+      "name": "Source search can inspect its captured revision and clear the results",
+      "passed": true
+    },
+    {
+      "name": "Changing a source query discards an in-flight result",
+      "passed": true
+    },
+    {
+      "name": "Invalid local source files report a visible error (0)",
+      "passed": true
+    },
+    {
+      "name": "Invalid local source files report a visible error (1)",
+      "passed": true
+    },
+    {
+      "name": "Invalid local source files report a visible error (2)",
+      "passed": true
+    },
+    {
+      "name": "File reading blocks importing partial content and fills the editor when ready",
+      "passed": true
+    },
+    {
+      "name": "History pagination uses the submitted query even when its input changes",
+      "passed": true
+    },
+    {
+      "name": "An old history response cannot replace a newer search",
+      "passed": true
+    },
+    {
+      "name": "Graph nodes and relationships support both Enter and Space without scrolling",
+      "passed": true
+    },
+    {
+      "name": "Unreadable server responses retain their HTTP status and produce a usable error",
+      "passed": true
+    },
+    {
+      "name": "A network failure after a submitted command warns against duplicate effects",
+      "passed": true
+    },
+    {
+      "name": "Scenario and execution-mode selectors change the submitted action and baseline notice",
+      "passed": true
+    },
+    {
+      "name": "Memory service tabs switch packets and conflicting claims open their evidence",
+      "passed": true
+    },
+    {
+      "name": "A busy source editor cannot submit through the form's Enter handler",
+      "passed": true
+    },
+    {
+      "name": "History clear search reloads all records and request failures remain visible",
+      "passed": true
+    },
+    {
+      "name": "System readiness refresh recovers from a visible dependency error",
+      "passed": true
+    },
+    {
+      "name": "A timed-out request releases its UI wait and never automatically retries a mutation",
+      "passed": true
+    },
+    {
+      "name": "Guide shortcuts reopen the current step and its own run after inspecting another incident",
+      "passed": true
+    },
+    {
+      "name": "A document-ID citation opens its exact revision when two retrieved versions share a source",
+      "passed": true
+    },
+    {
+      "name": "History selection retains older question metadata outside the current snapshot",
+      "passed": true
+    },
+    {
+      "name": "The starting screen explains the product and its six modules",
+      "passed": true
+    },
+    {
+      "name": "The graph module is available directly from navigation",
+      "passed": true
+    },
+    {
+      "name": "Run agent sends an automatic LLM workflow by default",
+      "passed": true
+    },
+    {
+      "name": "Pause at handoff explicitly selects investigation only",
+      "passed": true
+    },
+    {
+      "name": "Stop control targets the active job even while another incident is selected",
+      "passed": true
+    },
+    {
+      "name": "Company question carries the selected service",
+      "passed": true
+    },
+    {
+      "name": "A restored connection clears its stale error",
+      "passed": true
+    },
+    {
+      "name": "The source editor imports a synthetic policy and refreshes its parent",
+      "passed": true
+    },
+    {
+      "name": "System status distinguishes availability from a verified MCP roundtrip",
+      "passed": true
+    },
+    {
+      "name": "Knowledge graph renders only connected source nodes and actual relationships",
+      "passed": true
+    },
+    {
+      "name": "An empty incident story claims no completed work",
+      "passed": true
+    },
+    {
+      "name": "A measured run with distinct sessions and matching memory completes the story",
+      "passed": true
+    },
+    {
+      "name": "Other runs and reused sessions cannot supply fresh-session evidence",
+      "passed": true
+    },
+    {
+      "name": "Older, unverified and unsourced memory cannot complete the memory step",
+      "passed": true
+    },
+    {
+      "name": "A saved memory event documents writes even after records leave the bounded packet",
+      "passed": true
+    },
+    {
+      "name": "Unclosed tickets, interrupted jobs and failed measurements remain incomplete",
+      "passed": true
+    },
+    {
+      "name": "A rejected procedure explains its blocker without claiming recovery",
+      "passed": true
+    },
+    {
+      "name": "Tool errors and stopped runs display their actual message",
+      "passed": true
+    },
+    {
+      "name": "Readable activity preserves measurements and memory-save events",
+      "passed": true
+    },
+    {
+      "name": "Historical runs cannot complete a newly started walkthrough",
+      "passed": true
+    },
+    {
+      "name": "A dependency path requires actual directed service relationships",
+      "passed": true
+    },
+    {
+      "name": "Company completion requires this question's cited LLM answer",
+      "passed": true
+    },
+    {
+      "name": "Recovery requires separate sessions, measured health, ticket completion and an idle job",
+      "passed": true
+    },
+    {
+      "name": "Only this incident's three memory kinds complete the memory step",
+      "passed": true
+    },
+    {
+      "name": "Evidence from a different workspace cannot complete the guide",
+      "passed": true
+    },
+    {
+      "name": "The memory view explains actual packet limits and opens the packet without an action",
+      "passed": true
+    },
+    {
+      "name": "The homepage uses actual graph edges and does not invent a missing checkout path",
+      "passed": true
+    },
+    {
+      "name": "The incident story explains recorded recovery and opens only that run's memory",
+      "passed": true
+    },
+    {
+      "name": "The incident story explains an interrupted ticket without declaring completion",
+      "passed": true
+    },
+    {
+      "name": "Starting a walkthrough prepares a question without submitting an action",
+      "passed": true
+    },
+    {
+      "name": "The guided flow follows its own question, handoff, fresh resolver and memory",
+      "passed": true
+    },
+    {
+      "name": "Company answers do not display a selected incident's resolver summary",
+      "passed": true
+    },
+    {
+      "name": "A cited source opens the captured revision instead of a newer document",
+      "passed": true
+    },
+    {
+      "name": "Leaving the guide does not cancel a running server job",
+      "passed": true
+    },
+    {
+      "name": "An unfinished checkout fault links to its incident instead of starting another walkthrough",
+      "passed": true
+    },
+    {
+      "name": "Closing an inspector prevents a delayed source read from reopening it",
+      "passed": true
+    },
+    {
+      "name": "A memory filter with no matches shows an explanation and can be cleared",
+      "passed": true
+    },
+    {
+      "name": "An interruption after measured recovery still offers resume to finish the ticket",
+      "passed": true
+    },
+    {
+      "name": "A new guide hides a previously selected company answer until its own question runs",
+      "passed": true
+    }
+  ],
+  "backend": {
+    "tests": 83,
+    "passed": 83,
+    "failures": [],
+    "duration_seconds": 224.219,
+    "actual_falkordb_go_http_mcp": true,
+    "model_inference": false,
+    "scope": "Local event implementation; protocol simulation is not model inference"
+  },
+  "native_served_assets": {
+    "ready": true,
+    "worker": "connected",
+    "workspace": "team-demo",
+    "owned_processes": 3,
+    "html_status": 200,
+    "assets": [
+      {
+        "path": "/assets/index-DCZQhfES.js",
+        "http_status": 200,
+        "bytes": 311664,
+        "matches_current_build": true,
+        "sha256": "d1f493b395e2139d207a5fb6c1bf98d6e8aebee284dd21aeb88ab181265aa751"
+      },
+      {
+        "path": "/assets/index-DRAr89oT.css",
+        "http_status": 200,
+        "bytes": 39612,
+        "matches_current_build": true,
+        "sha256": "b38f85ad3a719e1667f0959406601e2b0d7551704c20e3b2b6ab95ddc6f30648"
+      }
+    ],
+    "browser_visual_review": false
+  },
+  "build": {
+    "typescript_including_live_driver": true,
+    "vite_production": true
+  },
+  "retained_development_results": [
+    {
+      "local_report": "frontend-audit-initial.json",
+      "tests": 40,
+      "passed": 37,
+      "failed": 3,
+      "failed_assertions": [
+        "The graph module is available directly from navigation",
+        "Run agent sends an automatic LLM workflow by default",
+        "A restored connection clears its stale error"
+      ]
+    },
+    {
+      "local_report": "frontend-audit-expanded.json",
+      "tests": 71,
+      "passed": 70,
+      "failed": 1,
+      "failed_assertions": [
+        "Navigation opens Run history and focuses the page title"
+      ]
+    }
+  ],
+  "browser_visual_review": false,
+  "os_file_picker_and_save_delivery": false,
+  "development_corrections": "Initial readiness/refresh assertions and duplicate heading selector were corrected; a redundant initial refresh was removed. These controlled DOM failures did not invoke a live model.",
+  "source_commit": "a483dbe4aec20b15547523995a2796843d1dab56",
+  "native_worker_refresh": {
+    "success": true,
+    "workspace": "team-demo",
+    "previous_worker_pid": 22400,
+    "new_worker_pid": 10828,
+    "api_ready": true,
+    "service_health": {
+      "gateway": 200,
+      "orders": 200,
+      "payments": 200,
+      "analytics": 503
+    },
+    "user_job_interrupted": false
+  },
+  "live_rehearsals": [
+    {
+      "evidence": "frontend-controls-live-initial.json",
+      "success": true,
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "duration_seconds": 123.466
+    },
+    {
+      "evidence": "frontend-controls-citation-failure.json",
+      "success": false,
+      "tests": 10,
+      "passed": 9,
+      "failed": 1,
+      "duration_seconds": 102.315
+    },
+    {
+      "evidence": "frontend-controls-live.json",
+      "success": true,
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "duration_seconds": 104.831
+    }
+  ]
+}

@@ -48,3 +48,7 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [Fresh committed-source Docker rehearsal: 51 product checks and 24 CLI commands](fresh-setup.json)
 - [Retained first fresh-source rehearsal failure: Windows output encoding](fresh-setup-first-failure.json)
 - [Setup regression: 78 backend checks, 40 UI checks and native app readiness](setup-regression.json)
+- [Frontend controls: DOM/logic regression, backend checks and current served build](frontend-controls.json)
+- [Initial live React frontend rehearsal: 10/10 workflows](frontend-controls-live-initial.json)
+- [Retained frontend repeat: 9/10, missing document-citation button](frontend-controls-citation-failure.json)
+- [Final live frontend rehearsal after exact document/revision citation resolution](frontend-controls-live.json)

@@ -112,3 +112,10 @@ states. A separate React integration driver operates the UI with real HTTP,
 cookies, SSE, FalkorDB, Go, MCP and local Qwen inference in an isolated Docker
 workspace. It captures JSON download delivery at the Blob/anchor boundary.
 Actual browser layout, OS file picking and save-dialog behavior remain unverified.
+
+A live frontend repeat exposed a document-reference gap: the model named a
+retrieved document ID/revision, while only raw source URIs became citation buttons.
+Codex added exact ID/revision resolution against retrieved records, captured
+revision metadata and matching inspector links, with negative and actual MCP
+regression checks. The 9/10 failure is retained alongside successful rehearsals.
+Source reference resolution does not verify claim entailment.
