@@ -10,7 +10,7 @@ import { KnowledgeGraph } from "./features/graph/KnowledgeGraph";
 import { ServiceGraph } from "./features/graph/ServiceGraph";
 import { api } from "./shared/api";
 import type { Doc, Workspace } from "./shared/contracts";
-import { incidentFixture, questionEventsFixture, questionFixture, workspaceFixture } from "./features/walkthrough/fixtures";
+import { eventFixture, incidentFixture, questionEventsFixture, questionFixture, workspaceFixture } from "./features/walkthrough/fixtures";
 
 const response = (value: unknown, status = 200) => new Response(JSON.stringify(value), {status, headers:{"Content-Type":"application/json"}});
 function deferred<T>() {let resolve!: (value:T) => void; const promise = new Promise<T>(done => {resolve=done;}); return {promise,resolve};}
@@ -271,4 +271,14 @@ test("Guide shortcuts reopen the current step and its own run after inspecting a
   fireEvent.click(screen.getByRole("button",{name:"Open current step"}));expect(screen.getByLabelText("Company question")).toBeTruthy();
   fireEvent.click(screen.getByRole("button",{name:/INC-OTHER/}));const reopen=await screen.findByRole("button",{name:"Open this run"});fireEvent.click(reopen);
   await screen.findByLabelText("Saved company answer");expect(screen.getByRole("heading",{level:1}).textContent).toBe("Company knowledge");
+});
+
+test("A document-ID citation opens its exact revision when two retrieved versions share a source",async()=>{
+  const data=workspaceFixture();data.tasks=[questionFixture];data.selected=questionFixture;
+  const older={...source,revision:"rev-1",text:"Old policy: 48 hours."},newer={...source,revision:"rev-2",text:"New policy: 96 hours."};
+  data.events=[eventFixture("tool","company","q",{tool:"company_context",result:{documents:[newer,older]}}),
+    eventFixture("session_finished","company","q",{mode:"llm",summary:"Document owned-example revision rev-1.",citations:[source.source],document_citations:[{id:source.id,revision:"rev-1",source:source.source}]})];
+  network(data);render(<App/>);await loaded();fireEvent.click(screen.getByRole("button",{name:"Company knowledge"}));
+  fireEvent.click(screen.getByRole("button",{name:source.source+" · rev rev-1"}));
+  const dialog=screen.getByRole("dialog");expect(dialog.textContent).toContain("Old policy: 48 hours.");expect(dialog.textContent).not.toContain("New policy: 96 hours.");
 });

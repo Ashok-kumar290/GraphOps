@@ -2,7 +2,6 @@
 import asyncio
 import json
 import os
-import re
 import sys
 import time
 from mcp import ClientSession, StdioServerParameters
@@ -11,6 +10,7 @@ from jsonschema import validate, ValidationError
 from graphops import settings
 from graphops.models.router import get_model, EmptyModelResponse, configuration
 from graphops.core.identity import uid
+from graphops.company.citations import collect_documents, resolve_citations
 
 
 class StopRequested(RuntimeError):pass
@@ -36,6 +36,7 @@ class Agent:
             env={**os.environ, "PYTHONPATH": str(settings.ROOT)}, cwd=str(settings.ROOT))
         calls, requests = 0, 0
         sources=set()
+        documents={}
         def collect_sources(value):
             if isinstance(value,dict):
                 if isinstance(value.get('source'),str):sources.add(value['source'])
@@ -63,6 +64,7 @@ class Agent:
                     data = result.structuredContent
                     if data is None: data = json.loads(next(c.text for c in result.content if hasattr(c, "text")))
                     collect_sources(data)
+                    collect_documents(data, documents)
                     # The MCP server persists the full result; browser refreshes from the graph.
                     self.emit({"type": "progress", "task": task_id, "tool": name, "evidence_id": data.get("evidence_id")})
                     return data
@@ -132,7 +134,7 @@ class Agent:
                             if role == "resolver" and current["status"] in {"handoff", "executing"}:
                                 contents.append({"role": "user", "parts": [{"text": "You are the resolver. The investigation and handoff are already saved. No measured recovery is saved yet. Call prepare_recovery(), then execute_recovery with its exact plan_id when ready. A terminal validation rejection records a blocker. Text alone does not complete resolution."}]})
                                 continue
-                            references={match.rstrip('.,:;') for match in re.findall(r'(?:fixture:event/|owned:)[a-zA-Z0-9_./:-]+',text)}
+                            references, document_citations = resolve_citations(text, sources, documents)
                             if role=='company':
                                 unsupported=references-sources
                                 uncertain=any(phrase in text.lower() for phrase in ('not found','no source','cannot determine','not provided','not enough','cannot answer',"don't know",'not available'))
@@ -140,7 +142,7 @@ class Agent:
                                     contents.append({'role':'user','parts':[{'text':'Cite exact source locations from retrieved evidence, or clearly state that the answer is not available. Unknown citations: '+str(sorted(unsupported))+'. Retrieved source locations: '+str(sorted(sources))}]})
                                     continue
                             result = {"summary": text, "summary_origin": "model"}
-                            if role=='company':result.update(citations=sorted(references),citation_check='known_source_locations' if references else 'no_supported_answer',claim_entailment_verified=False)
+                            if role=='company':result.update(citations=sorted(references),document_citations=document_citations,citation_check='known_source_locations' if references else 'no_supported_answer',claim_entailment_verified=False)
                             break
                         replies = []
                         for invocation in invocations:

@@ -117,6 +117,29 @@ class ProductIntegration(unittest.TestCase):
         self.assertTrue(worker.last_diagnostics['success']);self.assertTrue(worker.last_diagnostics['mcp']['success'])
         self.assertEqual(self.store.runs.get(task)['status'],'checked')
 
+    def test_company_document_id_revision_is_a_resolvable_citation(self):
+        doc=self.source()
+        class Model:
+            def generate(self,*args):
+                return {'role':'model','parts':[{'text':f"Review is 72 hours. Document `{doc['id']}` with revision `{doc['revision']}`."}]}
+        with patch('graphops.agents.runner.get_model',return_value=Model()):
+            result=asyncio.run(Agent(self.store,self.port).run(self.task,'company',mode='llm'))
+        self.assertEqual(result['model_requests'],1);self.assertEqual(result['citations'],[doc['source']])
+        self.assertEqual(result['document_citations'][0]['revision'],doc['revision'])
+        self.assertFalse(result['claim_entailment_verified']);self.assertEqual(self.lab.state()['action_count'],0)
+
+    def test_company_wrong_document_revision_still_requires_correction(self):
+        doc=self.source()
+        class Model:
+            calls=0
+            def generate(self,*args):
+                self.calls+=1
+                revision='nonexistent-revision' if self.calls==1 else doc['revision']
+                return {'role':'model','parts':[{'text':f"Document `{doc['id']}` with revision `{revision}` says 72 hours."}]}
+        with patch('graphops.agents.runner.get_model',return_value=Model()):
+            result=asyncio.run(Agent(self.store,self.port).run(self.task,'company',mode='llm'))
+        self.assertEqual(result['model_requests'],2);self.assertEqual(result['document_citations'][0]['revision'],doc['revision'])
+
     def test_backup_restore_preserves_company_and_recovery(self):
         self.source();self.recover('config')
         backup=export_workspace(self.store,self.lab)

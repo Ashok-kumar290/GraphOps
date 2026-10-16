@@ -9,9 +9,12 @@ export function CompanyQuestion() {
   const events = isQuestion ? data?.events || [] : [];
   const answer = [...events].reverse().find(e => e.kind === "session_finished" && e.role === "company");
   const citations: string[] = Array.isArray(answer?.data.citations) ? answer.data.citations : [];
-  const sourceEvidence = (source: string) => {
+  const documentCitations: {id:string;revision:string;source:string}[] = Array.isArray(answer?.data.document_citations) ? answer.data.document_citations : [];
+  const links = [...documentCitations.map(doc => ({source:doc.source, revision:doc.revision, id:doc.id})),
+    ...citations.filter(source => !documentCitations.some(doc => doc.source === source)).map(source => ({source, revision:"", id:""}))];
+  const sourceEvidence = (source: string, revision = "", id = "") => {
     const retrieved = [...events].reverse().filter(e => e.kind === "tool").map(e => e.data.result || {});
-    const doc = retrieved.flatMap(result => Array.isArray(result.documents) ? result.documents : result.id ? [result] : []).find((d: Doc) => d.source === source);
+    const doc = retrieved.flatMap(result => Array.isArray(result.documents) ? result.documents : result.id ? [result] : []).find((d: Doc) => d.source === source && (!revision || d.revision === revision) && (!id || d.id === id));
     // Use the revision captured by the question, even if the company source has since changed.
     if (doc) return {...doc, text_truncated: doc.text_truncated || !!doc.offset || doc.next_offset != null};
     return {source, owners: retrieved.flatMap(result => Array.isArray(result.owners) ? result.owners : []).filter(owner => owner.source === source), answer: answer?.data};
@@ -31,9 +34,9 @@ export function CompanyQuestion() {
     {answer ? <div className="company-answer" aria-label="Saved company answer">
       <div className="company-answer-meta"><strong>Saved answer</strong><span>{selected!.id}</span><span>{answer.data.mode === "llm" ? "Model answer" : "Scripted context"}</span></div>
       <p className="company-answer-text">{answer.data.summary}</p>
-      {!!citations.length && <div className="company-answer-sources"><h3>Cited source locations</h3>{citations.map(source => <button key={source} onClick={() => {
-        inspect("Source retrieved for saved answer", sourceEvidence(source));
-      }}>{source}</button>)}<small>These locations were checked against retrieved sources. Read the source text to check the answer.</small></div>}
+      {!!links.length && <div className="company-answer-sources"><h3>Cited source locations</h3>{links.map(link => <button key={link.source+":"+link.revision} onClick={() => {
+        inspect("Source retrieved for saved answer", sourceEvidence(link.source,link.revision,link.id));
+      }}>{link.source}{link.revision ? " · rev " + link.revision : ""}</button>)}<small>Source locations and explicit document ID/revision pairs were matched to retrieved records. Read the source text to check the answer.</small></div>}
       <button className="answer-evidence" onClick={() => inspect("Saved company answer evidence", answer)}>Inspect answer and session evidence</button>
     </div> : !working && <p className="quiet-note">Ask a question to get a saved answer from this service’s company context. Incident summaries appear in Agent tasks.</p>}
   </section>;
