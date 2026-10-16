@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import os
+import secrets
 from pathlib import Path, PurePosixPath
 import socket
 import subprocess
@@ -58,6 +59,8 @@ def inspect_archive(archive):
 
 
 def main():
+    # Docker/Vite emit Unicode even when Windows pipes default to a legacy code page.
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ref', default='HEAD', help='Committed Git revision to rehearse')
     parser.add_argument('--port', type=int, default=8083)
@@ -91,20 +94,29 @@ def main():
         print('Fresh committed source: '+revision, flush=True)
         print('Isolated Compose project: '+report['project'], flush=True)
         with (folder/'acceptance.log').open('w', encoding='utf-8') as log:
-            process = subprocess.Popen([sys.executable, '-m', 'tests.check_product', '--port', str(args.port),
+            with subprocess.Popen([sys.executable, '-m', 'tests.check_product', '--port', str(args.port),
                                         '--project', report['project']], cwd=checkout, env=env,
                                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                       text=True, encoding='utf-8', errors='replace')
-            for line in process.stdout:
-                log.write(line); log.flush()
-                print(line, end='', flush=True)
-            report['acceptance_exit_code'] = process.wait()
+                                       text=True, encoding='utf-8', errors='replace') as process:
+                for line in process.stdout:
+                    log.write(line); log.flush()
+                    print(line, end='', flush=True)
+                report['acceptance_exit_code'] = process.wait()
         product = checkout/'.runtime'/'reports'/'product.json'
         if product.exists(): report['acceptance'] = json.loads(product.read_text(encoding='utf-8'))
         report['success'] = report['acceptance_exit_code']==0 and report.get('acceptance',{}).get('success',False)
     except Exception as exc:
         report['error'] = type(exc).__name__
     finally:
+        # Also stop this exact project if the host driver fails before its own cleanup.
+        if (checkout/'compose.yaml').exists():
+            cleanup_env=clean_environment(os.environ,args.model,args.batch)
+            cleanup_env['GRAPHOPS_ACCESS_TOKEN']=secrets.token_urlsafe(32)
+            try:
+                stopped=subprocess.run(['docker','compose','-p',report['project'],'-f',str(checkout/'compose.yaml'),'stop'],
+                                       cwd=checkout,env=cleanup_env,capture_output=True,timeout=60)
+                report['containers_stopped']=stopped.returncode==0
+            except (OSError,subprocess.TimeoutExpired):report['containers_stopped']=False
         report['duration_seconds'] = round(time.perf_counter()-started,3)
         (folder/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
         print(json.dumps({'fresh_setup_success':report['success'],'report':str(folder/'report.json')}),flush=True)
