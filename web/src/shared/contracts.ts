@@ -61,6 +61,8 @@ export type Incident = {
   ticket_closed?: boolean;
   question?: boolean;
   diagnostic?: boolean;
+  verification?: boolean | {passed: number; runs: number; model?: {provider: string; model: string}; report?: string};
+  suite?: string;
   outcome?: {
     success: boolean;
     action: string;
@@ -111,4 +113,4 @@ export type Workspace = {
 
 export type Api = (path: string, body?: unknown) => Promise<any>;
 export type Inspect = (title: string, value: unknown) => void;
-export type View = "home" | "workspace" | "graph" | "memory" | "company" | "history" | "system" | "results";
+export type View = "home" | "workspace" | "graph" | "memory" | "company" | "history" | "system" | "results" | "verify";

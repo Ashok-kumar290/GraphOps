@@ -47,10 +47,15 @@ async def main(argv=None):
         if args.provider:os.environ['GRAPHOPS_EVENT_PROVIDER']=args.provider
         if args.model:os.environ['GRAPHOPS_EVENT_MODEL']=args.model
         if not 1<=args.repeats<=10:raise ValueError('Use --repeats from 1 to 10')
-        from graphops.workspace.certify import certify,CASES,HARD_CASES
-        cases=args.cases or {'standard':list(CASES),'hard':list(HARD_CASES),'all':list(CASES)+list(HARD_CASES)}[args.suite]
+        from graphops.workspace.certify import certify,CASES,HARD_CASES,QUICK
+        cases=args.cases or {'standard':list(CASES),'hard':list(HARD_CASES),'all':list(CASES)+list(HARD_CASES),'quick':QUICK}[args.suite]
         label=args.label or ''.join(c if c.isalnum() else '-' for c in configuration()['model'])+('' if args.suite=='standard' or args.cases else '-'+args.suite)
-        report=await certify(cases,args.repeats,label,out=lambda line:print(line,flush=True))
+        if getattr(args,'json',False):
+            # JSON Lines for the app's judge check: one event per case, then a summary.
+            emit=lambda event:print(json.dumps(event),flush=True)
+            report=await certify(cases,args.repeats,label,out=lambda line:None,progress=emit)
+            emit({'type':'certify_complete','passed':report['passed'],'runs':report['runs'],'model':report['model'],'report':'certify-'+label+'.json'})
+        else:report=await certify(cases,args.repeats,label,out=lambda line:print(line,flush=True))
         if report['passed']!=report['runs']:raise SystemExit(1)
         return
     if args.command=='restore':

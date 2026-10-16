@@ -12,6 +12,7 @@ import { CompanyPage } from "../features/company/CompanyPage";
 import { HistoryPage } from "../features/runs/HistoryPage";
 import { SystemPage } from "../features/system/SystemPage";
 import { ResultsPage } from "../features/results/ResultsPage";
+import { VerifyPage } from "../features/verify/VerifyPage";
 import { WalkthroughGuide } from "../features/walkthrough/WalkthroughGuide";
 function WorkspaceShell() {
 const {
@@ -42,7 +43,7 @@ const {
   download
 } = useWorkspace();
 const showRunAlerts = (view === "workspace" && !selected?.question) ||
-  (view === "company" && selected?.question && !selected.diagnostic && selected.target === service) ||
+  (view === "company" && selected?.question && !selected.diagnostic && !selected.verification && selected.target === service) ||
   (view === "system" && selected?.diagnostic);
 useEffect(() => { document.getElementById("page-title")?.focus(); }, [view]);
 return (
@@ -73,6 +74,7 @@ return (
 { id: "graph", label: "Connected graph", icon: Network },
               { id: "history", label: "Run history", icon: Clock3 },
               { id: "system", label: "System & backups", icon: Settings2 },
+              { id: "verify", label: "Judge check", icon: ShieldCheck },
               { id: "results", label: "Results", icon: BarChart3 },
             ] as const
           ).map((item) => (
@@ -265,7 +267,7 @@ return (
               </button>
             </div>
           )}
-          {!locked && <div className={"workspace-layout " + (view === "home" || view === "results" ? "overview-layout" : "")}>
+          {!locked && <div className={"workspace-layout " + (view === "home" || view === "results" || view === "verify" ? "overview-layout" : "")}>
             <section className="workspace-main">
 {!data && view !== "home" && view !== "results" ? <section className="panel product-panel" role="status"><h2>Waiting for the workspace</h2><p>Connect to load this module's records and controls.</p></section> : <>
 {view === "home" && <HomePage />}
@@ -276,9 +278,10 @@ return (
               {view === "history" && <HistoryPage />}
               {view === "system" && <SystemPage />}
               {view === "results" && <ResultsPage />}
+              {view === "verify" && <VerifyPage />}
               </>}
             </section>
-            {view !== "home" && view !== "results" && data && <ContextSidebar />}
+            {view !== "home" && view !== "results" && view !== "verify" && data && <ContextSidebar />}
           </div>}
           <footer>
             <span>

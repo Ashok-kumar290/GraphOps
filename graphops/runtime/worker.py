@@ -64,24 +64,70 @@ class Worker:
     def incident_report(self, task_id):
         return self.queries.incident_report(task_id)
 
+    async def component_checks(self, task_id, agent):
+        """Verify a fresh MCP session, the graph and actual model inference; record the result on the task."""
+        checks={'checked_at':now(),'task':task_id}
+        result=await agent.run(task_id,'company','Check read-only MCP tools',mode='scripted')
+        checks['mcp']={'success':result['tool_calls']>=2,'session':result['session']}
+        self.emit({'type':'progress','task':task_id,'stage':'model','role':'system check'})
+        try:
+            model=preflight()
+            response=await asyncio.to_thread(model.generate,'Reply with READY only.',[{'role':'user','parts':[{'text':'Check that inference is working. Reply READY.'}]}],[])
+            checks['model']={'success':any(p.get('text','').strip() for p in response['parts']),'provider':configuration()['provider'],'model':configuration()['model']}
+        except Exception as exc:checks['model']={'success':False,'error':str(exc)[:500] if isinstance(exc,(RuntimeError,ValueError)) else type(exc).__name__}
+        checks['success']=checks['mcp']['success'] and bool(checks['model']['success'])
+        self.last_diagnostics=checks;self.queries.invalidate()
+        self.store.runs.append_event(task_id,uid(),'system','component_check',checks)
+        return checks
+
+    async def verify(self, task_id, agent, suite):
+        """Judge check: component checks, then live certification cases in a separate process.
+
+        Certification starts its own isolated graphs and service fixtures; running it out of process keeps
+        this worker's lab credentials and demo workspace untouched."""
+        checks=await self.component_checks(task_id,agent)
+        if not checks['success']:
+            self.store.runs.update(task_id,{'status':'blocked','blocker':'Component checks failed; live cases were not started.'});return
+        session=uid()
+        (settings.DATA/'reports').mkdir(parents=True,exist_ok=True)
+        log_path=settings.DATA/'reports'/('judge-'+task_id.lower()+'.log')
+        log=log_path.open('wb')  # stderr goes to a file so an unread pipe can never stall the check
+        process=await asyncio.create_subprocess_exec(sys.executable,'-m','graphops.cli','certify','--suite',suite,'--label','judge-'+task_id.lower(),'--json',
+            cwd=str(settings.ROOT),env={**os.environ,'PYTHONPATH':str(settings.ROOT)},stdout=asyncio.subprocess.PIPE,stderr=log)
+        summary=None
+        try:
+            while True:
+                if self.stop_requested.is_set():raise StopRequested('Judge check stopped. Run it again to start over.')
+                try:line=await asyncio.wait_for(process.stdout.readline(),timeout=1)
+                except asyncio.TimeoutError:continue
+                if not line:break
+                try:event=json.loads(line)
+                except ValueError:continue
+                if event.get('type') in {'case_started','case_finished'}:
+                    self.store.runs.append_event(task_id,session,'system','verification_case',event)
+                    self.emit({'type':'progress','task':task_id,'stage':event['type'],'role':'judge check'})
+                elif event.get('type')=='certify_complete':summary=event
+            await process.wait()
+        finally:
+            if process.returncode is None:
+                process.kill();await process.wait()
+            log.close()
+        if summary is None:
+            error=log_path.read_text(encoding='utf-8',errors='replace').strip()[-400:]
+            raise RuntimeError('Judge check did not finish: '+(error or 'no result'))
+        passed=summary['passed']==summary['runs']
+        self.store.runs.update(task_id,{'status':'checked' if passed else 'blocked','verification':summary,
+            'blocker':None if passed else f"{summary['runs']-summary['passed']} of {summary['runs']} cases did not pass."})
+
     async def execute(self, task_id, command, question=""):
         task = self.store.runs.get(task_id); mode = task["mode"]
         try:
             agent = Agent(self.store, self.port, self.emit,should_stop=self.stop_requested.is_set)
             if command=='diagnose':
-                checks={'checked_at':now(),'task':task_id}
-                result=await agent.run(task_id,'company','Check read-only MCP tools',mode='scripted')
-                checks['mcp']={'success':result['tool_calls']>=2,'session':result['session']}
-                self.emit({'type':'progress','task':task_id,'stage':'model','role':'system check'})
-                try:
-                    model=preflight()
-                    response=await asyncio.to_thread(model.generate,'Reply with READY only.',[{'role':'user','parts':[{'text':'Check that inference is working. Reply READY.'}]}],[])
-                    checks['model']={'success':any(p.get('text','').strip() for p in response['parts']),'provider':configuration()['provider'],'model':configuration()['model']}
-                except Exception as exc:checks['model']={'success':False,'error':str(exc)[:500] if isinstance(exc,(RuntimeError,ValueError)) else type(exc).__name__}
-                checks['success']=checks['mcp']['success'] and bool(checks['model']['success'])
-                self.last_diagnostics=checks;self.queries.invalidate()
-                self.store.runs.append_event(task_id,uid(),'system','component_check',checks)
+                checks=await self.component_checks(task_id,agent)
                 self.store.runs.update(task_id,{'status':'checked' if checks['success'] else 'blocked'})
+            elif command=='verify':
+                await self.verify(task_id,agent,task.get('suite','quick'))
             elif command == "question":
                 await agent.run(task_id, "company", question, mode)
                 self.store.runs.update(task_id,{'status':'answered'})
@@ -166,6 +212,12 @@ class Worker:
         elif command=='diagnose':
             task=self.store.runs.create('diagnostics','System component checks','llm')
             self.store.runs.update(task['id'],{'question':True,'diagnostic':True,'target':'payments'})
+        elif command=='verify':
+            suite=body.get('suite','quick')
+            if suite not in {'quick','all'}:raise ValueError('Choose the quick or full judge check')
+            preflight()
+            task=self.store.runs.create('verification','Judge check · '+('quick, 4 cases' if suite=='quick' else 'full, 12 cases'),'llm')
+            self.store.runs.update(task['id'],{'question':True,'verification':True,'suite':suite,'target':'payments'})
         elif command == "question":
             question = body.get("question", "")
             if not isinstance(question,str) or not 1 <= len(question.strip()) <= 1000: raise ValueError("Enter a question of 1–1000 characters")

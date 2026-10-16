@@ -72,7 +72,7 @@ def build_parser():
     sub=command('certify','Run every graph-governed case against a model in isolated workspaces and score measured effects')
     sub.add_argument('--provider',choices=['ollama','groq','openrouter','gemini','compatible'],help='Override the configured provider for this run')
     sub.add_argument('--model',help='Override the configured model ID for this run')
-    sub.add_argument('--suite',choices=['standard','hard','all'],default='standard',help='standard: core cases; hard: adversarial cases')
+    sub.add_argument('--suite',choices=['quick','standard','hard','all'],default='standard',help='quick: four representative cases; standard: core cases; hard: adversarial cases')
     sub.add_argument('--cases',nargs='+',choices=['config','worker','changed_runbook','removed_edge','repeated','company',
                      'prompt_injection','memory_poisoning','unknown_fault','double_fault','self_healed','concurrent_resolvers'],
                      help='Run only these cases instead of a suite')

@@ -6,7 +6,7 @@ import { WALKTHROUGH_STEPS, type Walkthrough, type WalkthroughStep } from "../fe
 type Evidence = { title: string; value: unknown };
 
 // Each page has a URL fragment so refresh, Back and shared links keep the page.
-const VIEW_HASH: Record<View, string> = {home: "", workspace: "agent", graph: "graph", memory: "memory", company: "company", history: "history", system: "system", results: "results"};
+const VIEW_HASH: Record<View, string> = {home: "", workspace: "agent", graph: "graph", memory: "memory", company: "company", history: "history", system: "system", results: "results", verify: "verify"};
 const viewFromHash = (): View =>
   (Object.keys(VIEW_HASH) as View[]).find(v => VIEW_HASH[v] && VIEW_HASH[v] === location.hash.slice(1)) || "home";
 
@@ -275,7 +275,7 @@ const choose = (id: string, historyTask?: Incident) => {
     const task = historyTask || data?.tasks.find((t) => t.id === id);
     if (task?.target) setService(task.target);
     setView(
-      task?.diagnostic ? "system" : task?.question ? "company" : "workspace",
+      task?.verification ? "verify" : task?.diagnostic ? "system" : task?.question ? "company" : "workspace",
     );
   };
 

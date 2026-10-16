@@ -9,4 +9,5 @@ export const PAGE_META: Record<View, {title: string; description: string}> = {
   history: {title: "Run history", description: "Review saved tasks, evidence and workspace changes."},
   system: {title: "System & backups", description: "Check the running components and preserve your workspace."},
   results: {title: "Results", description: "Measured results across models and hard problems."},
+  verify: {title: "Judge check", description: "Run live checks yourself and watch each one pass or fail."},
 };

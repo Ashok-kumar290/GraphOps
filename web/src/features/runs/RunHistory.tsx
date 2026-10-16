@@ -93,7 +93,9 @@ export function RunHistory({
                   </button>
                 </td>
                 <td>
-                  {task.diagnostic
+                  {task.verification
+                    ? "Judge check"
+                    : task.diagnostic
                     ? "System check"
                     : task.mode === "llm"
                       ? "LLM agent"
