@@ -97,9 +97,9 @@ The team must add each member's actual contributions and complete its own code
 review and technical walkthrough. Automated checks and this draft do not attest
 participant understanding.
 
-## Links to supply
+## Submission links
 
-- Public source repository: not supplied.
+- Public source repository: https://github.com/Ashok-kumar290/GraphOps
 - Working demo video: not recorded/uploaded.
 - Live app: not provisioned; complete local setup is in README.md.
 - Team members and actual contributions: not supplied.
