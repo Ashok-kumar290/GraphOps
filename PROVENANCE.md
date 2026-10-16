@@ -86,3 +86,12 @@ module details into an expandable section, added an incident-scoped progress
 summary and made activity descriptions readable. Tool errors now display their
 recorded message. DOM/pure-rule checks and live API/agent checks cover those
 changes; browser layout review and participant understanding remain unverified.
+
+Codex then added a reproducible fresh-context memory comparison and a packet
+inspection panel showing the backend's actual limits and candidate flags. The
+comparison retains two complete sets of raw model answers and failed overall
+gates. It prompted explicit procedural eligibility metadata and exposed a
+continuing gap between retrieved facts and model interpretation. The local
+Ollama adapter now uses a configurable prefill batch of 64 for GPU-memory
+headroom and accepts an explicit JSON schema for read-only comparisons. Current
+action checks remain enforced independently of model replies.

@@ -2126,6 +2126,19 @@ footer > span {
 .recorded .journey-proof { color: #aad6c1; }
 .incident-story-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 24px; }
 .incident-story-footer > span { font-size: 11px; line-height: 1.8; color: #a7b5bf; }
+.memory-context { padding: 24px; }
+.memory-context-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
+.memory-context h2 { margin-top: 9px; font-size: 18px; line-height: 1.5; }
+.memory-context > p { color: #a9b8c3; line-height: 1.9; font-size: 12px; margin-top: 16px; }
+.memory-context-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 22px 0; gap: 16px; }
+.memory-context-counts > div { border-left: 2px solid #375647; padding-left: 16px; }
+.memory-context-counts dt { font-size: 12px; color: #c4d3cd; line-height: 1.7; }
+.memory-context-counts dd { font-size: 27px; margin: 8px 0; color: var(--mint); }
+.memory-context-counts small { font-size: 11px; line-height: 1.8; color: #9eacb7; }
+.memory-policy { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: #b5a6cf; font-size: 11px; line-height: 1.8; }
+.memory-context .memory-context-note { display: flex; align-items: flex-start; gap: 9px; padding-top: 15px; border-top: 1px solid var(--border); }
+.memory-context-note svg { flex-shrink: 0; margin-top: 4px; color: var(--mint); }
+@media (max-width: 760px) { .memory-context { padding: 18px; } .memory-context-counts { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 1200px) { .story-intro { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 760px) { .story-preview { grid-template-columns: minmax(0, 1fr); } .incident-story { padding: 18px; } .company-example { padding: 20px; } .incident-journey li { gap: 12px; } }
 @media (max-width: 1100px) { .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

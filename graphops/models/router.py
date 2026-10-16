@@ -22,11 +22,15 @@ def configuration():
 class Ollama:
     def __init__(self, model):
         self.model = model
+        batch = os.getenv('GRAPHOPS_OLLAMA_BATCH_SIZE', '64')
+        if not batch.isdigit() or not 32 <= int(batch) <= 1024:
+            raise ModelError('GRAPHOPS_OLLAMA_BATCH_SIZE must be an integer from 32 to 1024')
+        self.batch_size = int(batch)
         self.base = os.getenv("GRAPHOPS_OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
         if self.base not in {"http://127.0.0.1:11434", "http://localhost:11434", "http://host.docker.internal:11434"}:
             raise ModelError("Ollama must be the configured local host endpoint")
 
-    def generate(self, system, contents, declarations):
+    def generate(self, system, contents, declarations, response_schema=None):
         messages = [{"role": "system", "content": system}]
         for content in contents:
             if "_ollama" in content: messages.append(content["_ollama"]); continue
@@ -36,7 +40,9 @@ class Ollama:
                     messages.append({"role": "tool", "tool_name": reply["name"], "content": json.dumps(reply["response"])})
             else: messages.append({"role": "user", "content": "\n".join(p.get("text", "") for p in content["parts"])})
         payload = {"model": self.model, "messages": messages, "stream": False, "think": False, "keep_alive": "30m",
-                   "options": {"num_ctx": 8192, "num_predict": 768, "temperature": .2}}
+                   "options": {"num_ctx": 8192, "num_batch": self.batch_size, "num_predict": 768, "temperature": .2}}
+        if response_schema is not None:
+            payload['format'] = response_schema
         if declarations: payload["tools"] = [{"type": "function", "function": {"name": d["name"], "description": d["description"], "parameters": d["parametersJsonSchema"]}} for d in declarations]
         try:
             with httpx.Client(timeout=httpx.Timeout(90, connect=5)) as client:

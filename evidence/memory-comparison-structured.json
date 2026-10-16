@@ -1,0 +1,711 @@
+{
+  "scope": "Fresh-context read-only model fact recall and applicability on a real isolated recovery; not an agent recovery-speed comparison.",
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "configured": true
+  },
+  "actual_model_inference": true,
+  "seed_mode": "llm",
+  "protocol_version": 2,
+  "repeats_per_state_condition": 2,
+  "states": [
+    {
+      "state": "recovered",
+      "expected": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": false
+      },
+      "procedure_validity": [
+        "configuration_changed"
+      ],
+      "stale_health_demoted": null,
+      "runbook_change_invalidated_cache": null,
+      "memory_policy": {
+        "max_records": 12,
+        "record_data_excerpt_chars": 1500,
+        "health_fact_max_age_seconds": 30,
+        "max_cache_seconds": 10
+      }
+    },
+    {
+      "state": "same_fault_again",
+      "expected": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": true
+      },
+      "procedure_validity": [
+        "matching_configuration"
+      ],
+      "stale_health_demoted": true,
+      "runbook_change_invalidated_cache": null,
+      "memory_policy": {
+        "max_records": 12,
+        "record_data_excerpt_chars": 1500,
+        "health_fact_max_age_seconds": 30,
+        "max_cache_seconds": 10
+      }
+    },
+    {
+      "state": "runbook_retired",
+      "expected": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": false
+      },
+      "procedure_validity": [
+        "procedure_changed"
+      ],
+      "stale_health_demoted": true,
+      "runbook_change_invalidated_cache": true,
+      "memory_policy": {
+        "max_records": 12,
+        "record_data_excerpt_chars": 1500,
+        "health_fact_max_age_seconds": 30,
+        "max_cache_seconds": 10
+      }
+    }
+  ],
+  "samples": [
+    {
+      "state": "recovered",
+      "repeat": 1,
+      "order_position": 1,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2099,
+      "input_tokens": 776,
+      "output_tokens": 96,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring payments with a ticket and decision document. The procedure's applicability cannot be confirmed due to missing details.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring payments with a ticket and decision document. The procedure's applicability cannot be confirmed due to missing details."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 3171.096
+    },
+    {
+      "state": "recovered",
+      "repeat": 1,
+      "order_position": 2,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3456,
+      "input_tokens": 1323,
+      "output_tokens": 162,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The health was verified by two observation IDs. However, the remembered procedure is not applicable to the current snapshot.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The health was verified by two observation IDs. However, the remembered procedure is not applicable to the current snapshot."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4432.238
+    },
+    {
+      "state": "recovered",
+      "repeat": 1,
+      "order_position": 3,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27474,
+      "input_tokens": 4098,
+      "output_tokens": 164,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The procedure used in the last recovery (restore_config) is applicable to the current snapshot as the service is healthy and the configuration is up to date.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The procedure used in the last recovery (restore_config) is applicable to the current snapshot as the service is healthy and the configuration is up to date."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 6758.275
+    },
+    {
+      "state": "recovered",
+      "repeat": 2,
+      "order_position": 1,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3456,
+      "input_tokens": 1323,
+      "output_tokens": 162,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The health was verified by two observation IDs. However, the remembered procedure is not applicable to the current snapshot.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The health was verified by two observation IDs. However, the remembered procedure is not applicable to the current snapshot."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 3956.002
+    },
+    {
+      "state": "recovered",
+      "repeat": 2,
+      "order_position": 2,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27474,
+      "input_tokens": 4098,
+      "output_tokens": 167,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The procedure used in the past recovery is applicable to the current snapshot as the service 'payments' is healthy and the same runbook and decision documents are still relevant.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The procedure used in the past recovery is applicable to the current snapshot as the service 'payments' is healthy and the same runbook and decision documents are still relevant."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4504.646
+    },
+    {
+      "state": "recovered",
+      "repeat": 2,
+      "order_position": 3,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2099,
+      "input_tokens": 776,
+      "output_tokens": 107,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring payments using the restore_config action. The health was verified by the payments-decision and payments-ticket documents. The procedure is not applicable now due to missing context.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring payments using the restore_config action. The health was verified by the payments-decision and payments-ticket documents. The procedure is not applicable now due to missing context."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 2650.055
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 1,
+      "order_position": 1,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3483,
+      "input_tokens": 1331,
+      "output_tokens": 165,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration using the runbook. Checkout health was verified with the provided observation IDs. The procedure matches the current configuration and runbook revision.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last recovery involved restoring the payments service configuration using the runbook. Checkout health was verified with the provided observation IDs. The procedure matches the current configuration and runbook revision."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4725.015
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 1,
+      "order_position": 2,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27496,
+      "input_tokens": 4098,
+      "output_tokens": 166,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The procedure used to recover the payments service (restore_config) is applicable to the current snapshot as the same action is needed to resolve the current issue.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The procedure used to recover the payments service (restore_config) is applicable to the current snapshot as the same action is needed to resolve the current issue."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 6871.391
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 1,
+      "order_position": 3,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2121,
+      "input_tokens": 782,
+      "output_tokens": 104,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-ticket\", \"payments-runbook\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The procedure was verified by the runbook and ticket. However, the procedure is not applicable now due to missing context.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-ticket",
+          "payments-runbook"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The procedure was verified by the runbook and ticket. However, the procedure is not applicable now due to missing context."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 3058.083
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 2,
+      "order_position": 1,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27496,
+      "input_tokens": 4098,
+      "output_tokens": 207,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"b3101b26-665f-44c0-93de-f17caf9ab7cf\", \"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The recovery procedure used for the past incident is applicable to the current snapshot because the current snapshot shows the same service (payments) with the same issue (restore_config failure at config-broken-v1).\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "b3101b26-665f-44c0-93de-f17caf9ab7cf",
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The recovery procedure used for the past incident is applicable to the current snapshot because the current snapshot shows the same service (payments) with the same issue (restore_config failure at config-broken-v1)."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 1,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 5521.5
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 2,
+      "order_position": 2,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2121,
+      "input_tokens": 782,
+      "output_tokens": 104,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-ticket\", \"payments-runbook\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The procedure was verified by the ticket and runbook. However, the procedure is not applicable now due to missing context.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-ticket",
+          "payments-runbook"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The procedure was verified by the ticket and runbook. However, the procedure is not applicable now due to missing context."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 2632.043
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 2,
+      "order_position": 3,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3483,
+      "input_tokens": 1331,
+      "output_tokens": 166,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The procedure was verified with health evidence IDs. However, the procedure is not applicable now due to missing eligibility flags in the snapshot.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The procedure was verified with health evidence IDs. However, the procedure is not applicable now due to missing eligibility flags in the snapshot."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 3890.821
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 1,
+      "order_position": 1,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27775,
+      "input_tokens": 4098,
+      "output_tokens": 156,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": false,\n  \"explanation\": \"The procedure used in the past recovery is no longer applicable due to the runbook being retired and requiring review.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": false,
+        "explanation": "The procedure used in the past recovery is no longer applicable due to the runbook being retired and requiring review."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 6832.971
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 1,
+      "order_position": 2,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2400,
+      "input_tokens": 840,
+      "output_tokens": 105,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-health-1\", \"payments-health-2\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments configuration. The procedure was retired, and the current snapshot does not match the required runbook or health conditions for applicability.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-health-1",
+          "payments-health-2"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments configuration. The procedure was retired, and the current snapshot does not match the required runbook or health conditions for applicability."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 3174.35
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 1,
+      "order_position": 3,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3759,
+      "input_tokens": 1389,
+      "output_tokens": 167,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The health was verified by the provided observation IDs. However, the remembered procedure is not applicable now due to changes in the current snapshot.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The health was verified by the provided observation IDs. However, the remembered procedure is not applicable now due to changes in the current snapshot."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4627.966
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 2,
+      "order_position": 1,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2400,
+      "input_tokens": 840,
+      "output_tokens": 102,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-health-1\", \"payments-health-2\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments configuration. The procedure was retired, and the current snapshot does not match the required runbook or health checks.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-health-1",
+          "payments-health-2"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments configuration. The procedure was retired, and the current snapshot does not match the required runbook or health checks."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 2510.777
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 2,
+      "order_position": 2,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3759,
+      "input_tokens": 1389,
+      "output_tokens": 166,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last recovery involved restoring the payments service configuration. The health was verified by two observation IDs. However, the remembered procedure is not applicable now due to changes in the current snapshot.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last recovery involved restoring the payments service configuration. The health was verified by two observation IDs. However, the remembered procedure is not applicable now due to changes in the current snapshot."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4099.972
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 2,
+      "order_position": 3,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27775,
+      "input_tokens": 4098,
+      "output_tokens": 156,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-89D85C01\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"4bb9efbb-4f02-477f-a1b6-8e5187113463\", \"6d9ddfe5-428f-464b-a216-88d4711e59a7\"],\n  \"procedure_applicable_now\": false,\n  \"explanation\": \"The procedure used in the past recovery is no longer applicable due to the runbook being retired and requiring review.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-89D85C01",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "4bb9efbb-4f02-477f-a1b6-8e5187113463",
+          "6d9ddfe5-428f-464b-a216-88d4711e59a7"
+        ],
+        "procedure_applicable_now": false,
+        "explanation": "The procedure used in the past recovery is no longer applicable due to the runbook being retired and requiring review."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4461.475
+    }
+  ],
+  "success": false,
+  "limitations": [
+    "One synthetic incident; samples do not establish general reliability.",
+    "Same current snapshot and prompt in each condition; only supplied past context differs.",
+    "The no-context condition is expected to lack exact historical observations; abstention is appropriate.",
+    "Input tokens are provider-reported when available. Byte counts are not token estimates.",
+    "Provider context limits and warm-up/caching can affect inference timing; condition order is rotated.",
+    "No hidden evaluator answers are supplied to the model. All failed and malformed answers are retained.",
+    "Scoring checks exact historical fields/observation IDs and snapshot applicability, not explanation entailment."
+  ],
+  "inference_options": {
+    "context_tokens": 8192,
+    "prefill_batch_size": 64
+  },
+  "structured_output_schema_requested": true,
+  "seed_incident": "INC-89D85C01",
+  "seed_sessions": [
+    {
+      "role": "investigator",
+      "session": "c3f56a75-1d73-46fb-8d8c-8c0e59d082ec"
+    },
+    {
+      "role": "resolver",
+      "session": "f9a4562a-f0ad-488f-82cb-346bf7590fbb"
+    }
+  ],
+  "effects_during_comparison": 0,
+  "summary": {
+    "no_past_context": {
+      "samples": 6,
+      "parsed_answers": 6,
+      "complete_historical_recall": 0,
+      "incorrect_historical_claims": 12,
+      "applicability_correct": null,
+      "abstained_on_missing_procedure": 6,
+      "median_context_utf8_bytes": 2121.0,
+      "median_input_tokens": 782.0,
+      "median_elapsed_ms": 2854.069
+    },
+    "navigator_packet": {
+      "samples": 6,
+      "parsed_answers": 6,
+      "complete_historical_recall": 6,
+      "incorrect_historical_claims": 0,
+      "applicability_correct": 1,
+      "abstained_on_missing_procedure": null,
+      "median_context_utf8_bytes": 3483.0,
+      "median_input_tokens": 1331.0,
+      "median_elapsed_ms": 4266.105
+    },
+    "full_incident_history": {
+      "samples": 6,
+      "parsed_answers": 6,
+      "complete_historical_recall": 5,
+      "incorrect_historical_claims": 1,
+      "applicability_correct": 4,
+      "abstained_on_missing_procedure": null,
+      "median_context_utf8_bytes": 27496.0,
+      "median_input_tokens": 4098.0,
+      "median_elapsed_ms": 6139.887
+    }
+  },
+  "comparison_completed": true,
+  "elapsed_seconds": 114.244
+}

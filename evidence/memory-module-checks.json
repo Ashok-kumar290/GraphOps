@@ -1,0 +1,88 @@
+{
+  "observed_at": "2026-10-16T11:15:02.861519+00:00",
+  "backend_checks": {
+    "tests": 75,
+    "passed": 75,
+    "failures": [],
+    "duration_seconds": 207.228,
+    "actual_falkordb_go_http_mcp": true,
+    "model_inference": false,
+    "scope": "Local event implementation; protocol simulation is not model inference"
+  },
+  "frontend_checks": {
+    "passed": 40,
+    "total": 40,
+    "success": true,
+    "scope": "DOM and pure rule checks; HTTP/EventSource mocked"
+  },
+  "production_build": {
+    "passed": true,
+    "command": "npm run build"
+  },
+  "served_assets": [
+    {
+      "path": "/assets/index-Bg4hridU.js",
+      "http_status": 200,
+      "bytes": 306317
+    },
+    {
+      "path": "/assets/index-Ce73fF6W.css",
+      "http_status": 200,
+      "bytes": 38901
+    }
+  ],
+  "live_diagnostic": {
+    "success": true,
+    "elapsed_seconds": 4.343,
+    "task": "INC-10928B23",
+    "mcp": {
+      "success": true,
+      "session": "33da1475-6667-417a-af18-9af6a12b78f1"
+    },
+    "model": {
+      "success": true,
+      "provider": "ollama",
+      "model": "qwen3:8b"
+    }
+  },
+  "live_worker_refresh": {
+    "workspace": "team-demo",
+    "new_worker_ready": true,
+    "worker_restarts": 1,
+    "busy": false,
+    "policy": {
+      "max_records": 12,
+      "record_data_excerpt_chars": 1500,
+      "health_fact_max_age_seconds": 30,
+      "max_cache_seconds": 10
+    },
+    "authorizes_execution": false,
+    "procedural_records_with_candidate_flags": 4,
+    "services": [
+      {
+        "service": "gateway",
+        "http_status": 200
+      },
+      {
+        "service": "orders",
+        "http_status": 200
+      },
+      {
+        "service": "payments",
+        "http_status": 200
+      },
+      {
+        "service": "analytics",
+        "http_status": 503
+      }
+    ],
+    "note": "Restarted an idle owned Python worker to load updated policy and inference settings; Node supervised reconnection and the Go lab restored persistent state."
+  },
+  "initial_frontend_check_failure": {
+    "failed": 1,
+    "total": 40,
+    "reason": "The new label also appeared in the sidebar preview. Scoped the assertion to the newly named Retrieved memory records group."
+  },
+  "comparison_quality": "Both full comparison gates failed; raw answers and per-condition scores are recorded separately in memory-comparison.json.",
+  "browser_review": false
+}

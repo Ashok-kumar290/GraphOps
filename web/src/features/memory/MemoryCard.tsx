@@ -26,6 +26,7 @@ export function MemoryCard({
             : "Incident evidence"}
       </strong>
       <p>{nice(m.validity)}</p>
+      {m.kind === "procedural" && typeof m.procedure_candidate === "boolean" && <p className={m.procedure_candidate ? "text-mint" : "text-coral"}>{m.procedure_candidate ? "Candidate for current configuration" : "Revalidate before reuse"}</p>}
       <small className="mono">
         {m.task} · {m.revision}
       </small>

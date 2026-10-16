@@ -12,6 +12,12 @@ predict judging results. Enter all three names explicitly in the submission.
 
 ## Explain the important query and guard
 
+For the memory track, also open the [fresh-context comparison](../MEMORY_COMPARISON.md)
+and [raw evidence](../evidence/memory-comparison.json). Exact historical evidence
+recall was 6/6 with navigator packets in each developmental run, with smaller
+context than full history. The model's applicability judgments remained limited;
+both overall gates failed. Backend flags and action checks remain authoritative.
+
 1. `TopologyRepository.paths` traverses bounded `DEPENDS_ON` paths from the
    incident service and returns edge provenance.
 2. Investigator handoff requires a directly measured cause on a supported path.

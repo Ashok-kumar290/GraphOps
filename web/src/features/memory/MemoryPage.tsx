@@ -1,5 +1,5 @@
 import React from "react";
-import { Layers3 } from "lucide-react";
+import { ArrowRight, Braces, Layers3, ShieldCheck } from "lucide-react";
 import { nice } from "../../shared/format";
 import { useWorkspace } from "../../app/WorkspaceContext";
 
@@ -31,6 +31,17 @@ return (
                       </p>
                     </div>
                   </div>
+                  <section className="panel memory-context" aria-labelledby="memory-context-heading">
+                    <div className="memory-context-heading"><div><span className="eyebrow">WHAT A NEW SESSION CAN USE</span><h2 id="memory-context-heading">A small packet with sources and limits</h2></div><button className="button secondary" disabled={!packet} onClick={() => inspect("Navigator packet for " + service, packet)}><Braces size={14}/> Inspect navigator packet</button></div>
+                    <p>The resolver reads this service's navigator packet alongside the saved checkpoint and current company sources. Each record keeps its source, revision and applicability label.</p>
+                    <dl className="memory-context-counts">
+                      <div><dt>Current candidates</dt><dd>{packet?.active.length || 0}</dd><small>Check against fresh evidence before acting.</small></div>
+                      <div><dt>Historical context</dt><dd>{packet?.historical.length || 0}</dd><small>Past events and records that need revalidation.</small></div>
+                      <div><dt>Unverified claims</dt><dd>{packet?.unverified.length || 0}</dd><small>Kept separate from verified records.</small></div>
+                    </dl>
+                    {packet?.policy && <div className="memory-policy"><span>Up to {packet.policy.max_records} records</span><ArrowRight size={13} aria-hidden="true"/><span>Health facts expire after {packet.policy.health_fact_max_age_seconds}s</span><ArrowRight size={13} aria-hidden="true"/><span>Cache reused for up to {packet.policy.max_cache_seconds}s</span></div>}
+                    <p className="memory-context-note"><ShieldCheck size={14}/> Memory supplies candidates for the next decision. Recovery still requires current graph, procedure and service checks.</p>
+                  </section>
                   <div className="service-tabs">
                     {data?.health.map((h) => (
                       <button
@@ -41,9 +52,8 @@ return (
                         {h.service}
                         <span>
                           {
-                            Object.values(data.memory[h.service] || {})
-                              .filter(Array.isArray)
-                              .flat().length
+                            (["active", "historical", "unverified"] as const)
+                              .reduce((total, group) => total + (data.memory[h.service]?.[group].length || 0), 0)
                           }
                         </span>
                       </button>
@@ -79,7 +89,7 @@ return (
                       evidence.
                     </button>
                   )}
-                  <div className="memory-grid">
+                  <div className="memory-grid" role="group" aria-label="Retrieved memory records">
                     {(["active", "historical", "unverified"] as const).map(
                       (group) => (
                         <section className="panel memory-group" key={group}>

@@ -25,6 +25,7 @@ export type Company = {
   historical_documents: Doc[];
 };
 export type Memory = {
+  procedure_candidate?: boolean;
   id: string;
   task: string;
   service: string;
@@ -37,6 +38,8 @@ export type Memory = {
   data: Record<string, unknown>;
 };
 export type Packet = {
+  authorizes_execution?: boolean;
+  policy?: {max_records: number; record_data_excerpt_chars: number; health_fact_max_age_seconds: number; max_cache_seconds: number};
   active: Memory[];
   historical: Memory[];
   unverified: Memory[];

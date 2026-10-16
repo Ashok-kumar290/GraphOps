@@ -11,6 +11,27 @@ beforeEach(() => {
 afterEach(() => {cleanup(); vi.unstubAllGlobals();});
 const response = (value: unknown) => new Response(JSON.stringify(value), {status: 200, headers: {"Content-Type": "application/json"}});
 
+test("The memory view explains actual packet limits and opens the packet without an action", async () => {
+  const data = workspaceFixture();
+  data.memory.payments.policy = {max_records: 12, record_data_excerpt_chars: 1500, health_fact_max_age_seconds: 30, max_cache_seconds: 10};
+  data.memory.payments.active = [memoryFixture("procedural")];
+  data.memory.payments.active[0].procedure_candidate = true;
+  data.memory.payments.historical = [{...memoryFixture("procedural", "INC-OLD"), procedure_candidate: false, validity: "procedure_changed"}];
+  const fetch = vi.fn(async () => response(data)); vi.stubGlobal("fetch", fetch);
+  render(<App/>);
+  await screen.findByText("FalkorDB connected");
+  fireEvent.click(screen.getByRole("button", {name: "Memory navigator"}));
+  const summary = screen.getByRole("region", {name: "A small packet with sources and limits"});
+  expect(within(summary).getByText("Up to 12 records")).toBeTruthy();
+  expect(within(summary).getByText("Health facts expire after 30s")).toBeTruthy();
+  const records = screen.getByRole("group", {name: "Retrieved memory records"});
+  expect(within(records).getByText("Candidate for current configuration")).toBeTruthy();
+  expect(within(records).getByText("Revalidate before reuse")).toBeTruthy();
+  fireEvent.click(within(summary).getByRole("button", {name: "Inspect navigator packet"}));
+  expect(screen.getByRole("dialog", {name: "Navigator packet for payments"})).toBeTruthy();
+  expect(fetch.mock.calls.every(call => (call as any[])[1]?.method !== "POST")).toBe(true);
+});
+
 test("The homepage uses actual graph edges and does not invent a missing checkout path", async () => {
   const data = workspaceFixture(); data.graph.edges = [];
   vi.stubGlobal("fetch", vi.fn(async () => response(data)));

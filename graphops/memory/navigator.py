@@ -5,6 +5,9 @@ import json
 import time
 from graphops.core.identity import age
 
+POLICY = {"max_records": 12, "record_data_excerpt_chars": 1500,
+          "health_fact_max_age_seconds": 30, "max_cache_seconds": 10}
+
 
 class Navigator:
     def __init__(self, store):
@@ -18,24 +21,29 @@ class Navigator:
         company = self.store.company.context(service)
         docs = {d["source"]: d for d in company["documents"]}
         packet = {"service": service, "revision": revision, "active": [], "historical": [],
-                  "unverified": [], "conflicts": [], "cache_hit": False}
-        lifetime = 10
-        for record in self.store.memory.list(service)[:12]:
+                  "unverified": [], "conflicts": [], "cache_hit": False, "policy": dict(POLICY)}
+        packet['authorizes_execution'] = False
+        lifetime = POLICY['max_cache_seconds']
+        for record in self.store.memory.list(service)[:POLICY['max_records']]:
             group, reason = "active", "matching_configuration"
             if not record["verified"]: group, reason = "unverified", "unverified_claim"
             elif record["kind"] == "episodic": group, reason = "historical", "past_event"
             elif record["revision"] != revision: group, reason = "historical", "configuration_changed"
-            elif record["kind"] == "semantic" and not 0 <= age(record["created_at"]) <= 30:
+            elif record["kind"] == "semantic" and not 0 <= age(record["created_at"]) <= POLICY['health_fact_max_age_seconds']:
                 group, reason = "historical", "observation_expired"
             if record["verified"] and record["kind"] == "procedural":
                 source = docs.get(record["source"])
                 if not source or source["revision"] != record["data"].get("runbook_revision"):
                     group, reason = "historical", "procedure_changed"
             if group == "active" and record["kind"] == "semantic":
-                lifetime = min(lifetime, max(0, 30 - age(record["created_at"])))
+                lifetime = min(lifetime, max(0, POLICY['health_fact_max_age_seconds'] - age(record["created_at"])))
             encoded = json.dumps(record["data"])
-            if len(encoded) > 1500: record["data"] = {"excerpt": encoded[:1500], "truncated": True}
-            packet[group].append({**record, "validity": reason})
+            if len(encoded) > POLICY['record_data_excerpt_chars']:
+                record["data"] = {"excerpt": encoded[:POLICY['record_data_excerpt_chars']], "truncated": True}
+            entry = {**record, "validity": reason}
+            if record['kind'] == 'procedural':
+                entry['procedure_candidate'] = group == 'active'
+            packet[group].append(entry)
         claims = {}
         for record in packet["active"]:
             claim = record["data"].get("claim")

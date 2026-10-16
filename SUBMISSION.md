@@ -50,7 +50,9 @@ is accepted by the published rules. Review the actual form once submissions open
 - [x] Publish this event repository to the team's chosen public GitHub repository.
 - [ ] Inspect UI in a real browser, including mobile and keyboard interaction.
 - [x] Run repeated model evaluations; preserve failures and report aggregate results.
-- [ ] Compare memory versus no memory to measure the benefit of retrieval.
+- [x] Compare memory versus no memory and full history; preserve raw failures.
+      [Recorded comparison](MEMORY_COMPARISON.md) measures evidence recall/context
+      size. Both strict overall gates failed; model applicability remains limited.
 - [ ] Validate a hosted open-weight model with the team's private account key.
 - [ ] Provision free hosting if account/capacity permits; verify HTTPS, SSE,
       access, restart persistence and live LLM recovery from the public URL.

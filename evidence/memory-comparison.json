@@ -1,0 +1,166 @@
+{
+  "observed_at": "2026-10-16T11:12:06.122315+00:00",
+  "scope": "Two developmental comparisons, 18 fresh-context Qwen3:8b calls each, on separate real LLM/MCP/HTTP recovered incidents. A read-only fact-recall experiment, not an operational recovery-speed benchmark.",
+  "runs": {
+    "initial": {
+      "report": "memory-comparison-initial.json",
+      "completed_samples": 18,
+      "strict_all_conditions_gate_passed": false,
+      "effects_during_comparison": 0,
+      "summary_with_abstention_and_unsafe_claim_counts": {
+        "no_past_context": {
+          "samples": 6,
+          "parsed_answers": 6,
+          "complete_historical_recall": 0,
+          "incorrect_historical_claims": 12,
+          "parse_or_provider_errors": 0,
+          "unsafe_applicability_claims": 2,
+          "applicability_abstentions": 2,
+          "applicability_correct": null,
+          "abstained_on_missing_procedure": 2,
+          "median_context_utf8_bytes": 2121.0,
+          "median_input_tokens": 732.0,
+          "median_elapsed_ms": 3750.515
+        },
+        "navigator_packet": {
+          "samples": 6,
+          "parsed_answers": 6,
+          "complete_historical_recall": 6,
+          "incorrect_historical_claims": 0,
+          "parse_or_provider_errors": 0,
+          "unsafe_applicability_claims": 2,
+          "applicability_abstentions": 2,
+          "applicability_correct": 2,
+          "abstained_on_missing_procedure": null,
+          "median_context_utf8_bytes": 3427.0,
+          "median_input_tokens": 1263.0,
+          "median_elapsed_ms": 4530.408
+        },
+        "full_incident_history": {
+          "samples": 6,
+          "parsed_answers": 0,
+          "complete_historical_recall": 0,
+          "incorrect_historical_claims": 0,
+          "parse_or_provider_errors": 6,
+          "unsafe_applicability_claims": 0,
+          "applicability_abstentions": 0,
+          "applicability_correct": 0,
+          "abstained_on_missing_procedure": null,
+          "median_context_utf8_bytes": 27465.0,
+          "median_input_tokens": 4098.0,
+          "median_elapsed_ms": 19361.589
+        }
+      },
+      "elapsed_seconds": 211.494
+    },
+    "structured": {
+      "report": "memory-comparison-structured.json",
+      "completed_samples": 18,
+      "strict_all_conditions_gate_passed": false,
+      "effects_during_comparison": 0,
+      "summary_with_abstention_and_unsafe_claim_counts": {
+        "no_past_context": {
+          "samples": 6,
+          "parsed_answers": 6,
+          "complete_historical_recall": 0,
+          "incorrect_historical_claims": 12,
+          "parse_or_provider_errors": 0,
+          "unsafe_applicability_claims": 0,
+          "applicability_abstentions": 6,
+          "applicability_correct": null,
+          "abstained_on_missing_procedure": 6,
+          "median_context_utf8_bytes": 2121.0,
+          "median_input_tokens": 782.0,
+          "median_elapsed_ms": 2854.069
+        },
+        "navigator_packet": {
+          "samples": 6,
+          "parsed_answers": 6,
+          "complete_historical_recall": 6,
+          "incorrect_historical_claims": 0,
+          "parse_or_provider_errors": 0,
+          "unsafe_applicability_claims": 0,
+          "applicability_abstentions": 5,
+          "applicability_correct": 1,
+          "abstained_on_missing_procedure": null,
+          "median_context_utf8_bytes": 3483.0,
+          "median_input_tokens": 1331.0,
+          "median_elapsed_ms": 4266.105
+        },
+        "full_incident_history": {
+          "samples": 6,
+          "parsed_answers": 6,
+          "complete_historical_recall": 5,
+          "incorrect_historical_claims": 1,
+          "parse_or_provider_errors": 0,
+          "unsafe_applicability_claims": 2,
+          "applicability_abstentions": 0,
+          "applicability_correct": 4,
+          "abstained_on_missing_procedure": null,
+          "median_context_utf8_bytes": 27496.0,
+          "median_input_tokens": 4098.0,
+          "median_elapsed_ms": 6139.887
+        }
+      },
+      "elapsed_seconds": 114.244
+    }
+  },
+  "navigator_backend_candidate_checks": [
+    {
+      "state": "recovered",
+      "expected_candidate": false,
+      "candidate_flags": [
+        false
+      ],
+      "correct": true,
+      "authorizes_execution": false
+    },
+    {
+      "state": "same_fault_again",
+      "expected_candidate": true,
+      "candidate_flags": [
+        true
+      ],
+      "correct": true,
+      "authorizes_execution": false
+    },
+    {
+      "state": "runbook_retired",
+      "expected_candidate": false,
+      "candidate_flags": [
+        false
+      ],
+      "correct": true,
+      "authorizes_execution": false
+    }
+  ],
+  "latest_observed_context_reduction": {
+    "utf8_bytes_percent": 87.33,
+    "provider_reported_input_tokens_percent": 67.52
+  },
+  "interpretation": [
+    "Navigator exact historical recall was 6/6 in each run. No-past-context recall was 0/6. Structured full-history recall was 5/6.",
+    "In the structured run, navigator applicability was exactly correct in only 1/6 outputs; five outputs abstained with null. Zero navigator outputs incorrectly asserted applicability for an ineligible procedure.",
+    "The backend candidate flags matched all three state snapshots. Model interpretation does not authorize execution.",
+    "Both strict all-conditions gates failed. Failures and raw model answers are retained.",
+    "Protocol changes included candidate flags, a common JSON schema for all conditions, and moving the current snapshot/question after history. This is not a controlled attribution of improvements to one change.",
+    "Byte sizes and provider-reported token counts are separate observations. Effective context limits, prefix caching and hardware pressure affect timings."
+  ],
+  "attempts_before_completed_runs": [
+    {
+      "stage": "setup",
+      "failure": "FalkorDB was offline before inference; existing Docker/FalkorDB environment was started."
+    },
+    {
+      "stage": "seed_recovery",
+      "failure": "Local model read timeout before producing a handoff; Windows temporary-directory cleanup also encountered an open lab log. The harness now closes the lab before cleanup and retains failure reports."
+    }
+  ],
+  "inference_configuration": {
+    "model": "qwen3:8b",
+    "requested_context_tokens": 8192,
+    "prefill_batch_size": 64,
+    "temperature": 0.2
+  },
+  "browser_review_completed": false
+}

@@ -21,6 +21,8 @@ in a fresh session, validate the procedure, recover checkout and save memory.
 Each recorded step comes from the selected incident's state or evidence. The
 activity log retains inspectable tool results and displays actual error messages.
 Read [the requirements map](HACKATHON_REQUIREMENTS.md) before submission.
+See [the memory comparison](MEMORY_COMPARISON.md) for a reproducible fresh-context
+fact-recall experiment and its scoring limits.
 Recording and submission drafts are in [DEMO.md](DEMO.md) and
 [the submission package](submission/README.md).
 
@@ -88,6 +90,10 @@ or creates a persistent one, starts Ollama, downloads the selected local model
 if missing, builds changed assets, and launches **http://localhost:8080**.
 The first model download needs an internet connection. Keep the terminal open;
 Ctrl+C stops the app. Graph and controlled-service state remain on disk.
+The local adapter requests a prefill batch of 64 to reduce temporary GPU-memory
+demand. Set `GRAPHOPS_OLLAMA_BATCH_SIZE` to an integer from 32 to 1024 to tune it;
+the requested context window remains 8,192 tokens. Inference timing depends on
+available GPU memory, model loading and the provider's effective context limits.
 For a hosted provider, first use the hidden configuration prompt:
 
 ```powershell

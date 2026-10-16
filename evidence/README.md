@@ -41,3 +41,7 @@ These are local measurements. Model evaluations use actual inference; integratio
 - [Two live CLI rehearsals with incident-specific completion evidence](judge-cli-rehearsal.json)
 - [Commit ID mapping after correcting inherited Git attribution](history-attribution-map.json)
 - [Product explanation, incident story and live workflow verification](frontend-product-clarity.json)
+- [Memory comparison: measured context/recall benefit and retained failures](memory-comparison.json)
+- [Initial comparison raw answers](memory-comparison-initial.json)
+- [Structured-output comparison raw answers](memory-comparison-structured.json)
+- [Memory module regression, live diagnostic and worker reconnection](memory-module-checks.json)

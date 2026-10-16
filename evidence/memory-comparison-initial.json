@@ -1,0 +1,594 @@
+{
+  "scope": "Fresh-context read-only model fact recall and applicability on a real isolated recovery; not an agent recovery-speed comparison.",
+  "model": {
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "configured": true
+  },
+  "actual_model_inference": true,
+  "seed_mode": "llm",
+  "repeats_per_state_condition": 2,
+  "states": [
+    {
+      "state": "recovered",
+      "expected": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": false
+      },
+      "procedure_validity": [
+        "configuration_changed"
+      ],
+      "stale_health_demoted": null,
+      "runbook_change_invalidated_cache": null,
+      "memory_policy": {
+        "max_records": 12,
+        "record_data_excerpt_chars": 1500,
+        "health_fact_max_age_seconds": 30,
+        "max_cache_seconds": 10
+      }
+    },
+    {
+      "state": "same_fault_again",
+      "expected": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": true
+      },
+      "procedure_validity": [
+        "matching_configuration"
+      ],
+      "stale_health_demoted": true,
+      "runbook_change_invalidated_cache": null,
+      "memory_policy": {
+        "max_records": 12,
+        "record_data_excerpt_chars": 1500,
+        "health_fact_max_age_seconds": 30,
+        "max_cache_seconds": 10
+      }
+    },
+    {
+      "state": "runbook_retired",
+      "expected": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": false
+      },
+      "procedure_validity": [
+        "procedure_changed"
+      ],
+      "stale_health_demoted": true,
+      "runbook_change_invalidated_cache": true,
+      "memory_policy": {
+        "max_records": 12,
+        "record_data_excerpt_chars": 1500,
+        "health_fact_max_age_seconds": 30,
+        "max_cache_seconds": 10
+      }
+    }
+  ],
+  "samples": [
+    {
+      "state": "recovered",
+      "repeat": 1,
+      "order_position": 1,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2100,
+      "input_tokens": 727,
+      "output_tokens": 135,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the payments service configuration using the runbook 'payments-runbook' with the action 'restore_config'. The recovery was verified by the ticket 'payments-ticket' and the decision 'payments-decision'. The procedure is applicable now as it matches the current service configuration, runbook revision, and approved action.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the payments service configuration using the runbook 'payments-runbook' with the action 'restore_config'. The recovery was verified by the ticket 'payments-ticket' and the decision 'payments-decision'. The procedure is applicable now as it matches the current service configuration, runbook revision, and approved action."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": false
+      },
+      "elapsed_ms": 3742.473
+    },
+    {
+      "state": "recovered",
+      "repeat": 1,
+      "order_position": 2,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3400,
+      "input_tokens": 1256,
+      "output_tokens": 173,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"34be3503-a608-4429-b0f5-13d4dd9c2080\", \"f023c87b-1f20-437a-bd85-b59f24cad84c\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the configuration using the 'restore_config' action from the 'payments-runbook' runbook. The procedure was verified as applicable to the current service configuration, runbook revision, and approved action.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the configuration using the 'restore_config' action from the 'payments-runbook' runbook. The procedure was verified as applicable to the current service configuration, runbook revision, and approved action."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4342.908
+    },
+    {
+      "state": "recovered",
+      "repeat": 1,
+      "order_position": 3,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27444,
+      "input_tokens": 4098,
+      "output_tokens": 768,
+      "raw_answer": "The provided data represents a detailed log of a system recovery process for a service called **\"payments\"**. Here's a structured summary and analysis of the events:\n\n---\n\n### **1. Initial Problem Detection**\n- **Service**: `payments`\n- **Status**: Unhealthy (`http_status: 503`)\n- **Error**: `restore_config`\n- **Revision**: `config-broken-v1`\n- **Source**: `http://127.0.0.1:23021/health`\n- **Timestamp**: `2026-10-16T10:59:29.240976+00:00`\n\nThis indicates that the `payments` service is in a broken state and requires a configuration restore.\n\n---\n\n### **2. Dependency Inspection**\n- **Tool**: `inspect_dependencies`\n- **Service**: `gateway`\n- **Dependencies**: \n  - `orders`\n  - `orders -> payments`\n\nThis shows that the `payments` service is dependent on the `orders` service, which is part of the `gateway` system.\n\n---\n\n### **3. Contextual Information for `payments`**\n- **Owners**: `Payments Platform`\n- **Experts**: `Payments Platform on-call`\n- **Documents**:\n  - **Runbook**: `payments-runbook` (v1) \u2013 Instructions for restoring the `config-broken-v1` revision.\n  - **Decision**: `payments-decision` (v1) \u2013 States that recovery requires a current runbook and health measurements.\n  - **Ticket**: `payments-ticket` (v1) \u2013 A controlled lab ticket to recover `payments` and verify `checkout` health.\n  - **Chat**: `payments-chat` (v1) \u2013 Notes on ownership and procedures before changing `payments`.\n\n---\n\n### **4. Recovery Plan Preparation**\n- **Tool**: `prepare_recovery`\n- **Action**: `restore_config`\n- **Target**: `payments`\n- **Runbook**: `payments-runbook` (v1)\n- **Expected Revision**: `config-broken-v1`\n- **Plan ID**: `b9740c89-1080-4171-8a58-7a428049c302`\n\nA recovery plan was prepared using the runbook and decision documents.\n\n---\n\n### **5. Recovery Execution**\n- **Tool**: `execute_recovery`\n- **Plan ID**: `b9740c89-1080-4171-8a58-7a428049c302`\n- **Action**: `restore_config`\n- **Before**:\n  - `payments` was unhealthy (`http_status: 503`)\n  - `config-broken-v1`\n- **After**:\n  - `payments` is healthy (`http_status: 200`)\n  - `healthy-v1` revision\n- **Incident**: `gateway` and `orders` are healthy (`http_status: 200`)\n\nThe recovery was successful, and the `payments` service is now healthy.\n\n---\n\n### **6. Ticket Closure**\n- **Tool**: `complete_ticket`\n- **Ticket**: `payments-ticket`\n- **State**: `closed`\n- **Revision**: `closed-INC-E625D954`\n\nThe lab ticket was closed after the recovery was confirmed.\n\n---\n\n### **7. Summary of Recovery**\n- **Service**: `payments`\n- **Before**: Unhealthy (`http_status: 503`), `config-broken-v1`\n- **After**: Healthy (`http_status: 20",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "elapsed_ms": 21686.341
+    },
+    {
+      "state": "recovered",
+      "repeat": 2,
+      "order_position": 1,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3400,
+      "input_tokens": 1256,
+      "output_tokens": 173,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"34be3503-a608-4429-b0f5-13d4dd9c2080\", \"f023c87b-1f20-437a-bd85-b59f24cad84c\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the configuration using the 'restore_config' action from the 'payments-runbook' runbook. The procedure was verified as applicable to the current service configuration, runbook revision, and approved action.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the configuration using the 'restore_config' action from the 'payments-runbook' runbook. The procedure was verified as applicable to the current service configuration, runbook revision, and approved action."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4275.773
+    },
+    {
+      "state": "recovered",
+      "repeat": 2,
+      "order_position": 2,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27444,
+      "input_tokens": 4098,
+      "output_tokens": 768,
+      "raw_answer": "The provided log represents a sequence of events in a system that is handling a recovery process for a service called **\"payments\"**. Here's a structured summary of what happened:\n\n---\n\n### \ud83d\udd04 **Recovery Process Summary**\n\n#### \u2705 **Service Status:**\n- **Service:** `payments`\n- **Initial Status:** Unhealthy (`http_status: 503`, `error: \"restore_config\"`, `revision: \"config-broken-v1\"`)\n- **Final Status:** Healthy (`http_status: 200`, `error: \"\"`, `revision: \"healthy-v1\"`)\n\n#### \ud83d\udcdc **Recovery Plan:**\n- **Plan ID:** `b9740c89-1080-4171-8a58-7a428049c302`\n- **Action:** `restore_config`\n- **Target:** `payments`\n- **Runbook:** `payments-runbook` (revision `v1`)\n- **Expected Revision:** `config-broken-v1`\n\n#### \ud83e\udde0 **Context & Tools Used:**\n1. **`inspect_dependencies`**  \n   - Checked dependencies for `gateway` and found that `orders` is a dependent service.\n   - `orders` was healthy (`http_status: 200`).\n\n2. **`company_context`**  \n   - Provided ownership, experts, and documentation for the `payments` service.\n   - Included a **runbook** (`payments-runbook`) and **decision** (`payments-decision`) for recovery.\n\n3. **`observe_service`**  \n   - Monitored the health of `payments` and `gateway`.\n   - Detected the service was unhealthy and initiated recovery.\n\n4. **`prepare_recovery`**  \n   - Generated a recovery plan based on the context and observed status.\n\n5. **`execute_recovery`**  \n   - Applied the recovery plan and successfully restored the service.\n\n6. **`complete_ticket`**  \n   - Closed the associated ticket (`payments-ticket`) after recovery.\n\n---\n\n### \ud83d\udcc5 **Timeline of Events:**\n\n| Timestamp | Event | Description |\n|----------|-------|-------------|\n| 10:59:26.935 | `model_request_started` | Initial request started. |\n| 10:59:29.204 | `model_timing` | Model took 2.269 seconds to process the first request. |\n| 10:59:29.211 | `tool: inspect_dependencies` | Checked dependencies for `gateway`. |\n| 10:59:29.217 | `tool: company_context` | Retrieved context for `payments`. |\n| 10:59:29.241 | `tool: observe_service` | Observed `payments` was unhealthy. |\n| 10:59:29.245 | `tool: prepare_recovery` | Prepared recovery plan. |\n| 10:59:29.249 | `model_request_started` | Second request started. |\n| 10:59:30.887 | `model_timing` | Model took 1.637 seconds to process the second request. |\n| 10:59:30.897 | `tool: observe_service` | Re-observed `payments` status. |\n| 10:59:30.913 | `tool: observe_service` | `payments` became healthy. |\n| 10:59:30.918 |",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "elapsed_ms": 19290.204
+    },
+    {
+      "state": "recovered",
+      "repeat": 2,
+      "order_position": 3,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2100,
+      "input_tokens": 727,
+      "output_tokens": 135,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the payments service configuration using the runbook 'payments-runbook' with the action 'restore_config'. The recovery was verified by the ticket 'payments-ticket' and the decision 'payments-decision'. The procedure is applicable now as it matches the current service configuration, runbook revision, and approved action.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the payments service configuration using the runbook 'payments-runbook' with the action 'restore_config'. The recovery was verified by the ticket 'payments-ticket' and the decision 'payments-decision'. The procedure is applicable now as it matches the current service configuration, runbook revision, and approved action."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": false
+      },
+      "elapsed_ms": 3326.478
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 1,
+      "order_position": 1,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3427,
+      "input_tokens": 1263,
+      "output_tokens": 248,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"34be3503-a608-4429-b0f5-13d4dd9c2080\", \"f023c87b-1f20-437a-bd85-b59f24cad84c\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as matching the current service configuration, runbook revision, and approved action. The recovery was confirmed by the health observations with IDs '34be3503-a608-4429-b0f5-13d4dd9c2080' and 'f023c87b-1f20-437a-bd85-b59f24cad84c'.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as matching the current service configuration, runbook revision, and approved action. The recovery was confirmed by the health observations with IDs '34be3503-a608-4429-b0f5-13d4dd9c2080' and 'f023c87b-1f20-437a-bd85-b59f24cad84c'."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 6695.703
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 1,
+      "order_position": 2,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27465,
+      "input_tokens": 4098,
+      "output_tokens": 768,
+      "raw_answer": "The provided data represents a structured log of a system recovery process for a service named **\"payments\"**. Here's a summary and analysis of the key events and actions taken:\n\n---\n\n### \ud83d\udd0d **Overview of the Incident**\n- **Service Affected**: `payments`\n- **Issue**: The service was in a broken state (`revision: config-broken-v1`) with an HTTP status of `503` (Service Unavailable).\n- **Root Cause**: The service was in a broken configuration state, likely due to a misconfiguration or a failed update.\n- **Dependencies**: The `gateway` service was healthy, and it depended on the `orders` service, which was also healthy.\n\n---\n\n### \ud83d\udcca **Key Events in the Recovery Process**\n\n#### 1. **Initial Diagnosis**\n- The `observe_service` tool was used to check the health of the `payments` service.\n- The service was found to be unhealthy with the error: `restore_config`, and the revision was `config-broken-v1`.\n\n#### 2. **Dependency Check**\n- The `inspect_dependencies` tool was used to check the dependencies of the `gateway` service.\n- It confirmed that the `gateway` service depends on `orders`, and both were healthy.\n\n#### 3. **Context Gathering**\n- The `company_context` tool provided information about the `payments` service, including:\n  - Owners: \"Payments Platform\"\n  - Runbook: `payments-runbook` (v1)\n  - Decision: `payments-decision` (v1)\n  - Ticket: `payments-ticket` (open)\n  - Chat: `payments-chat` (discussion on recovery)\n\n#### 4. **Recovery Plan Preparation**\n- The `prepare_recovery` tool was used to prepare a recovery plan.\n- A recovery plan was created with the following details:\n  - **Target**: `payments`\n  - **Action**: `restore_config`\n  - **Expected Revision**: `config-broken-v1`\n  - **Runbook**: `payments-runbook` (v1)\n  - **Plan ID**: `b9740c89-1080-4171-8a58-7a428049c302`\n\n#### 5. **Execution of Recovery**\n- The `execute_recovery` tool was used to execute the recovery plan.\n- The recovery was successful:\n  - The service was restored to a healthy state (`revision: healthy-v1`)\n  - HTTP status changed from `503` to `200`\n  - The operation was logged with an `operation_id`: `graphops_event_13d64c3a183c2f8938b7:INC-E625D954`\n\n#### 6. **Ticket Closure**\n- The `complete_ticket` tool was used to close the ticket `payments-ticket` with the state `closed`.\n\n---\n\n### \u2705 **Final Outcome**\n- The **`payments` service was successfully recovered**.\n- The **`gateway` service** and its dependency **`orders`** were confirmed to be healthy.\n- The **synthetic ticket** (`payments-ticket`) was closed.\n- The **runbook** (`payments-runbook`) was used to guide the recovery process.\n\n---\n\n### \ud83d\udccc **Summary of Actions Taken**\n| Action | Description |\n|--------|-------------|\n| `observe_service` | Checked the health of the `payments` service. |\n| `inspect_dependencies` | Checked dependencies of the `gateway` service. |\n| `company_context` | Gathered context about the `payments` service. |\n| `prepare_recovery` | Prepared a recovery plan for the",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "elapsed_ms": 19732.003
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 1,
+      "order_position": 3,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2121,
+      "input_tokens": 732,
+      "output_tokens": 159,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified by the 'payments-decision' document, which requires a current matching runbook and live health measurements, and the 'payments-ticket' document, which authorized the recovery and verification of checkout health. The procedure is applicable to this snapshot as the current service configuration, runbook revision, and approved action match the past recovery procedure.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified by the 'payments-decision' document, which requires a current matching runbook and live health measurements, and the 'payments-ticket' document, which authorized the recovery and verification of checkout health. The procedure is applicable to this snapshot as the current service configuration, runbook revision, and approved action match the past recovery procedure."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": false
+      },
+      "elapsed_ms": 4076.517
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 2,
+      "order_position": 1,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27465,
+      "input_tokens": 4098,
+      "output_tokens": 768,
+      "raw_answer": "The provided log data represents a structured sequence of events related to a system recovery process, likely involving a service called **\"payments\"**. Here's a **summary and analysis** of the key events:\n\n---\n\n### \u2705 **Summary of the Recovery Process**\n\n- **Service Affected:** `payments`\n- **Issue:** The service was in a broken state (`revision: config-broken-v1`) with an HTTP 503 error.\n- **Recovery Action:** A **restore_config** operation was executed using a **runbook**.\n- **Outcome:** The service was successfully restored to a healthy state (`revision: healthy-v1`) with HTTP 200 status.\n- **Dependencies:** The `gateway` service was healthy and functioning, and it was confirmed that the `orders` service was also healthy.\n- **Ticket Closure:** A synthetic ticket (`payments-ticket`) was closed after the recovery was confirmed.\n\n---\n\n### \ud83d\udd0d **Key Events and Analysis**\n\n#### 1. **Initial Observation of the Problem**\n- **Tool Used:** `observe_service`\n- **Result:** The `payments` service was observed to be in a broken state with `error: restore_config`, `healthy: false`, and `http_status: 503`.\n- **Source:** `http://127.0.0.1:23021/health`\n\n#### 2. **Dependency Check**\n- **Tool Used:** `inspect_dependencies`\n- **Result:** The `gateway` service depends on `orders`, and both were confirmed to be healthy.\n- **Source:** `fixture:event/topology-v1`\n\n#### 3. **Service Context and Runbook**\n- **Tool Used:** `company_context`\n- **Result:** The `payments` service had a runbook (`payments-runbook`) and a decision document (`payments-decision`) that guided the recovery process.\n- **Runbook Action:** `restore_config` was the recommended action for the current issue.\n\n#### 4. **Recovery Plan Preparation**\n- **Tool Used:** `prepare_recovery`\n- **Result:** A recovery plan was prepared with the following details:\n  - **Target:** `payments`\n  - **Action:** `restore_config`\n  - **Runbook:** `payments-runbook`\n  - **Expected Revision:** `config-broken-v1`\n  - **Plan ID:** `b9740c89-1080-4171-8a58-7a428049c302`\n\n#### 5. **Execution of Recovery**\n- **Tool Used:** `execute_recovery`\n- **Result:** The recovery was successfully executed:\n  - **Before:** `payments` was in a broken state.\n  - **After:** `payments` was restored to a healthy state.\n  - **Operation ID:** `graphops_event_13d64c3a183c2f8938b7:INC-E625D954`\n  - **Status:** `restored: true`\n\n#### 6. **Ticket Closure**\n- **Tool Used:** `complete_ticket`\n- **Result:** The synthetic ticket `payments-ticket` was closed with the state `closed`.\n\n---\n\n### \ud83d\udcca **Performance Metrics**\n- **Total Duration:** ~8.3 seconds\n- **Model Requests:** 3\n- **Tool Calls:** 6\n- **Model Usage:**\n  - Input Tokens: 3,384\n  - Output Tokens: 16\n- **Tool Execution Time:** ~1.6 seconds\n\n---\n\n### \ud83d\udccc **Conclusion**\nThe recovery process was **efficient and successful**, with the `payments` service being restored",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "elapsed_ms": 19393.99
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 2,
+      "order_position": 2,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2121,
+      "input_tokens": 732,
+      "output_tokens": 160,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified using the 'payments-decision' document, which outlines the requirement for a current matching runbook and live health measurements, and the 'payments-ticket' document, which details the recovery process and verification of checkout health. The procedure is applicable to this snapshot as it matches the current service configuration, runbook revision, and approved action.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified using the 'payments-decision' document, which outlines the requirement for a current matching runbook and live health measurements, and the 'payments-ticket' document, which details the recovery process and verification of checkout health. The procedure is applicable to this snapshot as it matches the current service configuration, runbook revision, and approved action."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": false
+      },
+      "elapsed_ms": 3832.34
+    },
+    {
+      "state": "same_fault_again",
+      "repeat": 2,
+      "order_position": 3,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3427,
+      "input_tokens": 1263,
+      "output_tokens": 248,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"34be3503-a608-4429-b0f5-13d4dd9c2080\", \"f023c87b-1f20-437a-bd85-b59f24cad84c\"],\n  \"procedure_applicable_now\": true,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as matching the current service configuration, runbook revision, and approved action. The recovery was confirmed by the health observations with IDs '34be3503-a608-4429-b0f5-13d4dd9c2080' and 'f023c87b-1f20-437a-bd85-b59f24cad84c'.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": true,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as matching the current service configuration, runbook revision, and approved action. The recovery was confirmed by the health observations with IDs '34be3503-a608-4429-b0f5-13d4dd9c2080' and 'f023c87b-1f20-437a-bd85-b59f24cad84c'."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": true,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 5960.634
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 1,
+      "order_position": 1,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27745,
+      "input_tokens": 4098,
+      "output_tokens": 768,
+      "raw_answer": "The provided data represents a detailed log of a system recovery process for a service named **\"payments\"**. Here's a structured summary and analysis of the events:\n\n---\n\n### **1. Initial Problem Detection**\n- **Service**: `payments`\n- **Status**: Unhealthy (`http_status: 503`)\n- **Error**: `restore_config`\n- **Revision**: `config-broken-v1`\n- **Source**: `http://127.0.0.1:23021/health`\n- **Timestamp**: `2026-10-16T10:59:29.240976+00:00`\n\nThis indicates that the `payments` service is in a broken state, likely due to a configuration issue.\n\n---\n\n### **2. Dependency Inspection**\n- **Service**: `gateway`\n- **Dependencies**: `orders` (and `payments` itself)\n- **Sources**: `fixture:event/topology-v1`\n- **Query**: `MATCH p=(:Service {id:$service})-[:DEPENDS_ON*1..8]->(:Service) RETURN p`\n\nThis step confirmed that the `gateway` service depends on `orders`, and both are part of the same topology.\n\n---\n\n### **3. Contextual Information for `payments`**\n- **Owners**: `Payments Platform`\n- **Experts**: `Payments Platform on-call`\n- **Documents**:\n  - **Runbook**: `payments-runbook` (v1) \u2013 Instructions for restoring the `payments` service.\n  - **Decision**: `payments-decision` (v1) \u2013 Requires a current runbook and health measurements for recovery.\n  - **Ticket**: `payments-ticket` (v1) \u2013 A controlled lab ticket to recover `payments` and verify checkout health.\n  - **Chat**: `payments-chat` (v1) \u2013 Notes on ownership and procedures before making changes.\n\nThis provides the necessary context and documentation for recovery.\n\n---\n\n### **4. Recovery Plan Preparation**\n- **Action**: `restore_config`\n- **Target**: `payments`\n- **Expected Revision**: `config-broken-v1`\n- **Runbook**: `payments-runbook` (v1)\n- **Plan ID**: `b9740c89-1080-4171-8a58-7a428049c302`\n- **Evidence**: Includes previous observations and context from the `payments` service.\n\nThe recovery plan was successfully prepared and validated.\n\n---\n\n### **5. Recovery Execution**\n- **Plan ID**: `b9740c89-1080-4171-8a58-7a428049c302`\n- **Action**: `restore_config`\n- **Target**: `payments`\n- **Operation ID**: `graphops_event_13d64c3a183c2f8938b7:INC-E625D954`\n- **Before State**:\n  - `payments` was unhealthy (`http_status: 503`)\n  - Error: `restore_config`\n  - Revision: `config-broken-v1`\n- **After State**:\n  - `payments` is now healthy (`http_status: 200`)\n  - Error: ``\n  - Revision: `healthy-v1`\n\nThe recovery was successful, and the `payments` service is now back to a healthy state.\n\n---\n\n### **6. Post-Recovery Actions**\n- **Ticket Closure**: `payments-ticket` was closed with state `closed`.\n- **Summary**: \n  - `payments",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "elapsed_ms": 19329.188
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 1,
+      "order_position": 2,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2401,
+      "input_tokens": 791,
+      "output_tokens": 144,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified through the 'payments-decision' document and the 'payments-ticket' ticket. However, the procedure is not applicable to the current snapshot because the current runbook revision is 'comparison-retired-v2', which indicates the previous recovery procedure is retired.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified through the 'payments-decision' document and the 'payments-ticket' ticket. However, the procedure is not applicable to the current snapshot because the current runbook revision is 'comparison-retired-v2', which indicates the previous recovery procedure is retired."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 3758.556
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 1,
+      "order_position": 3,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3703,
+      "input_tokens": 1322,
+      "output_tokens": 183,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"34be3503-a608-4429-b0f5-13d4dd9c2080\", \"f023c87b-1f20-437a-bd85-b59f24cad84c\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as applicable at the time, but the current snapshot indicates that the runbook revision and service configuration may have changed, making the past procedure potentially outdated.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as applicable at the time, but the current snapshot indicates that the runbook revision and service configuration may have changed, making the past procedure potentially outdated."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4478.666
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 2,
+      "order_position": 1,
+      "condition": "no_past_context",
+      "context_utf8_bytes": 2401,
+      "input_tokens": 791,
+      "output_tokens": 151,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"payments-decision\", \"payments-ticket\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision config-broken-v1. The procedure was verified through the ticket 'payments-ticket' and the decision document 'payments-decision'. However, the procedure is not applicable to the current snapshot because the current runbook revision is 'config-broken-v1', and the procedure described in the historical runbook 'payments-runbook' is retired.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "payments-decision",
+          "payments-ticket"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision config-broken-v1. The procedure was verified through the ticket 'payments-ticket' and the decision document 'payments-decision'. However, the procedure is not applicable to the current snapshot because the current runbook revision is 'config-broken-v1', and the procedure described in the historical runbook 'payments-runbook' is retired."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": false,
+        "correct_health_evidence_ids": 0,
+        "incorrect_historical_claims": 2,
+        "applicability_correct": null,
+        "abstained_on_missing_procedure": true
+      },
+      "elapsed_ms": 3402.422
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 2,
+      "order_position": 2,
+      "condition": "navigator_packet",
+      "context_utf8_bytes": 3703,
+      "input_tokens": 1322,
+      "output_tokens": 189,
+      "raw_answer": "{\n  \"past_incident_id\": \"INC-E625D954\",\n  \"past_service\": \"payments\",\n  \"past_action\": \"restore_config\",\n  \"health_evidence_ids\": [\"34be3503-a608-4429-b0f5-13d4dd9c2080\", \"f023c87b-1f20-437a-bd85-b59f24cad84c\"],\n  \"procedure_applicable_now\": null,\n  \"explanation\": \"The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as applicable at the time, but the current snapshot shows that the runbook revision is 'comparison-retired-v2', which may make the past procedure incompatible with the current configuration.\"\n}",
+      "answer": {
+        "past_incident_id": "INC-E625D954",
+        "past_service": "payments",
+        "past_action": "restore_config",
+        "health_evidence_ids": [
+          "34be3503-a608-4429-b0f5-13d4dd9c2080",
+          "f023c87b-1f20-437a-bd85-b59f24cad84c"
+        ],
+        "procedure_applicable_now": null,
+        "explanation": "The last completed recovery involved restoring the configuration for the payments service at revision 'config-broken-v1'. The procedure was verified as applicable at the time, but the current snapshot shows that the runbook revision is 'comparison-retired-v2', which may make the past procedure incompatible with the current configuration."
+      },
+      "score": {
+        "correct_history_fields": 3,
+        "history_fields_total": 3,
+        "complete_historical_recall": true,
+        "correct_health_evidence_ids": 2,
+        "incorrect_historical_claims": 0,
+        "applicability_correct": false,
+        "abstained_on_missing_procedure": null
+      },
+      "elapsed_ms": 4582.151
+    },
+    {
+      "state": "runbook_retired",
+      "repeat": 2,
+      "order_position": 3,
+      "condition": "full_incident_history",
+      "context_utf8_bytes": 27745,
+      "input_tokens": 4098,
+      "output_tokens": 768,
+      "raw_answer": "The provided data represents a detailed log of a system recovery process for a service called **\"payments\"**. Here's a structured summary of the key events and actions taken:\n\n---\n\n### \ud83d\udccc **Overview of the Incident**\n- **Service Affected:** `payments`\n- **Issue:** The service was in a broken state (`revision: config-broken-v1`) with a `503 Service Unavailable` error.\n- **Root Cause:** The service was in a broken configuration state, likely due to a failed configuration restoration attempt.\n- **Resolution:** A recovery plan was executed successfully to restore the service to a healthy state.\n\n---\n\n### \ud83d\udcc5 **Timeline of Events**\n\n#### 1. **Initial Diagnosis (Request 1)**\n- **Time:** 2026-10-16T10:59:26.935\n- **Action:** The system detected that the `payments` service was in a broken state.\n- **Key Data:**\n  - `http_status`: 503\n  - `error`: `restore_config`\n  - `revision`: `config-broken-v1`\n  - `source`: `http://127.0.0.1:23021/health`\n\n#### 2. **Dependency Inspection**\n- **Tool Used:** `inspect_dependencies`\n- **Result:** The `payments` service depends on `orders`, which was healthy.\n- **Conclusion:** The issue was isolated to the `payments` service.\n\n#### 3. **Service Context and Runbook**\n- **Tool Used:** `company_context`\n- **Result:**\n  - The `payments` service is owned by the \"Payments Platform.\"\n  - A runbook (`payments-runbook`) was available for recovery.\n  - A ticket (`payments-ticket`) was created for the recovery process.\n\n#### 4. **Recovery Plan Preparation**\n- **Tool Used:** `prepare_recovery`\n- **Result:**\n  - A recovery plan was created with the following details:\n    - **Target:** `payments`\n    - **Action:** `restore_config`\n    - **Expected Revision:** `config-broken-v1`\n    - **Runbook:** `payments-runbook`\n    - **Plan ID:** `b9740c89-1080-4171-8a58-7a428049c302`\n\n#### 5. **Execution of Recovery Plan (Request 2)**\n- **Time:** 2026-10-16T10:59:29.249\n- **Tool Used:** `execute_recovery`\n- **Result:**\n  - The recovery plan was executed successfully.\n  - The service was restored to a healthy state (`revision: healthy-v1`).\n  - `http_status`: 200\n  - **Operation ID:** `graphops_event_13d64c3a183c2f8938b7:INC-E625D954`\n\n#### 6. **Post-Recovery Verification**\n- **Tool Used:** `observe_service`\n- **Result:**\n  - The `payments` service is now healthy.\n  - The `gateway` service is also healthy and its dependency (`orders`) is healthy.\n  - The service is now in a stable state.\n\n#### 7. **Ticket Closure**\n- **Tool Used:** `complete_ticket`\n- **Result:**\n  - The recovery ticket (`payments-ticket`) was closed.\n  - **State:** `closed`\n  - **Revision:** `closed-INC-E625D954`\n\n",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "elapsed_ms": 19112.609
+    }
+  ],
+  "success": false,
+  "limitations": [
+    "One synthetic incident; samples do not establish general reliability.",
+    "Same current snapshot and prompt in each condition; only supplied past context differs.",
+    "The no-context condition is expected to lack exact historical observations; abstention is appropriate.",
+    "Input tokens are provider-reported when available. Byte counts are not token estimates.",
+    "Provider context limits and warm-up/caching can affect inference timing; condition order is rotated.",
+    "No hidden evaluator answers are supplied to the model. All failed and malformed answers are retained.",
+    "Scoring checks exact historical fields/observation IDs and snapshot applicability, not explanation entailment."
+  ],
+  "inference_options": {
+    "context_tokens": 8192,
+    "prefill_batch_size": 64
+  },
+  "seed_incident": "INC-E625D954",
+  "seed_sessions": [
+    {
+      "role": "investigator",
+      "session": "3a79f10e-d040-497f-a7d2-489c2294604a"
+    },
+    {
+      "role": "resolver",
+      "session": "92fa185a-63bf-4e8c-9fea-1971eb6a53b6"
+    }
+  ],
+  "effects_during_comparison": 0,
+  "summary": {
+    "no_past_context": {
+      "samples": 6,
+      "parsed_answers": 6,
+      "complete_historical_recall": 0,
+      "incorrect_historical_claims": 12,
+      "applicability_correct": null,
+      "abstained_on_missing_procedure": 2,
+      "median_context_utf8_bytes": 2121.0,
+      "median_input_tokens": 732.0,
+      "median_elapsed_ms": 3750.515
+    },
+    "navigator_packet": {
+      "samples": 6,
+      "parsed_answers": 6,
+      "complete_historical_recall": 6,
+      "incorrect_historical_claims": 0,
+      "applicability_correct": 2,
+      "abstained_on_missing_procedure": null,
+      "median_context_utf8_bytes": 3427.0,
+      "median_input_tokens": 1263.0,
+      "median_elapsed_ms": 4530.408
+    },
+    "full_incident_history": {
+      "samples": 6,
+      "parsed_answers": 0,
+      "complete_historical_recall": 0,
+      "incorrect_historical_claims": 0,
+      "applicability_correct": 0,
+      "abstained_on_missing_procedure": null,
+      "median_context_utf8_bytes": 27465.0,
+      "median_input_tokens": 4098.0,
+      "median_elapsed_ms": 19361.589
+    }
+  },
+  "comparison_completed": true,
+  "elapsed_seconds": 211.494
+}
