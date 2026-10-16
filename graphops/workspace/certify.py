@@ -168,8 +168,11 @@ async def run_hard(case, store, port, lab):
         task = store.runs.create(case, "Handle checkout incident", "llm")["id"]
         await Agent(store, port).run(task, "investigator", INVESTIGATE, "llm")
         if store.runs.get(task)["status"] == "handoff":
-            await asyncio.gather(*(Agent(WorkspaceGraph(store.scope), port).run(task, "resolver", RESOLVE, "llm") for _ in range(2)),
-                                 return_exceptions=True)
+            outcomes = await asyncio.gather(*(Agent(WorkspaceGraph(store.scope), port).run(task, "resolver", RESOLVE, "llm") for _ in range(2)),
+                                            return_exceptions=True)
+            # One resolver may lose the race; if both failed, report why instead of scoring a silent failure.
+            errors = [o for o in outcomes if isinstance(o, BaseException)]
+            if len(errors) == len(outcomes): raise errors[0]
         final = store.runs.get(task)
         passed = final["status"] == "resolved" and bool(final.get("ticket_closed")) and lab.state()["action_count"] == 1
         return passed, [task], notes

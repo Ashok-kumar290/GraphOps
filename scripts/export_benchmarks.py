@@ -45,7 +45,8 @@ def main():
         entry = merged.setdefault(model, {"provider": report["model"]["provider"], "results": {}, "checked_at": report["checked_at"]})
         for result in report["results"]:
             if QUOTA.search(result.get("error") or ""):
-                entry.setdefault("quota", set()).add(result["case"]); continue  # never ran: provider quota, not the agent
+                entry.setdefault("quota", set()).add(result["case"]); entry["results"].pop(result["case"], None)
+                continue  # the latest attempt never ran: provider quota, not the agent
             entry["results"][result["case"]] = result  # latest report wins per case
             entry.get("quota", set()).discard(result["case"])
         entry["checked_at"] = max(entry["checked_at"], report["checked_at"])
