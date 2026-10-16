@@ -35,7 +35,15 @@ See [provenance and AI assistance](PROVENANCE.md).
 Requirements: Docker with Compose, a current browser, and either local Ollama
 with a tool-capable model or explicitly configured hosted model credentials.
 
-From this directory, copy `.env.example` to `.env`. Set a random
+Clone the public repository, then enter its directory:
+
+```sh
+git clone https://github.com/Ashok-kumar290/GraphOps.git
+cd GraphOps
+```
+
+Copy `.env.example` to `.env` (`Copy-Item .env.example .env` in PowerShell,
+or `cp .env.example .env` in a Unix shell). Set a random
 `GRAPHOPS_ACCESS_TOKEN` of at least 24 characters. Keep keys in `.env` locally.
 For the current local candidate, install [Ollama](https://ollama.com) and run:
 
@@ -108,7 +116,7 @@ development database can be started with:
 ```powershell
 docker run -d --name graphops-dev-db -p 127.0.0.1:6379:6379 -v graphops-dev-db:/var/lib/falkordb/data -e "REDIS_ARGS=--save 60 1" falkordb/falkordb@sha256:107455e862a824e45e8e9f5a7fbfdf5e00a08b14e13eae2577c72fd9e3f59ba6
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.lock
 .\build.ps1
 .\launch.ps1
 ```
@@ -218,6 +226,32 @@ The model evaluation uses real inference. The integration suite uses real
 FalkorDB/HTTP/MCP plus explicitly simulated model protocol checks. Package checks
 use the labeled scripted baseline. Reports go into ignored `.runtime/reports`;
 reviewed measurement summaries are in [RESULTS.md](RESULTS.md).
+
+### Rehearse a fresh source checkout
+
+With Docker running, Ollama serving `qwen3:8b`, and the Python development
+dependencies installed, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m tests.check_fresh_setup
+```
+
+This extracts **committed HEAD**, checks that local configuration and generated
+files are absent, and builds the app from that source. It creates a unique Docker
+project with separate graph/lab volumes on **localhost:8083**, then runs the live
+product and connected CLI acceptance checks, including restart/resume and backup
+restoration. Provider settings and credentials from the calling shell are removed;
+the rehearsal explicitly uses local Ollama. The host Python environment only drives
+the checks; app dependencies are installed inside the image. Existing Docker build
+caches and the installed Ollama model may be reused. This is not a native Windows
+first-install check or a browser visual review.
+
+Use `--ref COMMIT`, `--port PORT`, `--model MODEL`, or `--batch 32` to select those
+inputs. Reports, build logs and the exact source archive remain under ignored
+`.runtime/fresh-setup/`. Containers stop at the end; isolated named volumes remain
+for inspection. The report records their Compose project name. To remove a finished
+rehearsal's containers/network, run `docker compose -p PROJECT -f compose.yaml down`;
+only add `--volumes` when you intend to discard that rehearsal's data.
 
 ## Present limits
 

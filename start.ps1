@@ -15,7 +15,7 @@ try {
     }
     & $pythonPath -m graphops.bootstrap dependencies
     if ($LASTEXITCODE -ne 0) {
-        & $pythonPath -m pip install -r requirements.txt
+        & $pythonPath -m pip install -r requirements.lock
         if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
     }
     $config = (& $pythonPath -m graphops.bootstrap configuration) | ConvertFrom-Json

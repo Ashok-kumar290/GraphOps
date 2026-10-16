@@ -108,7 +108,8 @@ The full evaluation after this change passed all five cases. It observed one
 empty response and recovered on retry. The 30 nonempty model responses had a
 median request duration of 1.191 seconds and a maximum of 6.332 seconds. This
 small repeat does not erase the earlier failure or establish a success rate for
-unseen incidents. A memory/no-memory comparison remains pending.
+unseen incidents. The later [memory comparison](MEMORY_COMPARISON.md) records
+measured recall/context results and failed overall gates.
 
 ## Deployment status and limits
 

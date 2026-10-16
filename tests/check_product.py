@@ -1,7 +1,9 @@
 """Full packaged product acceptance: real model, MCP, graph, UI assets and persistence."""
+import argparse
 import json
 import os
 import secrets
+import re
 import subprocess
 import time
 import uuid
@@ -10,15 +12,22 @@ from graphops import settings
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--port',type=int,default=8082)
+    parser.add_argument('--project',default='graphops-product-check')
+    args=parser.parse_args()
+    if not 1024 <= args.port <= 65535:parser.error('port must be from 1024 to 65535')
+    if not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project):parser.error('invalid Compose project name')
     scope='product-'+uuid.uuid4().hex[:10]
-    env={**os.environ,'GRAPHOPS_ACCESS_TOKEN':secrets.token_urlsafe(32),'GRAPHOPS_HTTP_PORT':'8082','GRAPHOPS_WORKSPACE':scope}
-    command=['docker','compose','-p','graphops-product-check','-f',str(settings.ROOT/'compose.yaml')]
+    env={**os.environ,'GRAPHOPS_ACCESS_TOKEN':secrets.token_urlsafe(32),'GRAPHOPS_HTTP_PORT':str(args.port),'GRAPHOPS_WORKSPACE':scope}
+    command=['docker','compose','-p',args.project,'-f',str(settings.ROOT/'compose.yaml')]
     report={'mode':'llm','model_inference':True,'public_deployment':False,'checks':[],'success':False}
+    base=f'http://127.0.0.1:{args.port}'
     def docker(*args,input=None):return subprocess.run(command+list(args),cwd=settings.ROOT,env=env,input=input,capture_output=input is not None,text=True,check=True)
     def check(name,passed,**details):
         report['checks'].append({'name':name,'passed':bool(passed),**details});print(json.dumps(report['checks'][-1]),flush=True)
         if not passed:raise RuntimeError('Acceptance check failed: '+name)
-    with httpx.Client(base_url='http://127.0.0.1:8082',timeout=30,headers={'X-GraphOps':'1'}) as client:
+    with httpx.Client(base_url=base,timeout=30,headers={'X-GraphOps':'1'}) as client:
         def ready():
             for _ in range(120):
                 try:
@@ -43,10 +52,16 @@ def main():
             check('bad_access_token_rejected',client.post('/api/access',json={'token':'incorrect'}).status_code==403)
             post('/api/access',{'token':env['GRAPHOPS_ACCESS_TOKEN']})
             check('authenticated_workspace',client.get('/api/workspace').status_code==200)
+            if env.get('GRAPHOPS_EVENT_PROVIDER','ollama')=='ollama':
+                result=docker('exec','-T','app','python','-c',"from graphops.models.router import get_model;print(get_model().batch_size)",input='')
+                expected=int(env.get('GRAPHOPS_OLLAMA_BATCH_SIZE','64'))
+                check('ollama_batch_setting_forwarded',int(result.stdout.strip())==expected,batch_size=expected)
             check('malformed_json_400',client.post('/api/incidents',content='{').status_code==400)
             check('json_array_400',client.post('/api/incidents',json=[]).status_code==400)
             check('oversized_body_413',client.post('/api/incidents',content='x'*9000).status_code==413)
             page=client.get('/');check('ui_html',page.status_code==200)
+            assets=re.findall(r'(?:src|href)="(/assets/[^\"]+)"',page.text)
+            check('built_ui_assets',bool(assets) and all(client.get(path).status_code==200 for path in assets),assets=assets)
             check('missing_asset_404',client.get('/assets/missing.js').status_code==404)
             with client.stream('GET','/api/events') as stream:check('sse_connected',next(line for line in stream.iter_lines() if line.startswith('data:')).startswith('data:'))
             status=client.get('/api/readiness').json();check('graph_lab_model_available',all(status['components'][c]['status'] in {'online','available','verified'} for c in ('graph','lab','model')))
@@ -69,6 +84,9 @@ def main():
                 check('automatic_'+scenario,w['selected']['status']=='resolved' and w['selected'].get('ticket_closed') and w['selected']['target']==target and health['gateway']==200 and health['analytics']==503 and len({e['session'] for e in sessions})==2,seconds=round(time.perf_counter()-started,3))
                 incident=client.get('/api/reports',params={'task':task});payload=incident.json()
                 check('report_'+scenario,incident.status_code==200 and payload['schema']=='graphops.incident.v1' and payload['incident']['ticket_closed'] and not payload['truncated'])
+            packets=list(w['memory'].values())
+            check('memory_packet_policy_and_candidates',bool(packets) and all(p.get('policy',{}).get('max_records')==12 and p.get('authorizes_execution') is False for p in packets)
+                and any('procedure_candidate' in m for p in packets for group in ('active','historical','unverified') for m in p[group] if m['kind']=='procedural'))
             post('/api/company',{'service':'payments','operation':'retire_runbook'})
             task=post('/api/incidents',{'scenario':'config','mode':'llm'})['task'];w=wait(task)
             check('retired_procedure_blocks_action',w['selected']['status']=='blocked' and not any(e['kind']=='tool' and e['data'].get('tool')=='execute_recovery' for e in w['events']))
@@ -101,7 +119,7 @@ def main():
             check('backup_restores_into_new_workspace',restored_result['nodes']==len(backup['nodes']) and next(h['http_status'] for h in restored_state['health'] if h['service']=='gateway')==200)
             history=client.get('/api/history',params={'q':'refund'}).json();check('history_and_change_log',bool(history['tasks']) and len(history['audits'])>=4)
             from tests.check_connected_cli import exercise_connected_cli
-            report['connected_cli_commands']=exercise_connected_cli('http://127.0.0.1:8082',env,check)
+            report['connected_cli_commands']=exercise_connected_cli(base,env,check)
             post('/api/logout',{});check('logout_locks_workspace',client.get('/api/workspace').status_code==401)
             report['success']=all(check['passed'] for check in report['checks'])
         except Exception as exc:report['error']=str(exc)[:700] if isinstance(exc,RuntimeError) else type(exc).__name__

@@ -95,3 +95,11 @@ continuing gap between retrieved facts and model interpretation. The local
 Ollama adapter now uses a configurable prefill batch of 64 for GPU-memory
 headroom and accepts an explicit JSON schema for read-only comparisons. Current
 action checks remain enforced independently of model replies.
+
+Codex added a fresh-source Docker rehearsal that archives a selected committed
+revision, excludes local configuration and generated artifacts, removes inherited
+provider/workspace settings and runs the existing live product/CLI acceptance
+driver in a unique Docker project. Docker now forwards the local model batch
+setting; native first-time dependency installation uses the transitive lockfile.
+This automated rehearsal does not attest participant understanding, browser
+layout, native first-install behavior or a publicly hosted deployment.
