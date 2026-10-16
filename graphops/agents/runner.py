@@ -9,8 +9,12 @@ from mcp.client.stdio import stdio_client
 from jsonschema import validate, ValidationError
 from graphops import settings
 from graphops.models.router import get_model, EmptyModelResponse, configuration
+from graphops.models.providers import InvalidToolCall
 from graphops.core.identity import uid
 from graphops.company.citations import collect_documents, resolve_citations
+from graphops.agents.steering import allowed_tools, guidance, model_view, parse_text_tool_calls
+
+INITIAL_TOOLS = {"checkpoint": "checkpoint", "incident": "inspect_incident", "company": "company_context", "memory": "recall_memory"}
 
 
 class StopRequested(RuntimeError):pass
@@ -59,7 +63,7 @@ class Agent:
                     result = await asyncio.wait_for(client.call_tool(name, args), timeout=25)
                     if result.isError:
                         error = " ".join(getattr(c, "text", "") for c in result.content)[:700]
-                        self.publish(task_id, session, role, "tool_error", {"tool": name, "error": error})
+                        self.publish(task_id, session, role, "tool_error", {"tool": name, "arguments": args, "error": error})
                         return {"error": error}
                     data = result.structuredContent
                     if data is None: data = json.loads(next(c.text for c in result.content if hasattr(c, "text")))
@@ -99,17 +103,33 @@ class Agent:
                         "Company role: answer the company question, not the incident. Use search_company to find additional sources and read_source for longer documents. Cite the exact source strings and revisions returned by tools; never invent a source. If the sources cannot support an answer, state that clearly. "
                         "Keep output concise. Do not claim an action completed without its successful tool result."
                     )
+                    view = {key: model_view(INITIAL_TOOLS.get(key), value) for key, value in initial.items()}
                     contents = [{"role": "user", "parts": [{"text": prompt or "Continue the incident using the current evidence."},
-                        {"text": "Current sourced context: "+json.dumps(initial, separators=(",", ":"))}]}]
+                        {"text": "Current sourced context: "+json.dumps(view, separators=(",", ":"))}]}]
                     result = None
                     empty_retries = 0
+                    stalls = 0
+                    plan_ready = False
+                    # Providers that can be told to always call a tool get that instruction for incident roles.
+                    require_tool = role != "company" and getattr(model, "supports_required_tool", False)
                     for _ in range(8):
                         if self.should_stop():raise StopRequested('Stopped at a checkpoint. Resume this incident to continue.')
+                        current = self.store.runs.get(task_id)
+                        names = allowed_tools(role, current, plan_ready)
+                        offered = declarations if names is None else [d for d in declarations if d["name"] in names]
                         inference_start = time.perf_counter(); requests += 1
-                        self.publish(task_id, session, role, 'model_request_started', {'request':requests})
+                        self.publish(task_id, session, role, 'model_request_started', {'request':requests,
+                            'tools_offered': None if names is None else sorted(d["name"] for d in offered)})
                         self.emit({"type": "progress", "task": task_id, "stage": "model", "role": role})
                         try:
-                            content = await asyncio.to_thread(model.generate, system, contents, declarations)
+                            options = {"require_tool": True} if require_tool and offered else {}
+                            content = await asyncio.to_thread(model.generate, system, contents, offered, **options)
+                        except InvalidToolCall as exc:
+                            # The provider refused a call to a tool this step does not offer; nothing ran.
+                            self.publish(task_id, session, role, "invalid_tool_call_rejected", {"request": requests, "detail": str(exc)[:300]})
+                            contents.append({"role": "user", "parts": [{"text": "Your last tool call was rejected because that tool is not available "
+                                "in this session. Available tools: " + ", ".join(sorted(d["name"] for d in offered)) + ". Use one of these."}]})
+                            continue
                         except EmptyModelResponse:
                             self.publish(task_id, session, role, "model_response_retry", {"request": requests,
                                 "duration_ms": round((time.perf_counter()-inference_start)*1000), "reason": "empty_response"})
@@ -122,9 +142,26 @@ class Agent:
                             "duration_ms": round((time.perf_counter()-inference_start)*1000), "usage": content.get("_usage")})
                         contents.append(content)
                         invocations = [p["functionCall"] for p in content["parts"] if "functionCall" in p]
+                        text_calls = False
                         if not invocations:
                             text = "\n".join(p.get("text", "") for p in content["parts"] if not p.get("thought"))[:4000]
+                            invocations = parse_text_tool_calls(text, {d["name"] for d in offered})
+                            if invocations:
+                                text_calls = True
+                                self.publish(task_id, session, role, "text_tool_calls_parsed", {"tools": [i["name"] for i in invocations]})
+                        if not invocations:
                             current = self.store.runs.get(task_id)
+                            stalled = (role == "investigator" and current["status"] in {"new", "blocked"}) or \
+                                (role == "resolver" and (current["status"] in {"handoff", "executing"} or
+                                                         (current["status"] == "resolved" and not current.get("ticket_closed"))))
+                            if stalled and stalls:
+                                # A second stall: list the valid calls computed from current evidence. The model still chooses.
+                                stalls += 1
+                                message = guidance(role, current, initial.get("incident"))
+                                self.publish(task_id, session, role, "guidance_offered", {"stall": stalls, "message": message})
+                                contents.append({"role": "user", "parts": [{"text": message}]})
+                                continue
+                            if stalled: stalls += 1
                             if role == "investigator" and current["status"] in {"new", "blocked"}:
                                 contents.append({"role": "user", "parts": [{"text": "No handoff was saved. If evidence supports a cause, call handoff_target with that service. If evidence is healthy, ambiguous or unsupported, call conclude_investigation with the reason. A textual proposal does not complete this task."}]})
                                 continue
@@ -146,11 +183,20 @@ class Agent:
                             break
                         replies = []
                         for invocation in invocations:
-                            try: data = await call(invocation["name"], invocation.get("args", {}))
-                            except (ValueError, ValidationError) as exc: data = {"error": str(exc)[:700]}
-                            response = {"name": invocation["name"], "response": {"result": data}}
-                            if "id" in invocation: response["id"] = invocation["id"]
-                            replies.append({"functionResponse": response})
+                            if invocation["name"] not in {d["name"] for d in offered}:
+                                data = {"error": f"{invocation['name']} is not available at this step"}
+                            else:
+                                try: data = await call(invocation["name"], invocation.get("args", {}))
+                                except (ValueError, ValidationError) as exc: data = {"error": str(exc)[:700]}
+                            if invocation["name"] == "prepare_recovery": plan_ready = bool(data.get("ready"))
+                            shown = model_view(invocation["name"], data)
+                            if text_calls:
+                                # No native call exists to answer, so the result returns as ordinary text.
+                                replies.append({"text": f"Result of {invocation['name']}: " + json.dumps(shown, separators=(",", ":"))})
+                            else:
+                                response = {"name": invocation["name"], "response": {"result": shown}}
+                                if "id" in invocation: response["id"] = invocation["id"]
+                                replies.append({"functionResponse": response})
                             current = self.store.runs.get(task_id)
                             if data.get("terminal"):
                                 result = {"summary": data["reason"], "summary_origin": "backend", "blocked": True}; break

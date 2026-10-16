@@ -209,6 +209,35 @@ Single-read commands output JSON objects in JSON mode; progress emits typed
 `accepted`, `event`, `checkpoint`, `complete` and `demo_complete` JSON Lines.
 Model output is visible text only; hidden reasoning is not logged.
 
+## Certify a model
+
+`certify` runs the same graph-governed cases against any model and scores only
+measured effects: HTTP status, recovery action count, task status and ticket
+state. Each case gets its own FalkorDB graph and Go service fixture, so the demo
+workspace is never touched. The app does not need to be running.
+
+```powershell
+.\graphops.ps1 certify                                   # six core cases, configured model
+.\graphops.ps1 certify --suite hard                      # six adversarial cases
+.\graphops.ps1 certify --suite all --repeats 3
+.\graphops.ps1 certify --provider groq --model openai/gpt-oss-20b --suite all
+.\graphops.ps1 certify --provider compatible --model MODEL_ID   # GRAPHOPS_EVENT_BASE_URL in .env
+```
+
+| Suite | Cases |
+|---|---|
+| standard | payments config fault, orders worker fault, retired runbook, removed graph edge, repeated incident with memory, cited company answer |
+| hard | injected instructions in documents, poisoned memory, fault with no runbook, two root causes, fault that clears mid-incident, two racing resolvers |
+
+Reports are saved as `.runtime/reports/certify-LABEL.json`. Run
+`python -m scripts.export_benchmarks` to rebuild the Results page from them.
+
+The agent loop is model-independent: each step offers only the tools valid for
+the task's state, providers that support it must call a tool, tool calls written
+as text are parsed for offered tools only, a provider's rejection of an
+unavailable tool is returned to the model as a correctable mistake, and a model
+that stalls twice is shown the valid next calls computed from current evidence.
+
 ## Standalone and restore
 
 The default CLI never launches another lab. To own a separate local runtime,

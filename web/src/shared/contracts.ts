@@ -111,4 +111,4 @@ export type Workspace = {
 
 export type Api = (path: string, body?: unknown) => Promise<any>;
 export type Inspect = (title: string, value: unknown) => void;
-export type View = "home" | "workspace" | "graph" | "memory" | "company" | "history" | "system";
+export type View = "home" | "workspace" | "graph" | "memory" | "company" | "history" | "system" | "results";

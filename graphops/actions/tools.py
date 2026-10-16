@@ -71,7 +71,20 @@ class RecoveryTools:
             self.context.store.runs.append_event(self.context.task_id,self.context.session,self.context.role,'memory_saved',
                 {'service':plan['target'],'kinds':['episodic','procedural','semantic'],'source':after['source'],
                  'evidence':[after['evidence_id'],incident['evidence_id']]})
-        self.context.store.runs.update(self.context.task_id, {"status": "resolved" if success else "blocked", "outcome": outcome})
+        update = {"status": "resolved" if success else "blocked", "outcome": outcome}
+        if not success:
+            if response.get("restored") is True:
+                # The operation took effect, yet the incident is not fixed: never report this as resolved.
+                update["blocker"] = (f"{plan['target']} recovery took effect, but {task['service']} still returns HTTP "
+                                     f"{incident['http_status']}. Another cause remains.")
+                outcome["partial"] = True
+            else:
+                update["blocker"] = f"{plan['target']} recovery did not verify; no further action in this session."
+            update["outcome"] = outcome
+        self.context.store.runs.update(self.context.task_id, update)
+        if not success:
+            # Ends this resolver session; the backend's reason, not model prose, is the summary.
+            return self.context.record("execute_recovery", {"plan_id": plan_id}, {**outcome, "terminal": True, "reason": update["blocker"]})
         return self.context.record("execute_recovery", {"plan_id": plan_id}, outcome)
 
 

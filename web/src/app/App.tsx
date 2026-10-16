@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Activity, ArrowUpRight, Box, Braces, Clock3, Layers3, LockKeyhole, Network, RefreshCw, ShieldCheck, SquareTerminal, Users, Workflow, X, Zap, Settings2, Download, LogOut } from "lucide-react";
+import { Activity, ArrowUpRight, BarChart3, Box, Braces, Clock3, Layers3, LockKeyhole, Network, RefreshCw, ShieldCheck, SquareTerminal, Users, Workflow, X, Zap, Settings2, Download, LogOut } from "lucide-react";
 import { time, nice } from "../shared/format";
 import { WorkspaceProvider, useWorkspace } from "./WorkspaceContext";
 import { PAGE_META } from "./navigation";
@@ -11,6 +11,7 @@ import { MemoryPage } from "../features/memory/MemoryPage";
 import { CompanyPage } from "../features/company/CompanyPage";
 import { HistoryPage } from "../features/runs/HistoryPage";
 import { SystemPage } from "../features/system/SystemPage";
+import { ResultsPage } from "../features/results/ResultsPage";
 import { WalkthroughGuide } from "../features/walkthrough/WalkthroughGuide";
 function WorkspaceShell() {
 const {
@@ -72,6 +73,7 @@ return (
 { id: "graph", label: "Connected graph", icon: Network },
               { id: "history", label: "Run history", icon: Clock3 },
               { id: "system", label: "System & backups", icon: Settings2 },
+              { id: "results", label: "Results", icon: BarChart3 },
             ] as const
           ).map((item) => (
             <button
@@ -168,7 +170,7 @@ return (
             <span className="team-avatar">G</span>
           </div>
         </header>
-        <main id="main-content" tabIndex={-1}>
+        <main id="main-content" tabIndex={-1} className={"view-" + view}>
           <div className="page-heading">
             <div>
               <div className="eyebrow">
@@ -263,9 +265,9 @@ return (
               </button>
             </div>
           )}
-          {!locked && <div className={"workspace-layout " + (view === "home" ? "overview-layout" : "")}>
+          {!locked && <div className={"workspace-layout " + (view === "home" || view === "results" ? "overview-layout" : "")}>
             <section className="workspace-main">
-{!data && view !== "home" ? <section className="panel product-panel" role="status"><h2>Waiting for the workspace</h2><p>Connect to load this module's records and controls.</p></section> : <>
+{!data && view !== "home" && view !== "results" ? <section className="panel product-panel" role="status"><h2>Waiting for the workspace</h2><p>Connect to load this module's records and controls.</p></section> : <>
 {view === "home" && <HomePage />}
 {view === "graph" && <GraphPage />}
               {view === "workspace" && <AgentPage />}
@@ -273,9 +275,10 @@ return (
               {view === "company" && <CompanyPage />}
               {view === "history" && <HistoryPage />}
               {view === "system" && <SystemPage />}
+              {view === "results" && <ResultsPage />}
               </>}
             </section>
-            {view !== "home" && data && <ContextSidebar />}
+            {view !== "home" && view !== "results" && data && <ContextSidebar />}
           </div>}
           <footer>
             <span>

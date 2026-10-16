@@ -1,6 +1,9 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
+import "@fontsource-variable/instrument-sans";
+import "@fontsource-variable/source-serif-4";
+import "@fontsource-variable/jetbrains-mono";
 import "./style.css";
 export { App };
 const element = document.getElementById("root");

@@ -69,6 +69,14 @@ def build_parser():
     sub=command('restore','Restore a backup into a new local workspace');sub.add_argument('path')
     sub=command('configure','Configure a provider/access token locally using hidden prompts')
     sub.add_argument('--provider',choices=['ollama','groq','openrouter'],default='ollama');sub.add_argument('--model');sub.add_argument('--network',action='store_true')
+    sub=command('certify','Run every graph-governed case against a model in isolated workspaces and score measured effects')
+    sub.add_argument('--provider',choices=['ollama','groq','openrouter','gemini','compatible'],help='Override the configured provider for this run')
+    sub.add_argument('--model',help='Override the configured model ID for this run')
+    sub.add_argument('--suite',choices=['standard','hard','all'],default='standard',help='standard: core cases; hard: adversarial cases')
+    sub.add_argument('--cases',nargs='+',choices=['config','worker','changed_runbook','removed_edge','repeated','company',
+                     'prompt_injection','memory_poisoning','unknown_fault','double_fault','self_healed','concurrent_resolvers'],
+                     help='Run only these cases instead of a suite')
+    sub.add_argument('--repeats',type=int,default=1);sub.add_argument('--label',help='Report name; defaults to the model ID')
     sub=command('demo','Exercise company, graph, agent, action, memory and workspace modules together')
     sub.add_argument('--scenario',choices=['config','worker'],default='config');sub.add_argument('--mode',choices=['llm','scripted'],default='llm')
     sub.add_argument('--timeout',type=positive,default=600);sub.add_argument('--interval',type=positive,default=1)

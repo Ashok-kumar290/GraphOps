@@ -3,6 +3,7 @@ import os
 import time
 import json
 import httpx
+from urllib.parse import urlsplit
 from graphops import settings
 from graphops.models.providers import CompatibleModel, Gemini, ModelError
 
@@ -15,8 +16,13 @@ def configuration():
     provider = os.getenv("GRAPHOPS_EVENT_PROVIDER", "ollama")
     defaults = {"ollama": "qwen3:8b", "groq": "qwen/qwen3.8-27b", "openrouter": "nvidia/nemotron-3-super-120b-a12b:free"}
     model = os.getenv("GRAPHOPS_EVENT_MODEL", defaults.get(provider, ""))
-    key_name = {"groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY", "gemini": "GOOGLE_API_KEY"}.get(provider)
-    return {"provider": provider, "model": model, "configured": provider == "ollama" or bool(key_name and os.getenv(key_name))}
+    key_name = {"groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY", "gemini": "GOOGLE_API_KEY",
+                "compatible": "GRAPHOPS_EVENT_API_KEY"}.get(provider)
+    # Any OpenAI-compatible endpoint (vLLM, LM Studio, Together, OpenAI...) is configured by base URL and model.
+    local_compatible = provider == "compatible" and urlsplit(os.getenv("GRAPHOPS_EVENT_BASE_URL", "")).hostname in {"localhost", "127.0.0.1"}
+    configured = provider == "ollama" or local_compatible or bool(key_name and os.getenv(key_name))
+    if provider == "compatible": configured = configured and bool(model and os.getenv("GRAPHOPS_EVENT_BASE_URL"))
+    return {"provider": provider, "model": model, "configured": configured}
 
 
 class Ollama:
@@ -27,8 +33,11 @@ class Ollama:
             raise ModelError('GRAPHOPS_OLLAMA_BATCH_SIZE must be an integer from 32 to 1024')
         self.batch_size = int(batch)
         self.base = os.getenv("GRAPHOPS_OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
-        if self.base not in {"http://127.0.0.1:11434", "http://localhost:11434", "http://host.docker.internal:11434"}:
-            raise ModelError("Ollama must be the configured local host endpoint")
+        # Local Ollama over HTTP, or a hosted Ollama server only over HTTPS.
+        local = self.base in {"http://127.0.0.1:11434", "http://localhost:11434", "http://host.docker.internal:11434"}
+        remote = urlsplit(self.base)
+        if not local and not (remote.scheme == "https" and remote.hostname and not remote.username and not remote.query):
+            raise ModelError("Ollama must be the local host endpoint or an HTTPS URL")
 
     def generate(self, system, contents, declarations, response_schema=None):
         messages = [{"role": "system", "content": system}]
@@ -71,7 +80,11 @@ def get_model():
     if provider == "groq": return CompatibleModel(model, os.environ["GROQ_API_KEY"], "https://api.groq.com/openai/v1")
     if provider == "openrouter": return CompatibleModel(model, os.environ["OPENROUTER_API_KEY"], "https://openrouter.ai/api/v1")
     if provider == "gemini": return Gemini(model or "gemini-3.5-flash-lite", os.environ["GOOGLE_API_KEY"])
-    raise ModelError("Select ollama, groq, openrouter or gemini explicitly")
+    if provider == "compatible":
+        compatible = CompatibleModel(model, "unset", os.environ["GRAPHOPS_EVENT_BASE_URL"])
+        compatible.key = os.getenv("GRAPHOPS_EVENT_API_KEY") or None  # never fall back to another provider's key
+        return compatible
+    raise ModelError("Select ollama, groq, openrouter, gemini or compatible explicitly")
 
 
 def preflight():

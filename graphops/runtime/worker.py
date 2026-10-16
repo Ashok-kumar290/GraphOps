@@ -8,6 +8,7 @@ import threading
 import time
 from graphops import settings
 from graphops.agents.runner import Agent, StopRequested
+from graphops.agents.orchestrator import run_incident
 from graphops.actions.lab import Lab, request
 from graphops.core.synthetic import SERVICES, SCENARIOS
 from graphops.memory.navigator import Navigator
@@ -85,13 +86,8 @@ class Worker:
                 await agent.run(task_id, "company", question, mode)
                 self.store.runs.update(task_id,{'status':'answered'})
             elif command == "start":
-                await agent.run(task_id, "investigator", "Investigate the gateway failure. Compare reachable causes and unrelated failures, retrieve relevant context, then hand off supported evidence.", mode)
-                if not task.get("pause_after_handoff", False) and self.store.runs.get(task_id)["status"] == "handoff":
-                    self.emit({"type": "progress", "task": task_id, "stage": "handoff_saved", "role": "resolver"})
-                    # A fresh agent and MCP process load the saved handoff from FalkorDB.
-                    if self.stop_requested.is_set():raise StopRequested('Stopped at a checkpoint. Resume this incident to continue.')
-                    await Agent(WorkspaceGraph(self.store.scope), self.port, self.emit,should_stop=self.stop_requested.is_set).run(task_id, "resolver",
-                        "Continue the persisted handoff. Check memory and current procedure, recover only with a validated plan, verify health and complete the synthetic ticket.", mode)
+                await run_incident(self.store, self.port, task_id, mode, self.emit, self.stop_requested.is_set,
+                                   task.get("pause_after_handoff", False))
             else:
                 if task["status"] in {"new", "blocked"}:
                     await agent.run(task_id, "investigator", "Resume this incident from its checkpoint using current evidence. Recheck the blocker before handing off.", mode)
@@ -154,6 +150,9 @@ class Worker:
             pause = body.get("pause_after_handoff", False)
             if not isinstance(pause, bool): raise ValueError("Pause after handoff must be a boolean")
             if mode == "llm": preflight()  # No fault injection until the local model is installed.
+            # Refuse before recording anything, so a rejected start leaves no blocked incident in history.
+            active = [name for name, item in self.lab.state().get("services", {}).items() if name != "analytics" and item.get("fault")]
+            if active: raise ConflictError(f"A fault is still active on {', '.join(sorted(active))}. Resume or finish that incident first.")
             task = self.store.runs.create(scenario, "Investigate checkout service failure", mode)
             self.store.runs.update(task["id"], {"pause_after_handoff": pause})
             try: injection = self.lab.inject(scenario)

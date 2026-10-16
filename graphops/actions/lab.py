@@ -43,6 +43,12 @@ class Lab:
         if result["http_status"] != 200: raise ValueError(result.get("error", "Injection failed"))
         return result
 
+    def heal(self, service):
+        """Clear a fault without a recovery action, as when another operator fixes it."""
+        result = request(f"http://127.0.0.1:{self.port+4}/heal", {"service": service}, admin=True)
+        if result["http_status"] != 200: raise ValueError(result.get("error", "Heal failed"))
+        return result
+
     def start(self):
         binary = Path(os.getenv("GRAPHOPS_LAB_BINARY", str(settings.DATA / ("lab.exe" if os.name == "nt" else "lab"))))
         if not binary.is_file(): raise RuntimeError("Build the Go lab first with event/build.ps1 or Docker Compose")

@@ -33,7 +33,7 @@ export function ServiceGraph({
             height="22"
             patternUnits="userSpaceOnUse"
           >
-            <circle cx="1" cy="1" r=".7" fill="#29343d" />
+            <circle cx="1" cy="1" r=".7" style={{fill: "var(--rule)"}} />
           </pattern>
           <marker
             id="arrow"
@@ -43,7 +43,7 @@ export function ServiceGraph({
             refY="3.5"
             orient="auto"
           >
-            <path d="M0,0 L7,3.5 L0,7" fill="none" stroke="#5c7d78" />
+            <path d="M0,0 L7,3.5 L0,7" fill="none" style={{stroke: "var(--ink-3)"}} />
           </marker>
         </defs>
         <rect width="810" height="380" fill="url(#grid)" />
@@ -106,11 +106,11 @@ export function ServiceGraph({
                 width="25"
                 height="25"
                 rx="6"
-                fill={good ? "#19372f" : "#3b2527"}
+                style={{fill: good ? "var(--good-bg)" : "var(--bad-bg)", stroke: good ? "var(--good)" : "var(--bad)"}}
               />
               <path
                 d="M-70,-19h9v9h-9z M-67,-22v3 M-67,-10v3"
-                stroke={good ? "#67d5ae" : "#e78e83"}
+                style={{stroke: good ? "var(--good)" : "var(--bad)"}}
                 fill="none"
               />
               <text x="-43" y="-10" className="node-title">
@@ -120,7 +120,7 @@ export function ServiceGraph({
                 cx="-72"
                 cy="25"
                 r="3"
-                fill={good ? "#5ce1ac" : "#f19689"}
+                style={{fill: good ? "var(--good)" : "var(--bad)"}}
               />
               <text
                 x="-61"
@@ -135,7 +135,7 @@ export function ServiceGraph({
             </g>
           );
         })}
-        <path d="M50 233 H755" stroke="#273139" strokeDasharray="4 6" />
+        <path d="M50 233 H755" style={{stroke: "var(--rule-strong)"}} strokeDasharray="4 6" />
         <text x="32" y="264" className="svg-caption">
           OUTSIDE THE INCIDENT PATH
         </text>

@@ -42,6 +42,17 @@ async def main(argv=None):
             handle.write('\n'.join(k+'='+json.dumps(v) for k,v in values.items())+'\n')
         temporary.replace(path)
         print('Configuration saved locally. Restart the app to apply it.');return
+    if args.command=='certify':
+        # Runs locally against FalkorDB and its own service fixtures; the running app is not used or changed.
+        if args.provider:os.environ['GRAPHOPS_EVENT_PROVIDER']=args.provider
+        if args.model:os.environ['GRAPHOPS_EVENT_MODEL']=args.model
+        if not 1<=args.repeats<=10:raise ValueError('Use --repeats from 1 to 10')
+        from graphops.workspace.certify import certify,CASES,HARD_CASES
+        cases=args.cases or {'standard':list(CASES),'hard':list(HARD_CASES),'all':list(CASES)+list(HARD_CASES)}[args.suite]
+        label=args.label or ''.join(c if c.isalnum() else '-' for c in configuration()['model'])+('' if args.suite=='standard' or args.cases else '-'+args.suite)
+        report=await certify(cases,args.repeats,label,out=lambda line:print(line,flush=True))
+        if report['passed']!=report['runs']:raise SystemExit(1)
+        return
     if args.command=='restore':
         if not args.workspace:raise ValueError('Restore requires --workspace NEW_NAME')
         from graphops.workspace.backup import restore_workspace,load_backup

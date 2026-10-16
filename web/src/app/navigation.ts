@@ -8,4 +8,5 @@ export const PAGE_META: Record<View, {title: string; description: string}> = {
   memory: {title: "Shared memory", description: "Inspect what survives a session, where it came from and whether it still applies."},
   history: {title: "Run history", description: "Review saved tasks, evidence and workspace changes."},
   system: {title: "System & backups", description: "Check the running components and preserve your workspace."},
+  results: {title: "Results", description: "Measured results across models and hard problems."},
 };

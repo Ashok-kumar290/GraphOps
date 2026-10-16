@@ -78,7 +78,7 @@ export function KnowledgeGraph({
               refY="3.5"
               orient="auto"
             >
-              <path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#6d9990" />
+              <path d="M0 0 L7 3.5 L0 7" fill="none" style={{stroke: "var(--ink-3)"}} />
             </marker>
             <marker
               id="knowledge-arrow-back"
@@ -88,7 +88,7 @@ export function KnowledgeGraph({
               refY="3.5"
               orient="auto"
             >
-              <path d="M7 0 L0 3.5 L7 7" fill="none" stroke="#6d9990" />
+              <path d="M7 0 L0 3.5 L7 7" fill="none" style={{stroke: "var(--ink-3)"}} />
             </marker>
           </defs>
           {edges

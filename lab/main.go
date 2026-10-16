@@ -208,6 +208,29 @@ func (l *Lab) control(w http.ResponseWriter, r *http.Request) {
 		respond(w, 200, l.state)
 		return
 	}
+	if r.Method == "POST" && r.URL.Path == "/heal" {
+		// A fault clears without any recovery action, as when another operator or a retry fixes it.
+		var body struct {
+			Service string `json:"service"`
+		}
+		if !readBody(w, r, &body) {
+			return
+		}
+		l.mu.Lock()
+		defer l.mu.Unlock()
+		if _, ok := l.state.Services[body.Service]; !ok {
+			respond(w, 400, map[string]string{"error": "Unknown service"})
+			return
+		}
+		next := l.clone()
+		next.Services[body.Service] = Item{Revision: "healthy-v1"}
+		if err := l.save(next); err != nil {
+			respond(w, 500, map[string]string{"error": "Could not persist heal"})
+			return
+		}
+		respond(w, 200, map[string]any{"healed": body.Service, "action_count": next.Count})
+		return
+	}
 	if r.Method != "POST" || r.URL.Path != "/inject" {
 		respond(w, 404, map[string]string{"error": "Not found"})
 		return
@@ -219,10 +242,20 @@ func (l *Lab) control(w http.ResponseWriter, r *http.Request) {
 	if !readBody(w, r, &body) {
 		return
 	}
-	target, action, rev := "payments", "restore_config", "config-broken-v1"
-	if body.Scenario == "worker" {
-		target, action, rev = "orders", "restart_worker", "worker-stopped-v1"
-	} else if body.Scenario != "config" {
+	// faults maps each faulted service to its revision and own error.
+	faults := map[string]Item{}
+	switch body.Scenario {
+	case "config":
+		faults["payments"] = Item{"config-broken-v1", "restore_config"}
+	case "worker":
+		faults["orders"] = Item{"worker-stopped-v1", "restart_worker"}
+	case "unknown":
+		// A fault no approved runbook covers; the familiar fix must not be applied.
+		faults["payments"] = Item{"disk-full-v1", "disk_full"}
+	case "double":
+		faults["payments"] = Item{"config-broken-v1", "restore_config"}
+		faults["orders"] = Item{"worker-stopped-v1", "restart_worker"}
+	default:
 		respond(w, 400, map[string]string{"error": "Unknown scenario"})
 		return
 	}
@@ -236,7 +269,9 @@ func (l *Lab) control(w http.ResponseWriter, r *http.Request) {
 	}
 	next := l.clone()
 	next.Generation++
-	next.Services[target] = Item{rev, action}
+	for target, item := range faults {
+		next.Services[target] = item
+	}
 	next.Services["analytics"] = Item{Revision: "healthy-v1"}
 	if body.Distractor {
 		next.Services["analytics"] = Item{"unrelated-fault-v1", "unrelated"}

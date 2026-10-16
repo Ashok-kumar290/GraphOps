@@ -12,6 +12,10 @@ from urllib.parse import urlsplit
 class ModelError(RuntimeError): pass
 
 
+class InvalidToolCall(ModelError):
+    """The provider rejected the model's tool call (for example a tool not offered). Correctable by the model."""
+
+
 def error_detail(response, key: str | None) -> str:
     try:
         error = response.json().get("error", {})
@@ -41,6 +45,9 @@ def provider_retry_delay(response, fallback: float) -> float:
 
 class CompatibleModel:
     """OpenRouter or a configured OpenAI-compatible chat-completions endpoint."""
+    supports_required_tool = True
+    rate_limit_attempts = 6
+
     def __init__(self, model: str | None = None, api_key: str | None = None,
                  base_url: str | None = None):
         self.base_url = (base_url or os.getenv("MODEL_BASE_URL", "https://openrouter.ai/api/v1")).rstrip("/")
@@ -56,7 +63,7 @@ class CompatibleModel:
         if not self.key and endpoint.hostname not in {"localhost", "127.0.0.1"}:
             raise ModelError("Set OPENROUTER_API_KEY or MODEL_API_KEY locally; run configure without exposing the key")
 
-    def generate(self, system: str, contents: list, declarations: list) -> dict:
+    def generate(self, system: str, contents: list, declarations: list, require_tool: bool = False) -> dict:
         messages = [{"role": "system", "content": system}]
         for content in contents:
             if "_provider_message" in content:
@@ -74,25 +81,34 @@ class CompatibleModel:
         if declarations:
             payload["tools"] = [{"type": "function", "function": {"name": d["name"],
                 "description": d["description"], "parameters": d["parametersJsonSchema"]}} for d in declarations]
+            if require_tool: payload["tool_choice"] = "required"
         headers = {"Authorization": f"Bearer {self.key}"} if self.key else {}
+        started = time.perf_counter()
         try:
             with httpx.Client(timeout=60) as client:
-                for attempt in range(3):
+                attempts = self.rate_limit_attempts
+                for attempt in range(attempts):
                     try:
                         response = client.post(self.base_url + "/chat/completions", headers=headers, json=payload)
                     except httpx.TransportError:
-                        if attempt == 2: raise
+                        if attempt >= 2: raise
                         time.sleep(1 + attempt)
                         continue
                     detail = error_detail(response, self.key) if response.status_code != 200 else ""
                     if response.status_code == 429 and "per-day" in detail:
                         raise ModelError("Daily provider quota exhausted; wait for reset or configure available quota")
-                    if response.status_code in {429, 500, 502, 503, 504} and attempt < 2:
-                        time.sleep(provider_retry_delay(response, 1 + attempt))
+                    # Per-minute token limits clear within a minute; server errors get two retries.
+                    retryable = response.status_code == 429 or (response.status_code in {500, 502, 503, 504} and attempt < 2)
+                    if retryable and attempt < attempts - 1:
+                        time.sleep(provider_retry_delay(response, 2 + 2 * attempt))
                         continue
+                    if response.status_code == 400 and "tool call validation failed" in detail.lower():
+                        raise InvalidToolCall(detail)
                     if response.status_code != 200:
                         raise ModelError(f"Model provider HTTP {response.status_code}: {detail or 'check model, credentials and quota'}")
-                    choices = response.json().get("choices", [])
+                    body = response.json()
+                    usage = body.get("usage") or {}
+                    choices = body.get("choices", [])
                     if not choices or not choices[0].get("message"):
                         raise ModelError("Model provider returned no usable message")
                     message = choices[0]["message"]
@@ -105,7 +121,9 @@ class CompatibleModel:
                                                        "id": invocation["id"]}})
                     if not parts: raise ModelError("Model returned an empty response")
                     preserved = {k: v for k, v in message.items() if k in {"role", "content", "tool_calls", "reasoning_details"}}
-                    return {"role": "model", "parts": parts, "_provider_message": preserved}
+                    return {"role": "model", "parts": parts, "_provider_message": preserved,
+                            "_usage": {"input_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
+                                       "model_duration_ms": round((time.perf_counter() - started) * 1000)}}
         except (httpx.HTTPError, ValueError, KeyError, TypeError) as exc:
             raise ModelError(f"Model request failed: {type(exc).__name__}") from None
 

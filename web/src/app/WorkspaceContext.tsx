@@ -6,7 +6,7 @@ import { WALKTHROUGH_STEPS, type Walkthrough, type WalkthroughStep } from "../fe
 type Evidence = { title: string; value: unknown };
 
 // Each page has a URL fragment so refresh, Back and shared links keep the page.
-const VIEW_HASH: Record<View, string> = {home: "", workspace: "agent", graph: "graph", memory: "memory", company: "company", history: "history", system: "system"};
+const VIEW_HASH: Record<View, string> = {home: "", workspace: "agent", graph: "graph", memory: "memory", company: "company", history: "history", system: "system", results: "results"};
 const viewFromHash = (): View =>
   (Object.keys(VIEW_HASH) as View[]).find(v => VIEW_HASH[v] && VIEW_HASH[v] === location.hash.slice(1)) || "home";
 
