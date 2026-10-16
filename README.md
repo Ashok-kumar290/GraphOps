@@ -223,8 +223,9 @@ npm run build
 ```
 
 The model evaluation uses real inference. The integration suite uses real
-FalkorDB/HTTP/MCP plus explicitly simulated model protocol checks. Package checks
-use the labeled scripted baseline. Reports go into ignored `.runtime/reports`;
+FalkorDB/HTTP/MCP plus explicitly simulated model protocol checks. `check_package`
+defaults to the labeled scripted baseline; `--mode llm`, `check_product` and the
+fresh-source rehearsal use actual model inference. Reports go into ignored `.runtime/reports`;
 reviewed measurement summaries are in [RESULTS.md](RESULTS.md).
 
 ### Rehearse a fresh source checkout

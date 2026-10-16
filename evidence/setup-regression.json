@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-16",
+  "backend": {
+    "tests": 78,
+    "passed": 78,
+    "failures": [],
+    "duration_seconds": 211.237,
+    "actual_falkordb_go_http_mcp": true,
+    "model_inference": false,
+    "scope": "Local event implementation; protocol simulation is not model inference"
+  },
+  "frontend": {
+    "tests": 40,
+    "passed": 40,
+    "success": true,
+    "scope": "DOM and pure-rule checks; HTTP/EventSource mocked; no browser visual review"
+  },
+  "native_app": {
+    "health": {
+      "ready": true,
+      "worker": "connected",
+      "worker_restarts": 0,
+      "access_required": false
+    },
+    "workspace": "team-demo",
+    "service_health": [
+      {
+        "service": "gateway",
+        "http_status": 200,
+        "healthy": true
+      },
+      {
+        "service": "orders",
+        "http_status": 200,
+        "healthy": true
+      },
+      {
+        "service": "payments",
+        "http_status": 200,
+        "healthy": true
+      },
+      {
+        "service": "analytics",
+        "http_status": 503,
+        "healthy": false
+      }
+    ],
+    "owned_processes": 3
+  },
+  "fresh_package_evidence": "fresh-setup.json",
+  "retained_failure": "fresh-setup-first-failure.json",
+  "limits": [
+    "Fresh Docker build reused dependency build caches and the already installed Ollama model.",
+    "Host Python drove acceptance checks; no native Windows first-install rehearsal.",
+    "No public deployment or browser visual review. Existing memory-comparison failures remain unchanged."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "success": false,
+  "source_commit": "7ba795699aab71fa266988381d83420cee3daeed",
+  "project": "graphops-fresh-20261016t144529-1c6abf",
+  "port": 8083,
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "batch_size": 32,
+  "copied_local_configuration": false,
+  "app_dependencies_installed_in_docker": true,
+  "host_python_is_acceptance_driver": true,
+  "browser_visual_review": false,
+  "started_at": "2026-10-16T14:45:29.500214+00:00",
+  "archive_sha256": "c4b1440e020e708052d8e33ddafc25807ac82a8f9de9cf900102ba3f703f2b2e",
+  "source_files": 203,
+  "error": "UnicodeEncodeError",
+  "duration_seconds": 8.265,
+  "failure_scope": "Windows console could not encode Unicode Docker/Vite output; UTF-8 output handling was added before the successful retry.",
+  "secondary_driver_error": "OSError after output pipe closed; no passing acceptance result claimed."
+}

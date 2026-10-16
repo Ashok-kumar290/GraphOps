@@ -11,6 +11,7 @@
 | Recording plan | [DEMO.md](../DEMO.md); video still needs recording |
 | Setup and graph details | [README.md](../README.md), [QUERIES.md](../QUERIES.md) |
 | Actual measurements and limitations | [RESULTS.md](../RESULTS.md), [evidence](../evidence/README.md) |
+| Fresh-source setup rehearsal | [51 live product checks](../evidence/fresh-setup.json), including 24 connected CLI commands; [repeat it](../README.md#rehearse-a-fresh-source-checkout) |
 | Participant contribution/review | [PROVENANCE.md](../PROVENANCE.md), [LEARN.md](../LEARN.md); team must complete truthfully |
 | Browser review | Pending; connected browser inventory is empty |
 | Public source repository | [Ashok-kumar290/GraphOps](https://github.com/Ashok-kumar290/GraphOps); source uploaded and public API access verified October 16, 2026 |

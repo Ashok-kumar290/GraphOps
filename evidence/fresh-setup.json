@@ -1,0 +1,258 @@
+{
+  "success": true,
+  "source_commit": "b691e5688c8d9e0a6614cb0d39370b8056c82323",
+  "project": "graphops-fresh-20261016t144611-fbcbf4",
+  "port": 8083,
+  "provider": "ollama",
+  "model": "qwen3:8b",
+  "batch_size": 32,
+  "copied_local_configuration": false,
+  "app_dependencies_installed_in_docker": true,
+  "host_python_is_acceptance_driver": true,
+  "browser_visual_review": false,
+  "started_at": "2026-10-16T14:46:11.882951+00:00",
+  "archive_sha256": "8483c74abbe1ccea85ce0c10fba250a4b0e22e82045c627a22f6798176206e6a",
+  "source_files": 203,
+  "acceptance_exit_code": 0,
+  "acceptance": {
+    "mode": "llm",
+    "model_inference": true,
+    "public_deployment": false,
+    "checks": [
+      {
+        "name": "access_required",
+        "passed": true
+      },
+      {
+        "name": "bad_access_token_rejected",
+        "passed": true
+      },
+      {
+        "name": "authenticated_workspace",
+        "passed": true
+      },
+      {
+        "name": "ollama_batch_setting_forwarded",
+        "passed": true,
+        "batch_size": 32
+      },
+      {
+        "name": "malformed_json_400",
+        "passed": true
+      },
+      {
+        "name": "json_array_400",
+        "passed": true
+      },
+      {
+        "name": "oversized_body_413",
+        "passed": true
+      },
+      {
+        "name": "ui_html",
+        "passed": true
+      },
+      {
+        "name": "built_ui_assets",
+        "passed": true,
+        "assets": [
+          "/assets/index-Bg4hridU.js",
+          "/assets/index-Ce73fF6W.css"
+        ]
+      },
+      {
+        "name": "missing_asset_404",
+        "passed": true
+      },
+      {
+        "name": "sse_connected",
+        "passed": true
+      },
+      {
+        "name": "graph_lab_model_available",
+        "passed": true
+      },
+      {
+        "name": "live_model_and_mcp_verification",
+        "passed": true,
+        "diagnostics": {
+          "checked_at": "2026-10-16T14:46:21.782464+00:00",
+          "task": "INC-36C9E85B",
+          "mcp": {
+            "success": true,
+            "session": "8659234d-7df3-4c23-bd7f-135f2547177c"
+          },
+          "model": {
+            "success": true,
+            "provider": "ollama",
+            "model": "qwen3:8b"
+          },
+          "success": true
+        }
+      },
+      {
+        "name": "source_imported",
+        "passed": true
+      },
+      {
+        "name": "source_search",
+        "passed": true
+      },
+      {
+        "name": "source_conflict_409",
+        "passed": true
+      },
+      {
+        "name": "immutable_source_revision",
+        "passed": true
+      },
+      {
+        "name": "company_answer_from_current_owned_sources",
+        "passed": true,
+        "summary": "The owner of the payments service is **Payments Response**, as indicated in the ownership document with the source **owned:ownership/payments** and revision **ba1912da**.\n\nThe current refund review window is **96 hours**, as stated in the synthetic refund policy document with the source **owned:document/owned-93c1af12189a6b3068c7** and revision **23793cbf64c18553**.",
+        "citation_check": "known_source_locations"
+      },
+      {
+        "name": "automatic_config",
+        "passed": true,
+        "seconds": 15.434
+      },
+      {
+        "name": "report_config",
+        "passed": true
+      },
+      {
+        "name": "automatic_worker",
+        "passed": true,
+        "seconds": 12.371
+      },
+      {
+        "name": "report_worker",
+        "passed": true
+      },
+      {
+        "name": "memory_packet_policy_and_candidates",
+        "passed": true
+      },
+      {
+        "name": "retired_procedure_blocks_action",
+        "passed": true
+      },
+      {
+        "name": "resume_after_published_procedure",
+        "passed": true
+      },
+      {
+        "name": "optional_pause",
+        "passed": true
+      },
+      {
+        "name": "worker_supervisor_reconnects",
+        "passed": true
+      },
+      {
+        "name": "handoff_survives_app_restart",
+        "passed": true
+      },
+      {
+        "name": "fresh_resolver_after_restart",
+        "passed": true
+      },
+      {
+        "name": "stop_at_checkpoint",
+        "passed": true
+      },
+      {
+        "name": "resume_stopped_run",
+        "passed": true
+      },
+      {
+        "name": "complete_workspace_backup",
+        "passed": true
+      },
+      {
+        "name": "graph_restart_preserves_state",
+        "passed": true
+      },
+      {
+        "name": "backup_restores_into_new_workspace",
+        "passed": true
+      },
+      {
+        "name": "history_and_change_log",
+        "passed": true
+      },
+      {
+        "name": "cli_live_monitor_process_metrics",
+        "passed": true
+      },
+      {
+        "name": "cli_all_module_statuses",
+        "passed": true
+      },
+      {
+        "name": "cli_company_ownership",
+        "passed": true
+      },
+      {
+        "name": "cli_source_import_revision_and_search",
+        "passed": true
+      },
+      {
+        "name": "cli_actual_graph_paths",
+        "passed": true
+      },
+      {
+        "name": "cli_company_answer_current_source",
+        "passed": true
+      },
+      {
+        "name": "cli_six_module_live_demo",
+        "passed": true,
+        "task": "INC-C4088A88",
+        "seconds": 18.756
+      },
+      {
+        "name": "cli_live_steps_sessions_and_memory",
+        "passed": true
+      },
+      {
+        "name": "cli_event_cursor_and_reconnect",
+        "passed": true
+      },
+      {
+        "name": "cli_memory_navigation",
+        "passed": true
+      },
+      {
+        "name": "cli_history_and_report",
+        "passed": true
+      },
+      {
+        "name": "cli_complete_backup",
+        "passed": true
+      },
+      {
+        "name": "cli_detach_stop_and_resume",
+        "passed": true
+      },
+      {
+        "name": "cli_live_model_and_mcp_diagnostics",
+        "passed": true
+      },
+      {
+        "name": "cli_monitor_duration_and_json_lines",
+        "passed": true,
+        "commands": 24
+      },
+      {
+        "name": "logout_locks_workspace",
+        "passed": true
+      }
+    ],
+    "success": true,
+    "connected_cli_commands": 24
+  },
+  "containers_stopped": true,
+  "duration_seconds": 177.315
+}

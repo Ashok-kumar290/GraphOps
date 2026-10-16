@@ -31,6 +31,13 @@ both overall gates failed. Backend flags and action checks remain authoritative.
 The model selects tools and arguments. Backend guards decide whether a request
 is currently valid. Teams should be able to trace this in their own code review.
 
+The [fresh-source Docker rehearsal](../evidence/fresh-setup.json) builds a committed
+archive without copied local settings or generated files. All 51 product checks
+passed with real Qwen3:8b inference, including 24 connected CLI commands, sourced
+company answers, both supported recovery actions, persisted handoffs/memory and
+a retired-procedure blocker. This validates the local package; public hosting
+and browser visual review remain pending.
+
 ## Technical questions to rehearse
 
 - Why is payments an eligible cause while the unrelated analytics fault is not?

@@ -9,6 +9,8 @@ production capacity, general agent reliability, or a promise of hosted speed.
 
 | Check | Measured result | What it exercises |
 |---|---|---|
+| [Fresh committed-source Docker rehearsal](evidence/fresh-setup.json) | 51/51 product checks, including 24 actual CLI commands; 177.315 s including build/start/cleanup | Source commit `b691e56`, no copied local configuration or generated assets, unique graph/lab volumes, Qwen3:8b with explicit batch 32. Both recoveries, company sources, procedure retirement, worker/app/graph restarts, memory metadata and backup restoration passed. Docker dependency caches and the installed model were reused; host Python drove checks. Not a native first-install or browser review |
+| [Setup regression](evidence/setup-regression.json) | 78/78 backend checks in 211.237 s; 40/40 UI checks; normal app ready | Three new source/configuration isolation guards; actual graph/Go HTTP/MCP regression, simulated model protocol cases. Separate native app readiness check found three owned processes and HTTP 200 for gateway/orders/payments, with unrelated analytics HTTP 503 |
 | [Memory module regression and live diagnostic](evidence/memory-module-checks.json) | 75/75 backend checks in 207.228 s; 40/40 UI checks; build passed | Actual graph/Go HTTP/MCP regression with simulated model protocol cases; policy metadata, candidate flags, cached-packet isolation, JSON schema and batch validation. Separate live Qwen3:8b/MCP diagnostic passed in 4.343 s. Current assets served; browser review pending |
 | [Memory comparison](evidence/memory-comparison.json) | Two completed 18-call runs; both strict overall gates failed | Current navigator exact historical recall 6/6, no-past-context 0/6, full history 5/6. Navigator median reported input tokens 1,331 versus 4,098 full history; applicability exactly correct only 1/6, with five abstentions. Backend candidate flags matched all three snapshots. Raw answers/failures retained; [method and limits](MEMORY_COMPARISON.md) |
 | [Product explanation and incident story](evidence/frontend-product-clarity.json) | 39/39 UI/logic checks; 9/9 live workflow checks in 36.694 s; production build passed | Checkout-first homepage derives its path from graph records; incident progress uses scoped session, validation, recovery and memory evidence. Live Qwen3:8b handoff stays pending until the fresh resolver runs. Actual HTTP assets served successfully. Browser layout review remains pending |
@@ -31,9 +33,19 @@ production capacity, general agent reliability, or a promise of hosted speed.
 
 The complete product acceptance ran in an isolated Docker project with its own
 graph and lab volumes. Automatic payments recovery took 9.264 seconds and orders
-recovery 8.236 seconds in the latest warm local run. The company agent retrieved an
+recovery 8.236 seconds in an earlier warm local run. The company agent retrieved an
 updated imported policy (96 hours) and the current Payments Response owner, with
 known source locations. This is one controlled run, not a throughput guarantee.
+
+The later fresh-source rehearsal measured payments recovery at 15.434 seconds,
+orders at 12.371 seconds and the CLI's company-plus-recovery demonstration at
+18.756 seconds. The backend regression suite ran concurrently in a separate graph;
+these are observations under that workload, not a controlled speed comparison.
+Its [first attempt](evidence/fresh-setup-first-failure.json) stopped when the host
+driver could not encode a Unicode build-output character on Windows. The driver
+now emits UTF-8 and also stops its exact Docker project during cleanup. The failed
+report remains alongside the successful retry. The successful package stopped;
+the normal saved native workspace was restarted on localhost:8080.
 
 The first product acceptance attempt failed before startup: a TypeScript
 constructor parameter property was incompatible with Node's strip-only runtime.
