@@ -3,11 +3,13 @@
 Prepared artifacts: [submission package](submission/README.md),
 [form text draft](submission/FORM_DRAFT.md), [entry fields](submission/entry.json),
 [track evidence](submission/TRACK_EVIDENCE.md), and [recording plan](DEMO.md).
-These are draft materials; a video, public repository and participant review
-remain pending.
+These are draft materials; a video and participant review remain pending.
+Source code is published at [Ashok-kumar290/GraphOps](https://github.com/Ashok-kumar290/GraphOps).
 
-Follow [the publishing instructions](submission/PUBLISH.md) to create the public
-repository, verify its visibility and record the final URL.
+The source upload and public API access were verified on October 16, 2026.
+The first GitHub-hosted CI job was prevented from starting; it provides no
+remote test result. [Publishing instructions](submission/PUBLISH.md) are kept
+for reference.
 
 See [the supplied rules map](HACKATHON_REQUIREMENTS.md), [module design](MODULES.md)
 and [participant walkthrough](LEARN.md). Participant understanding and meaningful
@@ -45,7 +47,7 @@ is accepted by the published rules. Review the actual form once submissions open
 - [ ] Record each teammate's actual contributions in PROVENANCE.md.
 - [ ] Complete the participant walkthrough; explain the schema, essential queries,
       module interfaces and decisions in your own words.
-- [ ] Publish this event repository to the team's chosen public GitHub repository.
+- [x] Publish this event repository to the team's chosen public GitHub repository.
 - [ ] Inspect UI in a real browser, including mobile and keyboard interaction.
 - [x] Run repeated model evaluations; preserve failures and report aggregate results.
 - [ ] Compare memory versus no memory to measure the benefit of retrieval.

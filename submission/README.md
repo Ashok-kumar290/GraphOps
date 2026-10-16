@@ -1,6 +1,6 @@
 # Submission package
 
-**Status: prepared draft; not submitted or published.**
+**Status: submission draft; source code published; hackathon entry not submitted.**
 
 | Item | Location / current state |
 |---|---|
@@ -13,7 +13,8 @@
 | Actual measurements and limitations | [RESULTS.md](../RESULTS.md), [evidence](../evidence/README.md) |
 | Participant contribution/review | [PROVENANCE.md](../PROVENANCE.md), [LEARN.md](../LEARN.md); team must complete truthfully |
 | Browser review | Pending; connected browser inventory is empty |
-| Public source repository | [Ashok-kumar290/GraphOps](https://github.com/Ashok-kumar290/GraphOps); source upload verification pending |
+| Public source repository | [Ashok-kumar290/GraphOps](https://github.com/Ashok-kumar290/GraphOps); source uploaded and public API access verified October 16, 2026 |
+| Remote CI | GitHub-hosted job could not start; no remote test result yet |
 | Publishing instructions | [PUBLISH.md](PUBLISH.md); event repository only |
 | Live deployment | Not provisioned; complete local setup is provided |
 | Signed-in form | Public panel displays Loading; exact fields/limits unverified |
@@ -21,8 +22,8 @@
 ## Team input required
 
 The registered team name is **TeamDesperateForGTA**. Add member names and actual contributions. Complete
-the code/graph walkthrough and record what each person verified. Supply the
-public source repository and working video links after publication and upload.
+the code/graph walkthrough and record what each person verified. The public
+repository link is recorded; supply the working video link after upload.
 A public live app is preferred by the event page; the rules also permit complete
 local setup when deployment is unavailable.
 

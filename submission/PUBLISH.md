@@ -1,5 +1,11 @@
 # Publish the project repository
 
+**Completed October 16, 2026:** the source is public at
+[Ashok-kumar290/GraphOps](https://github.com/Ashok-kumar290/GraphOps). Its initial
+MIT license commit was preserved by merging both histories. The first remote CI
+job was prevented from starting, so remote checks remain unverified. The
+instructions below describe publication and follow-up verification.
+
 The repository to publish is **`C:\Users\Harsha\Hackathon\event`**. The
 surrounding `Hackathon/` directory also contains earlier
 preparation work and local credentials; use the event repository below.
