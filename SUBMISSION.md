@@ -43,6 +43,16 @@ is accepted by the published rules. Review the actual form once submissions open
 - [x] Frontend control audit and actual React-to-backend model workflows;
       [control checklist](FRONTEND_CHECKLIST.md) distinguishes verified behavior
       from pending real-browser and OS file/save review.
+- [x] Model-independent agent loop and `certify` across local and hosted models:
+      Qwen3 8B 12/12; Qwen3.8 27B and gpt-oss-20b 9/9 completed on Groq, with
+      three cases each stopped by the free tier's daily token limit.
+- [x] Six hard cases from reported agent failure modes, all passed with Qwen3 8B.
+- [x] Benchmark against LangGraph ReAct agents on the same model and cases:
+      GraphOps 12/12 with 0 unsafe fix requests; ReAct 7/12 and ReAct with a
+      graph tool 6/12, each with 6. [Raw reports](evidence/benchmarks).
+- [x] Judge check page: component checks plus a live quick (4) or full (12) run;
+      quick check passed 4/4 in 135 s from Chrome.
+- [x] Results page and per-session agent timelines generated from the reports.
 
 ## Before submitting
 
@@ -52,12 +62,15 @@ is accepted by the published rules. Review the actual form once submissions open
 - [ ] Complete the participant walkthrough; explain the schema, essential queries,
       module interfaces and decisions in your own words.
 - [x] Publish this event repository to the team's chosen public GitHub repository.
-- [ ] Inspect UI in a real browser, including mobile and keyboard interaction.
+- [x] Inspect UI in a real browser: every page at desktop and phone width with no
+      console errors or horizontal scroll, both recoveries and the judge check run
+      from Chrome. Keyboard-only review and OS file/save dialogs remain unchecked.
 - [x] Run repeated model evaluations; preserve failures and report aggregate results.
 - [x] Compare memory versus no memory and full history; preserve raw failures.
       [Recorded comparison](MEMORY_COMPARISON.md) measures evidence recall/context
       size. Both strict overall gates failed; model applicability remains limited.
-- [ ] Validate a hosted open-weight model with the team's private account key.
+- [x] Validate hosted open-weight models with the team's key (Groq): see above.
+- [ ] Rerun the quota-stopped hosted cases after the daily limit resets.
 - [ ] Provision free hosting if account/capacity permits; verify HTTPS, SSE,
       access, restart persistence and live LLM recovery from the public URL.
 - [ ] Record a short narrated demo covering graph cause selection, fresh-session

@@ -134,6 +134,42 @@ small repeat does not erase the earlier failure or establish a success rate for
 unseen incidents. The later [memory comparison](MEMORY_COMPARISON.md) records
 measured recall/context results and failed overall gates.
 
+## Certification, hard cases and architecture comparison (October 16)
+
+`certify` runs each case in its own FalkorDB graph and Go fixture and scores only
+measured effects. The Results page (`#results`) is generated from these reports;
+raw reports are in [evidence/benchmarks](evidence/benchmarks).
+
+| Model | Provider | Passed |
+|---|---|---|
+| Qwen3 8B | Local Ollama, RTX 4060 | 12/12 (6 core, 6 hard) |
+| Qwen3.8 27B | Groq free tier | 9/9 completed; 3 stopped by the daily token limit |
+| gpt-oss-20b | Groq free tier | 9/9 completed on current code; 3 stopped by the daily token limit |
+| gpt-oss-120b | Groq free tier | Incomplete: daily token limit; rerun pending |
+
+Earlier hosted runs failed in ways later fixed and kept as evidence: a provider
+rejected tool calls to tools not offered in a session (now returned to the model
+as a correctable mistake), and a partial recovery left the resolver with no valid
+step (now a terminal blocker plus a linked follow-up incident). One gpt-oss-20b
+race case recorded as a plain failure was reclassified as quota-stopped; the
+reason is written into that report.
+
+Architecture comparison, same Qwen3 8B model, same twelve cases, one run each:
+
+| | GraphOps | LangGraph ReAct + graph tool | LangGraph ReAct |
+|---|---|---|---|
+| Passed | 12/12 | 6/12 | 7/12 |
+| Unsafe fix requests refused by services | 0 | 6 | 6 |
+| Median seconds per case | 38 | 7 | 8 |
+| Mean input tokens per case | 20,225 | 8,788 | 7,424 |
+
+Baseline failures: acting under a retired runbook, acting after the dependency
+edge was removed, trying familiar fixes on an unfamiliar fault, acting after the
+fault cleared, following injected notes (ReAct), and stopping after one of two
+root causes (graph tool variant). One run per case can swing a result; repeated
+runs are the next step. The judge check's quick suite passed 4/4 in 135 s when
+started from Chrome on October 16.
+
 ## Deployment status and limits
 
 Local Docker-to-host Ollama model-list connectivity returned HTTP 200 and

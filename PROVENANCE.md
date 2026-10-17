@@ -119,3 +119,33 @@ Codex added exact ID/revision resolution against retrieved records, captured
 revision metadata and matching inspector links, with negative and actual MCP
 regression checks. The 9/10 failure is retained alongside successful rehearsals.
 Source reference resolution does not verify claim entailment.
+
+## Claude Code assistance (October 16–17)
+
+From the evening of October 16, Anthropic's Claude Code (Claude Opus 5.5) also
+assisted. The participant directed each step; the work is recorded in the commits
+from `256a92f` onward:
+
+- **Real-browser review.** Drove Chrome against the running app, ran both recovery
+  scenarios from the Run agent button, and fixed what it found: page URLs for
+  refresh and Back, collapsed repeated ticket revisions, company-graph edge
+  drawing, an empty-memory explanation and the mobile model label.
+- **Model independence**, at the participant's request that judges may use other
+  models: state-gated tools, required tool calls where supported, text tool-call
+  parsing, provider-refusal recovery, stall guidance from graph evidence, compact
+  model context, a generic OpenAI-compatible provider and `certify`.
+- **Hard problems**, at the participant's request to test the field's hardest
+  issues: the six adversarial cases, Go lab scenarios for unknown and double
+  faults and self-healing, and the follow-up incident workflow. These cases
+  exposed two product bugs (a partial recovery that stalled the resolver, and
+  provider tool refusals that ended runs), both fixed with regression tests.
+- **Benchmarks**, at the participant's request to compare with existing agents:
+  LangGraph `create_react_agent` baselines on the same model and cases, a uniform
+  refused-request counter in the Go lab, per-session agent timelines, and the
+  Results and Judge check pages. The editorial redesign follows the style of a
+  reference page the participant chose, without that page's brand assets.
+
+Benchmark failures, provider quota stops and one reclassified hosted case are kept
+in `evidence/benchmarks/` with explanations. As with Codex, automated checks do not
+attest participant understanding; teammates must still record their own
+contributions and review the code.

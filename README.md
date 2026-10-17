@@ -8,6 +8,32 @@ for another session. The included action demonstration investigates a checkout
 failure, hands off to a fresh resolver, validates a current procedure, recovers
 a simulated service and measures HTTP health.
 
+## For judges: check it yourself in five minutes
+
+1. Start the app (see [Windows development](#windows-development) or [Docker](#start-with-docker)).
+2. Open **Judge check** (`http://localhost:8080/#verify`) and click **Run quick check**.
+   It verifies FalkorDB, the services, a fresh MCP agent session and real model
+   inference, then runs four live cases in isolated graphs: a payments fault, a
+   retired runbook, injected instructions in company documents, and two root causes
+   at once. Each case shows what should happen and what was measured. About three
+   minutes with a local Qwen3 8B; your workspace is not changed.
+3. Open **Results** (`#results`) for every case across four models, the comparison
+   with LangGraph ReAct agents, and timelines of each tracked agent session.
+4. Open **Agent tasks**, click **Run agent**, and watch the investigator hand off to a
+   fresh resolver in the **Agents in this run** lanes.
+
+The same checks run from a terminal: `.\graphops.ps1 certify --suite quick`.
+
+| Measured with Qwen3 8B on a laptop GPU | GraphOps | LangGraph ReAct + graph tool | LangGraph ReAct |
+|---|---|---|---|
+| Core cases (6) | **6/6** | 3/6 | 4/6 |
+| Hard cases (6) | **6/6** | 3/6 | 3/6 |
+| Unsafe fix requests sent to services | **0** | 6 | 6 |
+| Median seconds per case | 38 | 7 | 8 |
+
+One run per case, scored only on measured effects. Raw reports are in
+[evidence/benchmarks](evidence/benchmarks); see [Benchmarks](#model-independence-and-benchmarks).
+
 ## Understand the project first
 
 Start with [the six modules](MODULES.md) and [the developer walkthrough](LEARN.md).
@@ -192,6 +218,50 @@ See [product operation and API](PRODUCT.md) for limits and recovery instructions
    resume it: recovery must be blocked. Publish a supported procedure and
    resume when appropriate. Previous source revisions remain inspectable.
 
+## Model independence and benchmarks
+
+The model chooses tools and causes; FalkorDB and the backend decide what is allowed.
+The agent loop does not depend on one model:
+
+- each step offers only the tools valid for the task's state, and providers that
+  support it must call a tool;
+- tool calls a model writes as text are parsed, for offered tools only;
+- a provider's refusal of an unavailable tool is returned to the model as a
+  correctable mistake, and empty replies are retried;
+- a model that stalls twice is shown the valid next calls computed from current
+  graph evidence;
+- the model receives a compact view of evidence; full results stay in FalkorDB.
+
+Any provider can be selected: local Ollama, Groq, OpenRouter, Gemini, or any
+OpenAI-compatible endpoint (`GRAPHOPS_EVENT_PROVIDER=compatible`,
+`GRAPHOPS_EVENT_BASE_URL`, `GRAPHOPS_EVENT_MODEL`). Check a model before relying on it:
+
+```powershell
+.\graphops.ps1 certify --suite all
+.\graphops.ps1 certify --provider groq --model openai/gpt-oss-20b --suite hard
+```
+
+`certify` runs twelve cases, each in its own FalkorDB graph and Go service fixture:
+six core cases and six hard ones built from failure modes reported for operations
+agents (injected instructions, poisoned memory, a fault no runbook covers, two root
+causes, a fault that clears mid-incident, and two resolvers racing). When a recovery
+works but checkout still fails, the incident is never marked resolved; a linked
+follow-up incident finds the remaining cause.
+
+To compare architectures on the same model and cases, the LangGraph baselines live
+in `bench/` (optional dependencies in `requirements-bench.txt`):
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-bench.txt
+.\.venv\Scripts\python.exe -m bench.baselines --arch react --suite all
+.\.venv\Scripts\python.exe -m bench.baselines --arch react_graph --suite all
+.\.venv\Scripts\python.exe -m scripts.export_benchmarks   # rebuild the Results page data
+```
+
+Hosted results on Groq's free tier: Qwen3.8 27B and gpt-oss-20b each passed every
+case that completed (9/9); three cases per model stopped at the provider's daily
+token limit and are reported as not run.
+
 ## Architecture and language responsibilities
 
 | Component | Technology | Responsibility |
@@ -267,6 +337,7 @@ model-generated sentence is correct. The company evaluation checks cited source
 fields, not full claim entailment.
 
 One shared team workspace and one agent job are supported per server. Network
-deployment uses a shared access token, not per-user authorization. Public hosting,
-hosted-model validation, browser visual review, demo recording and the actual
-submission form are still pending. See [submission checklist](SUBMISSION.md).
+deployment uses a shared access token, not per-user authorization. Benchmarks are
+one run per case; the LangGraph baselines are faster and use fewer tokens per case,
+which is the measured price of GraphOps's checks. Public hosting, demo recording
+and the actual submission form are still pending. See [submission checklist](SUBMISSION.md).
