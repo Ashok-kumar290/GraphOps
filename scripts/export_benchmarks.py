@@ -37,28 +37,63 @@ FEATURED = "qwen3:8b"
 QUOTA = re.compile(r"HTTP 429|rate limit|quota", re.I)
 
 
+def summarize(runs):
+    """One case across repeated runs: pass count, median time, totals, and the first useful trace."""
+    first = runs[0]
+    passing = [r for r in runs if r["passed"]]
+    summary = {k: v for k, v in first.items() if k not in {"round", "trace"}}
+    summary.update(passed=len(passing) == len(runs), pass_count=len(passing), run_count=len(runs),
+                   seconds=statistics.median(r["seconds"] for r in runs if "seconds" in r),
+                   refused_fix_requests=sum(r.get("refused_fix_requests") or 0 for r in runs),
+                   input_tokens=sum(r.get("input_tokens") or 0 for r in runs))
+    for flag in ("model_tried_injected_target", "model_tried_poisoned_target"):
+        if any(flag in r for r in runs): summary[flag] = any(r.get(flag) for r in runs)
+    failed = next((r for r in runs if not r["passed"]), None)
+    summary["error"] = failed.get("error") if failed else None
+    trace = next((r.get("trace") for r in passing if r.get("trace")), None)
+    if trace: summary["trace"] = trace
+    return summary
+
+
+def grouped(results):
+    cases = {}
+    for r in results: cases.setdefault(r["case"], []).append(r)
+    return cases
+
+
+def totals(results):
+    rows = list(results.values())
+    core = [r for c, r in results.items() if c in {x[0] for x in CASES if x[1] == "core"}]
+    hard = [r for c, r in results.items() if c in {x[0] for x in CASES if x[1] == "hard"}]
+    return dict(passed=sum(r["pass_count"] for r in rows), runs=sum(r["run_count"] for r in rows),
+                refused=sum(r["refused_fix_requests"] for r in rows), tokens=sum(r["input_tokens"] for r in rows),
+                median_seconds=statistics.median(r["seconds"] for r in rows) if rows else None,
+                core=sum(r["pass_count"] for r in core), core_runs=sum(r["run_count"] for r in core),
+                hard=sum(r["pass_count"] for r in hard), hard_runs=sum(r["run_count"] for r in hard))
+
+
 def main():
     merged = {}
     for path in sorted(REPORTS.glob("certify-*.json"), key=lambda p: p.stat().st_mtime):
+        if path.name.startswith("certify-judge-"): continue  # judge checks are live demonstrations, not benchmarks
         report = json.loads(path.read_text(encoding="utf-8"))
         model = report["model"]["model"]
         entry = merged.setdefault(model, {"provider": report["model"]["provider"], "results": {}, "checked_at": report["checked_at"]})
-        for result in report["results"]:
-            if QUOTA.search(result.get("error") or ""):
-                entry.setdefault("quota", set()).add(result["case"]); entry["results"].pop(result["case"], None)
-                continue  # the latest attempt never ran: provider quota, not the agent
-            entry["results"][result["case"]] = result  # latest report wins per case
-            entry.get("quota", set()).discard(result["case"])
+        for case, runs in grouped(report["results"]).items():
+            completed = [r for r in runs if not QUOTA.search(r.get("error") or "")]
+            if not completed:
+                # The latest attempt never ran (provider quota), so earlier results for this case no longer apply.
+                entry.setdefault("quota", set()).add(case); entry["results"].pop(case, None); continue
+            entry["results"][case] = completed  # the latest report wins per case
+            entry.get("quota", set()).discard(case)
         entry["checked_at"] = max(entry["checked_at"], report["checked_at"])
     models = []
     for model, entry in merged.items():
-        results = entry["results"]
         label, where = LABELS.get(model, (model, entry["provider"]))
-        timed = [r["seconds"] for r in results.values() if "seconds" in r]
+        results = {case: summarize(runs) for case, runs in entry["results"].items()}
         models.append({"id": model, "label": label, "where": where, "featured": model == FEATURED,
-                       "checked_at": entry["checked_at"], "passed": sum(r["passed"] for r in results.values()),
-                       "runs": len(results), "quota_skipped": sorted(entry.get("quota", set())), "median_seconds": statistics.median(timed) if timed else None,
-                       "results": {case: {k: v for k, v in r.items() if k not in {"round"}} for case, r in results.items()}})
+                       "checked_at": entry["checked_at"], "quota_skipped": sorted(entry.get("quota", set())),
+                       "results": results, **totals(results)})
     order = list(LABELS)
     models.sort(key=lambda m: order.index(m["id"]) if m["id"] in order else len(order))
     # Agent architectures on the same model: GraphOps against LangGraph ReAct baselines.
@@ -66,22 +101,15 @@ def main():
     featured = next((m for m in models if m["featured"]), None)
     if featured:
         architectures.append({"id": "graphops", "label": "GraphOps", "detail": "Graph-governed investigator and resolver sessions",
-                              "featured": True, "results": featured["results"]})
+                              "featured": True, "results": featured["results"], **totals(featured["results"])})
     for arch, label, detail in (("react_graph", "ReAct + graph tool", "LangGraph create_react_agent with a FalkorDB query tool"),
                                 ("react", "ReAct", "LangGraph create_react_agent with operations tools")):
-        path = REPORTS / f"baseline-{arch}-qwen3-8b.json"
-        if path.exists():
+        candidates = [REPORTS / f"baseline-{arch}-qwen3-8b-x3.json", REPORTS / f"baseline-{arch}-qwen3-8b.json"]
+        path = next((c for c in candidates if c.exists()), None)
+        if path:
             report = json.loads(path.read_text(encoding="utf-8"))
-            architectures.append({"id": arch, "label": label, "detail": detail, "featured": False,
-                                  "results": {r["case"]: r for r in report["results"]}})
-    for a in architectures:
-        rows = list(a["results"].values())
-        a.update(passed=sum(r["passed"] for r in rows), runs=len(rows),
-                 refused=sum(r.get("refused_fix_requests") or 0 for r in rows),
-                 tokens=sum(r.get("input_tokens") or 0 for r in rows),
-                 median_seconds=statistics.median(r["seconds"] for r in rows) if rows else None,
-                 core=sum(r["passed"] for c, r in a["results"].items() if c in {x[0] for x in CASES if x[1] == "core"}),
-                 hard=sum(r["passed"] for c, r in a["results"].items() if c in {x[0] for x in CASES if x[1] == "hard"}))
+            results = {case: summarize(runs) for case, runs in grouped(report["results"]).items()}
+            architectures.append({"id": arch, "label": label, "detail": detail, "featured": False, "results": results, **totals(results)})
     # Multi-agent timelines from the featured model's runs; traces stay out of the per-model tables.
     traces = {}
     for m in models:

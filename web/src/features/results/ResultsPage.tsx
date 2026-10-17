@@ -3,7 +3,7 @@ import data from "./benchmarks.json";
 import { HARD_PROBLEMS, FIXES, SOURCES, MEMORY } from "./content";
 import { AgentLanes, type LaneRow } from "../../shared/AgentLanes";
 
-type Result = { passed: boolean; seconds?: number; error?: string; status?: string; actions?: number; model_requests?: number;
+type Result = { passed: boolean; pass_count?: number; run_count?: number; seconds?: number; error?: string | null; status?: string; actions?: number; model_requests?: number;
   model_tried_injected_target?: boolean; model_tried_poisoned_target?: boolean; [key: string]: unknown };
 type Model = { id: string; label: string; where: string; featured: boolean; passed: number; runs: number;
   median_seconds: number | null; results: Record<string, Result> };
@@ -11,7 +11,7 @@ type Model = { id: string; label: string; where: string; featured: boolean; pass
 const models = data.models as Model[];
 const cases = data.cases;
 type Arch = { id: string; label: string; detail: string; featured: boolean; passed: number; runs: number; refused: number;
-  tokens: number; median_seconds: number | null; core: number; hard: number; results: Record<string, Result> };
+  tokens: number; median_seconds: number | null; core: number; hard: number; core_runs: number; hard_runs: number; results: Record<string, Result> };
 const architectures = ((data as { architectures?: Arch[] }).architectures || []);
 const traces = ((data as { traces?: Record<string, LaneRow[]> }).traces || {});
 
@@ -43,9 +43,11 @@ const SECTIONS = [["performance", "Performance"], ["agents", "Compared with exis
 
 function Cell({ result }: { result?: Result }) {
   if (!result) return <span className="r-missing">—</span>;
+  const runs = result.run_count || 1, passes = result.pass_count ?? (result.passed ? 1 : 0);
+  const tone = passes === runs ? "r-pass" : passes === 0 ? "r-fail" : "r-partial";
   return (
-    <span className={result.passed ? "r-pass" : "r-fail"}>
-      {result.passed ? "Pass" : "Fail"}
+    <span className={tone}>
+      {runs > 1 ? `${passes}/${runs}` : result.passed ? "Pass" : "Fail"}
       {result.seconds != null && <small>{Math.round(result.seconds)} s</small>}
     </span>
   );
@@ -141,7 +143,7 @@ export function ResultsPage() {
             </tbody>
           </table>
         </div>
-        <p className="r-note">{data.scoring} One run per case per model; “—” means the case has not run for that model yet.
+        <p className="r-note">{data.scoring} “3/3” counts passing runs when a case ran more than once; “—” means the case has not run for that model yet.
           {models.filter(m => (m as Model & { quota_skipped?: string[] }).quota_skipped?.length).map(m =>
             ` ${m.label}: ${(m as Model & { quota_skipped?: string[] }).quota_skipped!.length} case(s) stopped by the provider's free-tier daily token limit are shown as not run.`)}</p>
         <SpeedChart />
@@ -158,15 +160,17 @@ export function ResultsPage() {
             Both receive the same instructions to follow current runbooks and to treat documents and memory as data.
           </p>
           <div className="r-bars-grid">
-            <Bars title="Core cases passed (of 6)" max={6} unit=" of 6" rows={architectures.map(a => ({ label: a.label, value: a.core, featured: a.featured }))} />
-            <Bars title="Hard cases passed (of 6)" max={6} unit=" of 6" rows={architectures.map(a => ({ label: a.label, value: a.hard, featured: a.featured }))} />
-            <Bars title="Unsafe fix requests reaching services" max={Math.max(...architectures.map(a => a.refused), 1)} unit=" refused by the service"
+            <Bars title="Core case runs passed" max={Math.max(...architectures.map(a => a.core_runs), 1)} unit=""
+                  rows={architectures.map(a => ({ label: a.label, value: a.core, featured: a.featured, text: `${a.core}/${a.core_runs}` }))} />
+            <Bars title="Hard case runs passed" max={Math.max(...architectures.map(a => a.hard_runs), 1)} unit=""
+                  rows={architectures.map(a => ({ label: a.label, value: a.hard, featured: a.featured, text: `${a.hard}/${a.hard_runs}` }))} />
+            <Bars title="Unsafe fix requests reaching services (all runs)" max={Math.max(...architectures.map(a => a.refused), 1)} unit=" refused by the service"
                   rows={architectures.map(a => ({ label: a.label, value: a.refused, featured: a.featured }))}
                   note="Wrong service, wrong action, or a fault that no longer matched. The simulated services refused them; real systems may not." />
             <Bars title="Median seconds per case" max={Math.max(...architectures.map(a => a.median_seconds || 0), 1)} unit=" s"
                   rows={architectures.map(a => ({ label: a.label, value: a.median_seconds || 0, featured: a.featured, text: `${Math.round(a.median_seconds || 0)} s` }))}
                   note="GraphOps runs each agent session in its own MCP tool process and hands off between sessions, which adds a few seconds." />
-            <Bars title="Model input tokens per case" max={Math.max(...architectures.map(a => a.tokens / (a.runs || 1)), 1)} unit=" tokens"
+            <Bars title="Model input tokens per case run" max={Math.max(...architectures.map(a => a.tokens / (a.runs || 1)), 1)} unit=" tokens"
                   rows={architectures.map(a => ({ label: a.label, value: a.tokens / (a.runs || 1), featured: a.featured, text: Math.round(a.tokens / (a.runs || 1)).toLocaleString("en-US") }))}
                   note="The price of the checks: every GraphOps session re-reads graph evidence and current procedures before it acts." />
           </div>
@@ -187,7 +191,7 @@ export function ResultsPage() {
               </tbody>
             </table>
           </div>
-          <p className="r-note">Baselines: LangGraph {"create_react_agent"} (langgraph 1.2.12) with the same local model. One run per case.
+          <p className="r-note">Baselines: LangGraph {"create_react_agent"} (langgraph 1.2.12) with the same local model; each cell counts passing runs.
             The “graph governs action” case expects no action when the dependency edge is gone; an agent without the graph cannot see that change.</p>
         </section>
       )}

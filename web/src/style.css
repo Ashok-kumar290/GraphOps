@@ -2432,3 +2432,5 @@ footer > span {
 .fb-queries li code { overflow-x: auto; white-space: nowrap; display: block; }
 .fb-copy { padding: 5px 10px; font-size: 12px; gap: 6px; }
 @media (max-width: 760px) { .fb-queries li { grid-template-columns: 1fr; } }
+.r-partial { color: var(--warn); font-weight: 600; display: inline-flex; gap: 8px; align-items: baseline; }
+.r-partial small { color: var(--ink-3); font-weight: 400; font-variant-numeric: tabular-nums; }

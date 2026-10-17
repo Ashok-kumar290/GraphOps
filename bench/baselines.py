@@ -184,17 +184,19 @@ async def main():
     parser.add_argument("--arch", choices=["react", "react_graph"], required=True)
     parser.add_argument("--provider", default="ollama"); parser.add_argument("--model", default="qwen3:8b")
     parser.add_argument("--suite", choices=["standard", "hard", "all"], default="all"); parser.add_argument("--cases", nargs="+")
+    parser.add_argument("--repeats", type=int, default=1)
     args = parser.parse_args()
     cases = args.cases or {"standard": list(CASES), "hard": list(HARD_CASES), "all": list(CASES) + list(HARD_CASES)}[args.suite]
     llm = chat_model(args.provider, args.model)
     print(f"Baseline {args.arch} with {args.provider} / {args.model}: {len(cases)} cases", flush=True)
     results = []
-    for case in cases:
-        result = await run_case(case, args.arch, llm); results.append(result)
-        print(f"  {'PASS' if result['passed'] else 'FAIL'}  {case:<22}{result['seconds']:>7}s  actions={result.get('actions')} "
-              f"refused={result.get('refused_fix_requests')} " + (result.get("error") or ""), flush=True)
-    label = f"baseline-{args.arch}-" + "".join(c if c.isalnum() else "-" for c in args.model)
-    report = {"architecture": args.arch, "framework": "LangGraph create_react_agent", "model": {"provider": args.provider, "model": args.model},
+    for round_number in range(args.repeats):
+        for case in cases:
+            result = await run_case(case, args.arch, llm); result["round"] = round_number + 1; results.append(result)
+            print(f"  {'PASS' if result['passed'] else 'FAIL'}  {case:<22}{result['seconds']:>7}s  actions={result.get('actions')} "
+                  f"refused={result.get('refused_fix_requests')} " + (result.get("error") or ""), flush=True)
+    label = f"baseline-{args.arch}-" + "".join(c if c.isalnum() else "-" for c in args.model) + (f"-x{args.repeats}" if args.repeats > 1 else "")
+    report = {"architecture": args.arch, "framework": "LangGraph create_react_agent", "model": {"provider": args.provider, "model": args.model}, "repeats": args.repeats,
               "checked_at": datetime.now(timezone.utc).isoformat(), "passed": sum(r["passed"] for r in results), "runs": len(results),
               "median_seconds": statistics.median(r["seconds"] for r in results), "results": results}
     path = settings.DATA / "reports" / f"{label}.json"; path.write_text(json.dumps(report, indent=1), encoding="utf-8")
