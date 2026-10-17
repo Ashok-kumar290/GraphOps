@@ -248,8 +248,18 @@ async def run_case(case):
                     "tokens_by_role": tokens_by_role(events), "trace": trace(tasks, events), **notes}
         except Exception as exc:
             while isinstance(exc, BaseExceptionGroup) and exc.exceptions: exc = exc.exceptions[0]
-            return {"case": case, "passed": False, "seconds": round(time.perf_counter() - started, 1),
-                    "error": str(exc)[:400] if isinstance(exc, (RuntimeError, ValueError)) else type(exc).__name__}
+            failed = {"case": case, "passed": False, "seconds": round(time.perf_counter() - started, 1),
+                      "error": str(exc)[:400] if isinstance(exc, (RuntimeError, ValueError)) else type(exc).__name__}
+            try:
+                # Keep the trail of a failed run so its cause can be diagnosed after the graph is deleted.
+                incidents = [t["id"] for t in store.runs.list()] if not tasks else tasks
+                events = [{**e, "task": t} for t in incidents for e in store.runs.events(t)]
+                failed.update(actions=lab.state()["action_count"], refused_fix_requests=lab.state().get("rejected_count", 0),
+                              trace=trace(incidents, events),
+                              tool_calls=[{"role": e["role"], "tool": e["data"].get("tool"), "arguments": e["data"].get("arguments"),
+                                           "kind": e["kind"]} for e in events if e["kind"] in {"tool", "tool_error"}][-40:])
+            except Exception: pass
+            return failed
         finally:
             lab.close(); store.graph.delete()
 

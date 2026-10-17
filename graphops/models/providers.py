@@ -16,6 +16,11 @@ class EmptyModelResponse(ModelError):
     """An inference finished without text or tools; no effect was requested."""
 
 
+# Provider refusals caused by the model's own reply: an unknown tool, text where a call was required,
+# or a tool call the provider could not parse. Nothing ran; the model can try again.
+CORRECTABLE = ("tool call validation failed", "did not call a tool", "parsing failed", "failed_generation")
+
+
 class InvalidToolCall(ModelError):
     """The provider rejected the model's tool call (for example a tool not offered). Correctable by the model."""
 
@@ -107,7 +112,7 @@ class CompatibleModel:
                         time.sleep(provider_retry_delay(response, 2 + 2 * attempt))
                         continue
                     # The provider refused the model's tool use (unknown tool, or text where a call was required).
-                    if response.status_code == 400 and ("tool call validation failed" in detail.lower() or "did not call a tool" in detail.lower()):
+                    if response.status_code == 400 and any(marker in detail.lower() for marker in CORRECTABLE):
                         raise InvalidToolCall(detail)
                     if response.status_code != 200:
                         raise ModelError(f"Model provider HTTP {response.status_code}: {detail or 'check model, credentials and quota'}")

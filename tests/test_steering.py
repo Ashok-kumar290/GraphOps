@@ -245,3 +245,12 @@ class ProviderRejectionUnit(unittest.TestCase):
             self.assertTrue(any(e["kind"] == "invalid_tool_call_rejected" for e in store.runs.events(task)))
         finally:
             lab.close(); temp.cleanup(); store.graph.delete()
+
+    def test_provider_parse_failure_is_correctable(self):
+        from graphops.models.providers import InvalidToolCall
+        model = CompatibleModel("m", "k", "https://example.test/v1")
+        real = httpx.Client
+        refusal = httpx.Response(400, json={"error": {"message": "Parsing failed. The model generated output that could not be parsed.", "code": "failed_generation"}})
+        with patch("graphops.models.providers.httpx.Client", lambda **kw: real(transport=httpx.MockTransport(lambda r: refusal))):
+            with self.assertRaises(InvalidToolCall):
+                model.generate("s", [{"role": "user", "parts": [{"text": "go"}]}], [])

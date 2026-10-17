@@ -127,8 +127,8 @@ class Agent:
                         except InvalidToolCall as exc:
                             # The provider refused a call to a tool this step does not offer; nothing ran.
                             self.publish(task_id, session, role, "invalid_tool_call_rejected", {"request": requests, "detail": str(exc)[:300]})
-                            contents.append({"role": "user", "parts": [{"text": "Your last tool call was rejected because that tool is not available "
-                                "in this session. Available tools: " + ", ".join(sorted(d["name"] for d in offered)) + ". Use one of these."}]})
+                            contents.append({"role": "user", "parts": [{"text": "The provider rejected your last reply and nothing ran: " + str(exc)[:200]
+                                + ". Reply with one valid tool call using one of: " + ", ".join(sorted(d["name"] for d in offered)) + "."}]})
                             continue
                         except EmptyModelResponse:
                             self.publish(task_id, session, role, "model_response_retry", {"request": requests,
