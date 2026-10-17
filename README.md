@@ -36,7 +36,7 @@ One run per case, scored only on measured effects. Raw reports are in
 
 ## Understand the project first
 
-Start with [the six modules](MODULES.md) and [the developer walkthrough](LEARN.md).
+Start with [the one-page explanation](EXPLAIN.md), [the six modules](MODULES.md) and [the developer walkthrough](LEARN.md).
 The app opens on **Start here**. Select **Start guided walkthrough** for one flow
 through a cited company answer, graph evidence, an investigator handoff, a fresh
 resolver and the resulting shared memory. See [the five-step walkthrough](WALKTHROUGH.md).
