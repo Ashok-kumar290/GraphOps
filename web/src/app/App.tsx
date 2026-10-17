@@ -31,6 +31,7 @@ const {
   inspector,
   setInspector,
   locked,
+  viewOnly,
   token,
   setToken,
   refresh,
@@ -158,7 +159,7 @@ return (
                 {data.stopping ? "Stopping..." : "Stop at checkpoint"}
               </button>
             )}
-            {data?.access_required && (
+            {data?.access_required && data.authenticated !== false && (
               <button
                 className="plain-icon"
                 title="Lock workspace"
@@ -216,9 +217,9 @@ return (
               <span>{selected.blocker}</span>
             </div>
           )}
-          {locked && (
+          {(locked || viewOnly) && (
             <form
-              className="access-form panel"
+              className={"access-form panel" + (viewOnly ? " access-form-public" : "")}
               onSubmit={(e) => {
                 e.preventDefault();
                 void command("/api/access", { token });
@@ -226,8 +227,10 @@ return (
             >
               <LockKeyhole size={20} />
               <div>
-                <h3>Demo access</h3>
-                <p>Enter the access token supplied with this deployment.</p>
+                <h3>{viewOnly ? "Public view" : "Demo access"}</h3>
+                <p>{viewOnly
+                  ? "Browse the graph, runs, sources and results freely. Running agents, injecting faults or changing the company needs the judge access token."
+                  : "Enter the access token supplied with this deployment."}</p>
               </div>
               <input
                 type="password"
@@ -239,7 +242,7 @@ return (
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="Access token"
               />
-              <button className="button primary" disabled={pending || !token.trim()}>{pending ? "Unlocking..." : "Unlock workspace"}</button>
+              <button className="button primary" disabled={pending || !token.trim()}>{pending ? "Unlocking..." : viewOnly ? "Unlock to run agents" : "Unlock workspace"}</button>
             </form>
           )}
           {!locked && mode === "scripted" && (

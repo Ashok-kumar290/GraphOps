@@ -107,6 +107,8 @@ export type Workspace = {
   active_task?: string;
   diagnostics?: any;
   access_required?: boolean;
+  public_view?: boolean;
+  authenticated?: boolean;
   scenarios: { id: string; label: string }[];
   observed_at: string;
 };

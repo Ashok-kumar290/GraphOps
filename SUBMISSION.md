@@ -71,8 +71,13 @@ is accepted by the published rules. Review the actual form once submissions open
       size. Both strict overall gates failed; model applicability remains limited.
 - [x] Validate hosted open-weight models with the team's key (Groq): see above.
 - [ ] Rerun the quota-stopped hosted cases after the daily limit resets.
-- [ ] Provision free hosting if account/capacity permits; verify HTTPS, SSE,
-      access, restart persistence and live LLM recovery from the public URL.
+- [x] Public view mode: anyone can browse; every change needs the access token
+      (API checked: anonymous reads 200, all anonymous writes 401).
+- [x] One-command VM setup (`deploy/setup-vm.sh`) and arm64 image build. Full
+      production stack rehearsed locally behind Caddy HTTPS: public view, secure
+      cookie, SSE, and a live Groq agent run resolved (checkout 503 → 200).
+- [ ] Provision the Oracle VM (team account); verify HTTPS, SSE, public view,
+      unlock, restart persistence and the quick judge check from the public URL.
 - [ ] Record a short narrated demo covering graph cause selection, fresh-session
       recovery, memory reuse, changed company knowledge and a blocked action.
 - [ ] Add the public repository, demo URL and video to the submission form.

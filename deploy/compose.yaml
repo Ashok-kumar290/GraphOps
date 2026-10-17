@@ -26,6 +26,8 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       GRAPHOPS_ACCESS_TOKEN: ${GRAPHOPS_ACCESS_TOKEN:?Set a random access token of at least 24 characters}
       GRAPHOPS_SECURE_COOKIE: "1"
+      # Anyone can browse; running agents or changing data needs the access token.
+      GRAPHOPS_PUBLIC_VIEW: ${GRAPHOPS_PUBLIC_VIEW:-1}
     volumes:
       - lab-data:/app/.runtime
     depends_on:

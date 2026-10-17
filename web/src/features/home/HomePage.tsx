@@ -14,7 +14,7 @@ const MODULES: {name:string; purpose:string; view:View; icon:typeof Network}[] =
 ];
 
 export function HomePage() {
-  const {setView, setQuestion, setService, data, startWalkthrough, busy, locked, connectionError, walkthrough, openWalkthroughStep, choose} = useWorkspace();
+  const {setView, setQuestion, setService, data, startWalkthrough, busy, locked, viewOnly, connectionError, walkthrough, openWalkthroughStep, choose} = useWorkspace();
   const documents = Object.values(data?.company || {}).reduce((n, c) => n + c.documents.length, 0);
   const checkoutReady = data?.health.find(h => h.service === "gateway")?.http_status === 200;
   const unfinished = data?.tasks.find(t => !t.question && t.status !== "resolved");
@@ -27,7 +27,7 @@ export function HomePage() {
       <h2>Fix a checkout failure. Keep the evidence for the next session.</h2>
       <p>GraphOps is a company operations assistant. One agent finds the cause, a fresh agent uses its saved findings to recover the service, and the result becomes shared memory.</p>
       <div className="product-actions">
-        <button className="button primary" disabled={!data || busy || locked || !!connectionError || !walkthrough && !checkoutReady} onClick={() => walkthrough ? openWalkthroughStep(walkthrough.step) : startWalkthrough()}>{walkthrough ? "Continue guided walkthrough" : "Start guided walkthrough"} <ArrowRight size={15}/></button>
+        <button className="button primary" disabled={!data || busy || locked || viewOnly || !!connectionError || !walkthrough && !checkoutReady} onClick={() => walkthrough ? openWalkthroughStep(walkthrough.step) : startWalkthrough()}>{walkthrough ? "Continue guided walkthrough" : "Start guided walkthrough"} <ArrowRight size={15}/></button>
         <button className="button secondary" onClick={() => setView("workspace")}>Open incident workspace <ArrowRight size={15} /></button>
       </div>
       <p className="overview-guide-note">Starting the guide prepares a question. You choose when to run each step. The incident demo deliberately creates a fault in our controlled sample company.</p>

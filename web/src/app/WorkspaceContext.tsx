@@ -128,6 +128,9 @@ const command = async (path: string, body: unknown) => {
     // The ref closes the interval before React renders the disabled button.
     if (commandInFlight.current) return null;
     const access = path === "/api/access" || path === "/api/logout";
+    if (!access && viewOnly) {
+      setError("This is the public view. Enter the access token above to run agents or change the workspace."); return null;
+    }
     if (!access && (!data || locked || connectionError)) {
       setError("Reconnect to the workspace before submitting a command."); return null;
     }
@@ -157,7 +160,9 @@ const command = async (path: string, body: unknown) => {
         setWalkthrough(null);
         setData(null);
         setInspector(null);
-        setLocked(true);
+        // A public deployment stays readable after signing out.
+        if (data?.public_view) {accessEpoch.current++; authenticating.current = false; await refresh();}
+        else setLocked(true);
         return result;
       }
       if (path === "/api/company") setNotice("Company change saved.");
@@ -176,7 +181,9 @@ const command = async (path: string, body: unknown) => {
 
 const busy = pending || !!data?.busy,
     unavailable = !data || locked || !!connectionError,
-    controlsDisabled = busy || unavailable,
+    // Public visitors can browse everything but change nothing.
+    viewOnly = !!data?.public_view && !data.authenticated,
+    controlsDisabled = busy || unavailable || viewOnly,
     // Hide an old run's controls while the requested run is still loading.
     selected = taskId && data?.selected?.id !== taskId ? undefined : data?.selected;
 
@@ -193,7 +200,7 @@ useEffect(() => {
 }, [data]);
 
 const startWalkthrough = () => {
-  if (!data || busy || locked || connectionError || data.health.find(h => h.service === "gateway")?.http_status !== 200) return;
+  if (!data || busy || locked || viewOnly || connectionError || data.health.find(h => h.service === "gateway")?.http_status !== 200) return;
   setWalkthrough({workspace: data.workspace, step: "company", questionId: null, incidentId: null, questionEvents: [], incidentEvents: []});
   setService("payments");
   setQuestion("Who owns payments, and which current procedure supports recovery? Cite the exact sources and revisions.");
@@ -305,7 +312,7 @@ async function download(path: string, name: string) {
       setDownloading("");
     }
   }
-return { data, view, setView, taskId, setTaskId, service, setService, scenario, setScenario, mode, setMode, pauseAfterHandoff, setPauseAfterHandoff, error, setError, connectionError, pending, notice, setNotice, downloading, unavailable, controlsDisabled, memoryQuery, setMemoryQuery, memoryKind, setMemoryKind, inspector, setInspector, question, setQuestion, owner, setOwner, locked, token, setToken, stage, refresh, command, busy, selected, selectedHealth, company, packet, allMemory, inspect, choose, download, walkthrough, startWalkthrough, openWalkthroughStep, leaveWalkthrough: () => {setWalkthrough(null); if (memoryQuery === walkthrough?.incidentId) setMemoryQuery("");} };
+return { data, view, setView, taskId, setTaskId, service, setService, scenario, setScenario, mode, setMode, pauseAfterHandoff, setPauseAfterHandoff, error, setError, connectionError, pending, notice, setNotice, downloading, unavailable, controlsDisabled, viewOnly, memoryQuery, setMemoryQuery, memoryKind, setMemoryKind, inspector, setInspector, question, setQuestion, owner, setOwner, locked, token, setToken, stage, refresh, command, busy, selected, selectedHealth, company, packet, allMemory, inspect, choose, download, walkthrough, startWalkthrough, openWalkthroughStep, leaveWalkthrough: () => {setWalkthrough(null); if (memoryQuery === walkthrough?.incidentId) setMemoryQuery("");} };
 }
 type Controller = ReturnType<typeof useWorkspaceController>;
 const Context = createContext<Controller | null>(null);

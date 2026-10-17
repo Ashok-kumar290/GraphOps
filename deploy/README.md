@@ -1,60 +1,86 @@
-# Free hosting plan
+# Public hosting
 
-Status: deployment files prepared; **no public instance provisioned**.
+Status: ready to provision. Verified October 17, 2026: the arm64 image builds and
+runs; the full stack from this folder (FalkorDB, app, Caddy HTTPS) ran locally with
+public view, and a live Groq Qwen3.8 27B agent resolved the payments incident
+through HTTPS while an anonymous viewer followed it. The public instance needs the
+team's Oracle account (below).
 
-## Recommended route
+## What visitors get
 
-An Oracle Cloud **Always Free eligible** Linux VM can run the app, FalkorDB and
-controlled Go services in Docker. Hosted open-weight inference avoids running
-an LLM on the VM's CPU. The current template selects Groq Qwen; that adapter
-still needs live validation with the team's private credential.
+With `GRAPHOPS_PUBLIC_VIEW=1` (the default here) anyone can open the site and
+browse everything: the connected graph, company knowledge, past runs and their
+agent lanes, the memory navigator, results and benchmarks. Anything that changes
+state (running an agent, injecting a fault, asking a model question, importing
+data, the judge check) needs the access token, which you give to judges. This
+keeps one visitor from using up the Groq daily quota. Set it to `0` to put the
+whole site behind the token.
 
-As checked October 15, 2026, Oracle documents 2 OCPUs/12 GB total for A1 on an
-Always Free tenancy. Capacity may be unavailable; signup requires identity/card
-verification. Use only resources labeled Always Free and remain inside the
-account's displayed limits. Do not enable a paid upgrade to get capacity.
-[Current allocation](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm),
-[signup details](https://www.oracle.com/cloud/free/faq/).
+FalkorDB, the app port, the lab services and the FalkorDB Browser are never
+exposed; only Caddy listens on 80/443.
 
-The pinned FalkorDB image includes Linux arm64 and amd64 manifests. Go and the
-app image compile for the build host. The complete package has been tested on
-local Linux amd64 Docker; an ARM build/run is still pending.
+## Oracle Cloud Always Free (recommended)
 
-## Provision and deploy
+Oracle documents 2 OCPUs/12 GB for Ampere A1 on an Always Free tenancy, as
+checked October 15, 2026. Signup requires card verification; use only resources
+labelled *Always Free* and never upgrade to get capacity.
+[Allocation](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm),
+[signup FAQ](https://www.oracle.com/cloud/free/faq/).
 
-1. Create an eligible Ubuntu VM. Install Docker Engine and the Compose plugin
-   using [Docker's Ubuntu instructions](https://docs.docker.com/engine/install/ubuntu/).
-2. Copy this event repository to the VM. Point an existing domain/subdomain at
-   its public IP. If the team has no domain, choose a free DNS provider before
-   this step; a domain is not included by this repository.
-3. Permit inbound TCP 80/443 (UDP 443 is optional) in the VM and cloud firewall.
-   Keep FalkorDB, app, and lab ports private. Restrict SSH to your own IP.
-4. Copy `deploy/cloud.env.example` to `deploy/cloud.env`, restrict permissions
-   with `chmod 600 deploy/cloud.env`, then edit locally. Set the hostname, a
-   randomly generated access token, and the provider key. A token can be made
-   with `openssl rand -hex 32`; don't post it to a public issue or README.
-5. From the repository root:
+1. **Sign up** at https://signup.cloud.oracle.com. Pick a home region close to
+   you; Always Free capacity is per region and cannot be moved later.
+2. **Create the VM**: Compute → Instances → Create instance.
+   - Image: Canonical Ubuntu 24.04 (or 22.04).
+   - Shape: Ampere → `VM.Standard.A1.Flex`, 2 OCPUs, 12 GB (shows *Always Free-eligible*).
+   - Networking: keep the default new VCN with a public subnet and *Assign a public IPv4 address*.
+   - SSH keys: *Generate a key pair* and download the private key.
 
-   ```sh
-   docker compose --env-file deploy/cloud.env -f deploy/compose.yaml config --quiet
-   docker compose --env-file deploy/cloud.env -f deploy/compose.yaml up --build -d
-   docker compose --env-file deploy/cloud.env -f deploy/compose.yaml ps
+   "Out of capacity" is common; retry later or try another availability domain.
+3. **Open the cloud firewall**: Instance → Subnet → Default security list →
+   Add ingress rules: source `0.0.0.0/0`, TCP, destination ports `80,443`.
+4. **Connect and install** (from Windows PowerShell):
+
+   ```powershell
+   ssh -i $HOME\Downloads\ssh-key.key ubuntu@PUBLIC_IP
    ```
 
-6. Open `https://YOUR_HOSTNAME`, enter the token, run the **LLM** investigation,
-   resume it in a new session, and verify the measured result. Then restart the
-   app and verify that graph memory and lab state survive. Repeat with a retired
-   runbook: the action must be blocked. Share the token privately with judges.
+   then on the VM:
 
-Caddy obtains TLS certificates when DNS and public 80/443 are configured.
-It flushes streamed updates immediately.
+   ```sh
+   curl -fsSL https://raw.githubusercontent.com/Ashok-kumar290/GraphOps/master/deploy/setup-vm.sh -o setup-vm.sh
+   bash setup-vm.sh
+   ```
+
+   The script installs Docker, opens 80/443 in the VM's own iptables (Oracle
+   images reject them by default), asks for the Groq key with input hidden,
+   generates the access token, picks the hostname `PUBLIC-IP-WITH-DASHES.sslip.io`
+   (no domain needed; set `GRAPHOPS_DOMAIN` first to use your own) and starts
+   FalkorDB, the app and Caddy. The first build takes several minutes.
+5. **Check it**: open the printed `https://…sslip.io` URL in a private window.
+   You should see the workspace with a *Public view* banner. Unlock with the
+   token (`grep ACCESS_TOKEN ~/GraphOps/deploy/cloud.env`), run the quick judge
+   check, and confirm 4/4.
+
+To update after a push, run `bash setup-vm.sh` again; settings and volumes are kept.
+
+Caddy obtains TLS certificates once DNS and public 80/443 work, and flushes
+streamed updates immediately.
 [Caddy HTTPS prerequisites](https://caddyserver.com/docs/quick-starts/reverse-proxy).
 
-Groq's free plan is quota limited; exact account limits take precedence. The
-published Qwen allowance is currently 8K tokens/minute and 200K tokens/day.
-Several tool calls may hit the minute limit. Do not promise unlimited judging
-traffic or speed until the hosted evaluation passes.
-[Provider limits](https://console.groq.com/docs/rate-limits).
+Groq's free plan is quota limited (currently 200K tokens/day for Qwen3.8 27B).
+A quick judge check uses a meaningful share of that, so share the token only
+with judges. [Provider limits](https://console.groq.com/docs/rate-limits).
+
+### Manual route
+
+If you prefer not to run the script: install Docker Engine and the Compose
+plugin ([Ubuntu instructions](https://docs.docker.com/engine/install/ubuntu/)),
+clone this repository, copy `deploy/cloud.env.example` to `deploy/cloud.env`
+(`chmod 600`), fill it in, then:
+
+```sh
+docker compose --env-file deploy/cloud.env -f deploy/compose.yaml up --build -d
+```
 
 ## Persistence and scope
 

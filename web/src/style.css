@@ -1745,6 +1745,19 @@ footer > span {
 .access-form svg {
   color: var(--mint);
 }
+.access-form-public {
+  background: var(--info-bg);
+  border-color: transparent;
+  padding: 14px 20px;
+}
+.access-form-public svg {
+  color: var(--info);
+}
+.access-form-public p {
+  font-size: 12px;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
 .spin {
   animation: spin 1.2s linear infinite;
 }

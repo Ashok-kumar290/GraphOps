@@ -283,7 +283,8 @@ live with your own credentials. Imported records never authorise an action. See
 | Deployment | Docker Compose | App, private graph, durable volumes; Caddy for public HTTPS |
 
 See [ARCHITECTURE.md](ARCHITECTURE.md), [QUERIES.md](QUERIES.md), and
-[free hosting setup](deploy/README.md). Rust has no justified role in the
+[public hosting setup](deploy/README.md) (Oracle Always Free VM, one script,
+public read-only view with token-gated runs). Rust has no justified role in the
 current implementation.
 
 ## Run checks
@@ -347,7 +348,8 @@ model-generated sentence is correct. The company evaluation checks cited source
 fields, not full claim entailment.
 
 One shared team workspace and one agent job are supported per server. Network
-deployment uses a shared access token, not per-user authorization. Benchmarks are
+deployment uses a shared access token, not per-user authorization; public view
+lets anyone read, and only token holders can change anything. Benchmarks are
 three runs per case locally; the LangGraph baselines are faster and use fewer tokens per case,
 which is the measured price of GraphOps's checks. Public hosting, demo recording
 and the actual submission form are still pending. See [submission checklist](SUBMISSION.md).

@@ -4,7 +4,7 @@ import { useWorkspace } from "../../app/WorkspaceContext";
 import type { Doc } from "../../shared/contracts";
 
 export function CompanyQuestion() {
-  const {data, service, mode, setMode, question, setQuestion, command, busy, selected, inspect, locked, connectionError, walkthrough} = useWorkspace();
+  const {data, service, mode, setMode, question, setQuestion, command, busy, selected, inspect, locked, viewOnly, connectionError, walkthrough} = useWorkspace();
   const isQuestion = selected?.question && !selected.diagnostic && selected.target === service && (!walkthrough || selected.id === walkthrough.questionId);
   const events = isQuestion ? data?.events || [] : [];
   const answer = [...events].reverse().find(e => e.kind === "session_finished" && e.role === "company");
@@ -28,7 +28,7 @@ export function CompanyQuestion() {
     </div>
     <form onSubmit={e => {e.preventDefault(); void command("/api/questions", {question, mode, service});}}>
       <input value={question} onChange={e => setQuestion(e.target.value)} aria-label="Company question" placeholder="Who owns this service, and what procedure applies?" maxLength={1000} required/>
-      <button className="button primary" disabled={busy || !data || locked || !!connectionError || !question.trim()}><Send size={15}/> Ask</button>
+      <button className="button primary" disabled={busy || !data || locked || viewOnly || !!connectionError || !question.trim()}><Send size={15}/> Ask</button>
     </form>
     {working && <p className="company-answer-state" role="status"><LoaderCircle size={15} className="spin"/> Reading company context and selecting sources…</p>}
     {answer ? <div className="company-answer" aria-label="Saved company answer">

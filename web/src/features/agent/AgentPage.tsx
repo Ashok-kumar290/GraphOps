@@ -19,6 +19,7 @@ const {
   pauseAfterHandoff,
   setPauseAfterHandoff,
   locked,
+  viewOnly,
   connectionError,
   stage,
   command,
@@ -77,7 +78,7 @@ return (
                       </select>
                       <button
                         className="button primary"
-                        disabled={busy || !data || locked || !!connectionError}
+                        disabled={busy || !data || locked || viewOnly || !!connectionError}
                         onClick={() =>
                           void command("/api/incidents", {
                             scenario,

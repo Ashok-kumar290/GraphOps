@@ -104,6 +104,24 @@ test("Unlock shows failures, prevents empty submission, then loads the workspace
   expect(screen.queryByRole("heading",{name:"Demo access"})).toBeNull();expect(fetch.mock.calls.filter(([p])=>p==="/api/access")).toHaveLength(2);
 });
 
+test("Public view shows the workspace read-only until the token unlocks running", async () => {
+  const data=workspaceFixture();Object.assign(data,{access_required:true,public_view:true,authenticated:false});
+  const fetch=network(data,(path,options)=>{
+    if(path==="/api/access"){Object.assign(data,{authenticated:true});return response({authenticated:true});}
+  });
+  render(<App/>);await loaded();
+  expect(screen.getByRole("heading",{name:"Public view"})).toBeTruthy();
+  expect(screen.queryByRole("button",{name:"Lock workspace"})).toBeNull();
+  expect((screen.getByRole("button",{name:/Start guided walkthrough/}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button",{name:"Agent tasks"}));
+  expect((await screen.findByRole("button",{name:/Run agent/}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.change(screen.getByLabelText("Workspace access token"),{target:{value:"judge-token"}});
+  fireEvent.click(screen.getByRole("button",{name:"Unlock to run agents"}));
+  await waitFor(()=>expect(screen.queryByRole("heading",{name:"Public view"})).toBeNull());
+  expect((screen.getByRole("button",{name:/Run agent/}) as HTMLButtonElement).disabled).toBe(false);
+  expect(fetch.mock.calls.some(([p])=>p==="/api/incidents")).toBe(false);
+});
+
 test("A disconnected workspace keeps mutations disabled until an actual successful refresh", async () => {
   let offline=false;network(workspaceFixture(),path=>path.startsWith("/api/workspace")&&offline?response({error:"Worker unavailable"},503):undefined);
   render(<App/>);await loaded();fireEvent.click(screen.getByRole("button",{name:"Company knowledge"}));
