@@ -17,6 +17,8 @@ WORKDIR /app
 COPY requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.lock
 COPY graphops/ ./graphops/
+# Sample Slack and Jira exports for the Connected tools demo.
+COPY samples/ ./samples/
 COPY web/server.ts ./web/server.ts
 COPY web/api/ ./web/api/
 COPY web/package.json ./web/package.json
