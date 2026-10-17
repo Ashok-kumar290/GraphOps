@@ -58,7 +58,7 @@ try {
             if ($occupied) { throw 'Port 6379 is occupied by another service. Configure the intended FalkorDB connection.' }
             $existing = & docker ps -a --filter name=^/graphops-local-db$ --format '{{.ID}}'
             if ($existing) { & docker start $existing | Out-Null }
-            else { & docker run -d --name graphops-local-db -p 127.0.0.1:6379:6379 -v graphops-local-db:/var/lib/falkordb/data -e 'REDIS_ARGS=--save 60 1' falkordb/falkordb@sha256:107455e862a824e45e8e9f5a7fbfdf5e00a08b14e13eae2577c72fd9e3f59ba6 | Out-Null }
+            else { & docker run -d --name graphops-local-db -p 127.0.0.1:6379:6379 -p 127.0.0.1:3000:3000 -v graphops-local-db:/var/lib/falkordb/data -e 'REDIS_ARGS=--save 60 1' falkordb/falkordb@sha256:107455e862a824e45e8e9f5a7fbfdf5e00a08b14e13eae2577c72fd9e3f59ba6 | Out-Null }
         }
         for ($attempt=0; $attempt -lt 30; $attempt++) { if (Test-GraphOpsDatabase) { break }; Start-Sleep -Seconds 1 }
         if (-not (Test-GraphOpsDatabase)) { throw 'FalkorDB did not become ready.' }

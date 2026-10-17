@@ -3,6 +3,9 @@ services:
     image: falkordb/falkordb@sha256:107455e862a824e45e8e9f5a7fbfdf5e00a08b14e13eae2577c72fd9e3f59ba6
     environment:
       REDIS_ARGS: "--save 60 1"
+    ports:
+      # FalkorDB Browser for viewing the graph; log in with host localhost, port 6379.
+      - "127.0.0.1:${FALKORDB_BROWSER_PORT:-3000}:3000"
     volumes:
       - graph-data:/var/lib/falkordb/data
     healthcheck:

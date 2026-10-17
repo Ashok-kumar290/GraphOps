@@ -2,6 +2,7 @@ import React from "react";
 import { useWorkspace } from "../../app/WorkspaceContext";
 import { KnowledgeGraph } from "./KnowledgeGraph";
 import { ServiceGraph } from "./ServiceGraph";
+import { FalkorBrowserPanel } from "./FalkorBrowserPanel";
 
 export function GraphPage() {
   const {data, service, setService, selected, inspect} = useWorkspace();
@@ -12,5 +13,6 @@ export function GraphPage() {
     <section className="panel product-panel"><h2>Service dependencies</h2>{data && <ServiceGraph data={data} active={service} onSelect={setService}/>}</section>
     {data && <KnowledgeGraph data={data} service={service} inspect={inspect}/>}
     <section className="panel product-panel"><h2>How to read this</h2><p>A service node is a system the agent can observe. A dependency edge means one service relies on another. Owner and document edges give the agent company context. Click a source to inspect its evidence.</p><small>Selected run: {selected?.id || "None"}. The graph alone does not prove current health; the agent also makes live observations.</small></section>
+    {data?.graph_name && <FalkorBrowserPanel graphName={data.graph_name} incident={selected && !selected.question ? selected.id : undefined}/>}
   </div>;
 }

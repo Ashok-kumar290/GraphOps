@@ -24,7 +24,7 @@ def main():
     port=8084
     with socket.socket() as probe:probe.bind(('127.0.0.1',port))
     env=clean_environment(os.environ,'qwen3:8b',64)
-    env.update(GRAPHOPS_ACCESS_TOKEN=secrets.token_urlsafe(32),GRAPHOPS_HTTP_PORT=str(port),GRAPHOPS_WORKSPACE=scope,
+    env.update(GRAPHOPS_ACCESS_TOKEN=secrets.token_urlsafe(32),GRAPHOPS_HTTP_PORT=str(port),GRAPHOPS_WORKSPACE=scope,FALKORDB_BROWSER_PORT=str(port+1000),
                GRAPHOPS_FRONTEND_URL=f'http://127.0.0.1:{port}',GRAPHOPS_FRONTEND_WORKSPACE=scope)
     command=['docker','compose','-p','graphops-'+scope,'-f',str(settings.ROOT/'compose.yaml')]
     folder=settings.DATA/'reports'/('frontend-live-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S'))

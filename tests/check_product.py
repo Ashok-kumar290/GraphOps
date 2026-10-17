@@ -19,7 +19,8 @@ def main():
     if not 1024 <= args.port <= 65535:parser.error('port must be from 1024 to 65535')
     if not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project):parser.error('invalid Compose project name')
     scope='product-'+uuid.uuid4().hex[:10]
-    env={**os.environ,'GRAPHOPS_ACCESS_TOKEN':secrets.token_urlsafe(32),'GRAPHOPS_HTTP_PORT':str(args.port),'GRAPHOPS_WORKSPACE':scope}
+    # Isolated stacks also need their own FalkorDB Browser port.
+    env={**os.environ,'GRAPHOPS_ACCESS_TOKEN':secrets.token_urlsafe(32),'GRAPHOPS_HTTP_PORT':str(args.port),'GRAPHOPS_WORKSPACE':scope,'FALKORDB_BROWSER_PORT':str(args.port+1000)}
     command=['docker','compose','-p',args.project,'-f',str(settings.ROOT/'compose.yaml')]
     report={'mode':'llm','model_inference':True,'public_deployment':False,'checks':[],'success':False}
     base=f'http://127.0.0.1:{args.port}'

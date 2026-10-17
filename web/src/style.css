@@ -2418,3 +2418,17 @@ footer > span {
 .v-pill.no { background: var(--bad-bg); color: var(--bad); }
 .v-pill.run { background: var(--info-bg); color: var(--info); }
 @media (max-width: 760px) { .v-intro { grid-template-columns: 1fr; } .v-history li button { grid-template-columns: 1fr; gap: 4px; } }
+
+/* FalkorDB Browser guide on the Connected graph page. */
+.fb-panel p { margin: 0 0 4px; }
+.fb-steps { margin: 4px 0 6px; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; line-height: 1.55; }
+.fb-steps a { color: var(--accent); }
+.fb-panel code { font-family: var(--f-mono); font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.fb-panel kbd { font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--rule-strong); border-radius: 3px; padding: 0 4px; }
+.fb-name { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; flex-wrap: wrap; }
+.fb-queries { list-style: none; padding: 0; margin: 4px 0 8px; display: grid; gap: 8px; }
+.fb-queries li { display: grid; grid-template-columns: 190px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.fb-queries li b { font-size: 13px; font-weight: 600; }
+.fb-queries li code { overflow-x: auto; white-space: nowrap; display: block; }
+.fb-copy { padding: 5px 10px; font-size: 12px; gap: 6px; }
+@media (max-width: 760px) { .fb-queries li { grid-template-columns: 1fr; } }
