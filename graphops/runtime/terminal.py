@@ -77,6 +77,11 @@ def build_parser():
                      'prompt_injection','memory_poisoning','unknown_fault','double_fault','self_healed','concurrent_resolvers'],
                      help='Run only these cases instead of a suite')
     sub.add_argument('--repeats',type=int,default=1);sub.add_argument('--label',help='Report name; defaults to the model ID')
+    sub=command('connect','Import records from Slack, Jira or GitHub into the company graph')
+    sub.add_argument('tool',choices=['slack','jira','github'])
+    sub.add_argument('--live',action='store_true',help='Use the live API with credentials from .env instead of the sample data')
+    sub.add_argument('--path',type=Path,help='A Slack export folder or a saved Jira search response')
+    sub.add_argument('--repo',help='GitHub repository as owner/name (public data)')
     sub=command('demo','Exercise company, graph, agent, action, memory and workspace modules together')
     sub.add_argument('--scenario',choices=['config','worker'],default='config');sub.add_argument('--mode',choices=['llm','scripted'],default='llm')
     sub.add_argument('--timeout',type=positive,default=600);sub.add_argument('--interval',type=positive,default=1)

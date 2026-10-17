@@ -42,6 +42,13 @@ async def main(argv=None):
             handle.write('\n'.join(k+'='+json.dumps(v) for k,v in values.items())+'\n')
         temporary.replace(path)
         print('Configuration saved locally. Restart the app to apply it.');return
+    if args.command=='connect':
+        # Writes to this workspace's graph directly; the running app sees the records on its next refresh.
+        from graphops.graph.workspace import WorkspaceGraph
+        from graphops.connectors.run import run as connect
+        store=WorkspaceGraph(args.workspace or settings.SCOPE)
+        result=connect(store,args.tool,'live' if args.live else 'sample',args.path,args.repo)
+        print(json.dumps(result,indent=2));return
     if args.command=='certify':
         # Runs locally against FalkorDB and its own service fixtures; the running app is not used or changed.
         if args.provider:os.environ['GRAPHOPS_EVENT_PROVIDER']=args.provider

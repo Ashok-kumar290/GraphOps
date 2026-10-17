@@ -1,0 +1,15 @@
+[
+ {
+  "type": "message",
+  "user": "U02MARCO",
+  "ts": "1792050000.000100",
+  "text": "Checkout incident review: two failures this week, payments config and the orders worker. Both were downstream of the gateway, which only showed symptoms."
+ },
+ {
+  "type": "message",
+  "user": "U03AISHA",
+  "ts": "1792050300.000200",
+  "thread_ts": "1792050000.000100",
+  "text": "Analytics was also red during both incidents but is unrelated to checkout; leave it to the data team (CHK-31)."
+ }
+]

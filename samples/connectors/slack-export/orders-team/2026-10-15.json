@@ -1,0 +1,15 @@
+[
+ {
+  "type": "message",
+  "user": "U03AISHA",
+  "ts": "1792049400.000100",
+  "text": "orders worker stopped processing the queue overnight; gateway checkouts are timing out behind it."
+ },
+ {
+  "type": "message",
+  "user": "U04DEV",
+  "ts": "1792049700.000200",
+  "thread_ts": "1792049400.000100",
+  "text": "Memory leak in the batch consumer again. restart_worker clears it; ORD-87 has the long-term fix."
+ }
+]

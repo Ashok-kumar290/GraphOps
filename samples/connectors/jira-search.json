@@ -1,0 +1,185 @@
+{
+ "startAt": 0,
+ "maxResults": 50,
+ "total": 4,
+ "issues": [
+  {
+   "key": "PAY-142",
+   "fields": {
+    "summary": "Payments config v2 rejected by health check",
+    "status": {
+     "name": "Done"
+    },
+    "assignee": {
+     "displayName": "Priya Nair"
+    },
+    "reporter": {
+     "displayName": "Marco Silva"
+    },
+    "components": [
+     {
+      "name": "Payments"
+     }
+    ],
+    "labels": [
+     "incident"
+    ],
+    "description": {
+     "type": "doc",
+     "version": 1,
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "Config v2 failed validation in production. Restored the last good configuration with restore_config. Root cause: missing timeout field."
+        }
+       ]
+      }
+     ]
+    },
+    "updated": "2026-10-14T11:20:00.000+0530",
+    "issuetype": {
+     "name": "Bug"
+    },
+    "priority": {
+     "name": "High"
+    }
+   }
+  },
+  {
+   "key": "PAY-150",
+   "fields": {
+    "summary": "Hand over payments on-call ownership",
+    "status": {
+     "name": "In Progress"
+    },
+    "assignee": {
+     "displayName": "Marco Silva"
+    },
+    "reporter": {
+     "displayName": "Priya Nair"
+    },
+    "components": [
+     {
+      "name": "Payments"
+     }
+    ],
+    "labels": [
+     "ownership"
+    ],
+    "description": {
+     "type": "doc",
+     "version": 1,
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "Payments Platform on-call moves from Priya to Marco this Friday. Update the company graph owner."
+        }
+       ]
+      }
+     ]
+    },
+    "updated": "2026-10-16T09:00:00.000+0530",
+    "issuetype": {
+     "name": "Task"
+    },
+    "priority": {
+     "name": "Medium"
+    }
+   }
+  },
+  {
+   "key": "ORD-87",
+   "fields": {
+    "summary": "Orders batch consumer leaks memory and stops the worker",
+    "status": {
+     "name": "In Progress"
+    },
+    "assignee": {
+     "displayName": "Dev Patel"
+    },
+    "reporter": {
+     "displayName": "Aisha Bello"
+    },
+    "components": [
+     {
+      "name": "Orders"
+     }
+    ],
+    "labels": [
+     "incident"
+    ],
+    "description": {
+     "type": "doc",
+     "version": 1,
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "The worker stops after several hours. restart_worker restores processing; a fix to release buffers is in review."
+        }
+       ]
+      }
+     ]
+    },
+    "updated": "2026-10-15T18:30:00.000+0530",
+    "issuetype": {
+     "name": "Bug"
+    },
+    "priority": {
+     "name": "High"
+    }
+   }
+  },
+  {
+   "key": "CHK-31",
+   "fields": {
+    "summary": "Analytics dashboard red during checkout incidents",
+    "status": {
+     "name": "To Do"
+    },
+    "assignee": null,
+    "reporter": {
+     "displayName": "Aisha Bello"
+    },
+    "components": [
+     {
+      "name": "Analytics"
+     }
+    ],
+    "labels": [
+     "triage"
+    ],
+    "description": {
+     "type": "doc",
+     "version": 1,
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "Analytics health fails independently of checkout. Not on the checkout dependency path; owned by the data team."
+        }
+       ]
+      }
+     ]
+    },
+    "updated": "2026-10-15T19:00:00.000+0530",
+    "issuetype": {
+     "name": "Bug"
+    },
+    "priority": {
+     "name": "Low"
+    }
+   }
+  }
+ ]
+}

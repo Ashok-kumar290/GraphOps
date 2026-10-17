@@ -208,6 +208,7 @@ async def run_case(case):
                 await Agent(store, port).run(task, "company", "Who owns payments, which procedure applies, and which decision supports recovery? Cite source locations and revisions.", "llm")
                 summary = "\n".join(e["data"].get("summary", "") for e in store.runs.events(task) if e["kind"] == "session_finished")
                 passed = all(s in summary for s in ("Payments Platform", "fixture:event/payments-runbook", "fixture:event/payments-decision"))
+                notes["answer"] = summary[:800]  # kept so a missed citation can be read afterwards
                 expected_actions = 0
             else:
                 lab.inject("worker" if case == "worker" else "config")

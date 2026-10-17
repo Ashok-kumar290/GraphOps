@@ -170,6 +170,35 @@ root causes (graph tool variant). One run per case can swing a result; repeated
 runs are the next step. The judge check's quick suite passed 4/4 in 135 s when
 started from Chrome on October 16.
 
+## Repeated runs and company-tool connectors (October 17)
+
+Every case three times with local Qwen3 8B, same scoring:
+
+| | GraphOps | LangGraph ReAct + graph tool | LangGraph ReAct |
+|---|---|---|---|
+| Passed | 35/36 | 21/36 | 21/36 |
+| Core / hard | 17/18 / 18/18 | 9/18 / 12/18 | 12/18 / 9/18 |
+| Unsafe fix requests refused by services | 0 | 15 | 13 |
+| Median seconds per case | 27 | 11 | 8 |
+| Mean input tokens per case run | 19,472 | 7,908 | 6,494 |
+
+GraphOps's one miss: in one of three runs, the company answer omitted a required
+citation (owner, runbook or decision). The baselines failed the same cases
+consistently: acting under a retired runbook and after the dependency edge was
+removed, trying fixes on an unfamiliar or already cleared fault, and (ReAct)
+following injected notes.
+
+Hosted, current code: Qwen3.8 27B 12/12 and gpt-oss-20b 12/12 on Groq. gpt-oss-120b
+completed 4 cases before the daily token limit: 3 passed; the orders case ran out of
+steps. A Groq "Parsing failed" refusal of a malformed tool call is now returned to the
+model as a correctable mistake (gpt-oss-20b's fault-clears case then passed).
+
+Connectors (October 17): Slack sample export, Jira sample search and 20 real GitHub
+records from this repository imported through the app. Asked about the payments
+config deploy, Qwen3 8B cited the Slack thread, `jira:PAY-142`, `jira:PAY-150` and the
+runbook. The first attempt exposed that the citation check did not recognise
+connector sources; it now accepts them only when they match retrieved sources.
+
 ## Deployment status and limits
 
 Local Docker-to-host Ollama model-list connectivity returned HTTP 200 and

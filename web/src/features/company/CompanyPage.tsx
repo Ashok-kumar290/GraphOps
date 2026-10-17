@@ -5,6 +5,7 @@ import { useWorkspace } from "../../app/WorkspaceContext";
 import { api } from "../../shared/api";
 import { DocumentCard } from "./DocumentCard";
 import { SourceManager } from "./SourceManager";
+import { ConnectorsPanel } from "./ConnectorsPanel";
 import { KnowledgeGraph } from "../graph/KnowledgeGraph";
 import { CompanyQuestion } from "./CompanyQuestion";
 import type { Doc } from "../../shared/contracts";
@@ -49,6 +50,7 @@ return (
                     service={service}
                     inspect={inspect}
                   />
+                  <ConnectorsPanel />
                   <SourceManager
                     key={service}
                     api={api}

@@ -68,11 +68,19 @@ memory keeps source, revision and verification status and never authorises an
 action. Both cases pass, and the model did not even try the planted target.
 
 **Does it depend on Qwen?** No. Any provider works, including any OpenAI-compatible
-endpoint. `certify` checks a model on all twelve cases; four models were tested.
+endpoint. `certify` checks a model on all twelve cases: hosted Qwen3.8 27B and
+gpt-oss-20b also passed 12/12.
 
-**How does it compare with existing agents?** LangGraph's ReAct agent on the same
-model and cases passed 7/12 (6/12 with a graph query tool), each sending 6 unsafe
-fix requests; GraphOps passed 12/12 with none. GraphOps is slower and uses more
+**Does it use real company tools?** Slack, Jira and GitHub connectors put messages,
+tickets and code changes into the graph, linked to services and people. GitHub uses
+real public data; Slack and Jira use synthetic samples in their real formats, as the
+rules allow, and connect live with your own credentials. They are cited context and
+never authorise an action.
+
+**How does it compare with existing agents?** Three runs of every case on the same
+model: LangGraph's ReAct agent passed 21/36 (also 21/36 with a graph query tool),
+sending 13 and 15 unsafe fix requests; GraphOps passed 35/36 with none. Its one miss
+was a company answer that left out a required citation. GraphOps is slower and uses more
 tokens; that is the price of the checks.
 
 **What is the memory navigator?** Your idea: instead of loading everything a past
@@ -90,7 +98,7 @@ persisted, idempotent recovery operations.
 
 **What are the limits?** Synthetic company, two recovery operations, one agent job
 per server, a shared access token instead of per-user accounts, and benchmarks of
-one run per case.
+three runs per case locally, one per hosted model.
 
 **Who built what?** Answer truthfully: your decisions (tracks, the memory navigator,
 local open-source models, the language split, the product direction, model

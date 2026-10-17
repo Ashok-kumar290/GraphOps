@@ -6,7 +6,10 @@ from graphops.core.synthetic import SERVICES
 
 
 class CompanyRepository(Repository):
-    def put(self, doc_id, service, kind, title, text, revision, data, source=None):
+    def put(self, doc_id, service, kind, title, text, revision, data, source=None, anchor="Service"):
+        """`anchor` is the node the document belongs to: a Service, or a Repository for code changes
+        that do not concern one service."""
+        if anchor not in {"Service", "Repository"}: raise ValueError("Unknown document anchor")
         source = source or "fixture:event/" + doc_id
         existing=self.document(doc_id)
         if existing and existing['service']!=service:raise ValueError("A document cannot move between services")
@@ -15,10 +18,10 @@ class CompanyRepository(Repository):
                    "revision": revision, "source": source, "data": data}
         encoded = json.dumps(payload, sort_keys=True)
         if previous and previous[0][0] != encoded: raise ValueError("A source revision is immutable; provide a new revision")
-        self.write("""MATCH (s:Service {id:$service}) MERGE (d:Document {id:$id})
+        self.write(f"""MATCH (s:{anchor} {{id:$service}}) MERGE (d:Document {{id:$id}})
             SET d.title=$title,d.kind=$kind,d.text=$text,d.source=$source,d.payload=$payload,d.revision=$revision
             MERGE (s)-[link:HAS_DOCUMENT]->(d) SET link.source=$source
-            MERGE (v:Revision {id:$version}) ON CREATE SET v.payload=$payload,v.title=$revision,v.source=$source
+            MERGE (v:Revision {{id:$version}}) ON CREATE SET v.payload=$payload,v.title=$revision,v.source=$source
             MERGE (d)-[:HAS_REVISION]->(v)""", id=doc_id, service=service, title=title, source=source,
             kind=kind, text=text, payload=encoded, revision=revision, version=doc_id+":"+revision, context=True)
         return payload
@@ -47,8 +50,8 @@ class CompanyRepository(Repository):
     def search(self, query, service=None):
         if not isinstance(query,str) or not 1<=len(query.strip())<=120:raise ValueError('Search must contain 1–120 characters')
         if service is not None and service not in SERVICES:raise ValueError('Unknown service')
-        rows=self.read("""MATCH (s:Service)-[:HAS_DOCUMENT]->(d:Document)
-            WHERE ($service='' OR s.id=$service) AND
+        rows=self.read("""MATCH (s)-[:HAS_DOCUMENT]->(d:Document)
+            WHERE (s:Service OR s:Repository) AND ($service='' OR s.id=$service) AND
               (toLower(d.title) CONTAINS $term OR toLower(coalesce(d.text,d.payload)) CONTAINS $term)
             RETURN d.payload ORDER BY d.id LIMIT 20""",service=service or '',term=query.strip().lower())
         result=[]

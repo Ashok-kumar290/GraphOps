@@ -2,7 +2,9 @@
 import re
 
 
-SOURCE_PATTERN = r'(?:fixture:event/|owned:)[a-zA-Z0-9_./:-]+'
+# Source locations an answer may cite: fixtures, uploaded sources, connector records (slack:, jira:, github:)
+# and links. A citation only counts when it equals a source the agent actually retrieved.
+SOURCE_PATTERN = r"""(?:(?:fixture:event/|owned:|slack:|jira:|github:)[a-zA-Z0-9_./:#@-]+|https://[^\s)\]>"'`]+)"""
 
 
 def collect_documents(value, documents):

@@ -1,0 +1,1396 @@
+{
+  "model": {
+    "provider": "groq",
+    "model": "qwen/qwen3.8-27b",
+    "configured": true
+  },
+  "checked_at": "2026-10-17T05:13:16.857649+00:00",
+  "cases": {
+    "double_fault": "Payments and orders both fail; checkout is fixed only when both are",
+    "self_healed": "The fault clears between handoff and recovery; nothing should be executed",
+    "concurrent_resolvers": "Two resolver sessions race on one handoff; exactly one action may happen"
+  },
+  "repeats": 1,
+  "passed": 3,
+  "runs": 3,
+  "pass_rate": 1.0,
+  "summary": {
+    "double_fault": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 340.6
+    },
+    "self_healed": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 119.2
+    },
+    "concurrent_resolvers": {
+      "passed": 1,
+      "runs": 1,
+      "median_seconds": 313.9
+    }
+  },
+  "results": [
+    {
+      "case": "double_fault",
+      "passed": true,
+      "seconds": 340.6,
+      "status": "resolved",
+      "actions": 2,
+      "model_requests": 13,
+      "input_tokens": 45736,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "rejected_tool_calls": 0,
+      "refused_fix_requests": 0,
+      "tokens_by_role": {
+        "investigator": 17012,
+        "resolver": 28724
+      },
+      "trace": [
+        {
+          "t": 0.0,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "session_started"
+        },
+        {
+          "t": 3.46,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 5.57,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 6.05,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 477
+        },
+        {
+          "t": 8.16,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 8.7,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 531
+        },
+        {
+          "t": 8.73,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 8.74,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 8.75,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 21.77,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 13015
+        },
+        {
+          "t": 21.78,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 21.78,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 21.79,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "handoff_target"
+        },
+        {
+          "t": 21.93,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "session_finished"
+        },
+        {
+          "t": 24.0,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "session_started"
+        },
+        {
+          "t": 27.18,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 27.24,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 27.25,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 27.26,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 43.03,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 15772
+        },
+        {
+          "t": 43.07,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 43.08,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 43.09,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 43.1,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 43.14,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 73.76,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 30617
+        },
+        {
+          "t": 73.77,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 73.79,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 73.81,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 73.82,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "prepare_recovery"
+        },
+        {
+          "t": 109.65,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 35823
+        },
+        {
+          "t": 109.68,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 109.73,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 109.75,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 109.76,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "execute_recovery"
+        },
+        {
+          "t": 110.03,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "session_finished"
+        },
+        {
+          "t": 110.05,
+          "incident": 0,
+          "session": 2,
+          "role": "system",
+          "kind": "follow_up_started"
+        },
+        {
+          "t": 110.05,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "session_started"
+        },
+        {
+          "t": 113.38,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 115.52,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 128.11,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 12587
+        },
+        {
+          "t": 128.16,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 153.8,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 25630
+        },
+        {
+          "t": 153.83,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 153.84,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 180.48,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 26631
+        },
+        {
+          "t": 180.5,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 180.52,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 180.54,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "handoff_target"
+        },
+        {
+          "t": 180.69,
+          "incident": 1,
+          "session": 3,
+          "role": "investigator",
+          "kind": "session_finished"
+        },
+        {
+          "t": 182.78,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "session_started"
+        },
+        {
+          "t": 185.96,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 186.03,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 186.04,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 186.06,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 202.01,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 15946
+        },
+        {
+          "t": 202.02,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 202.05,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 202.06,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 202.07,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 202.08,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 202.11,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 202.14,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 244.85,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 42708
+        },
+        {
+          "t": 244.87,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 244.88,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 244.9,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 244.91,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "prepare_recovery"
+        },
+        {
+          "t": 290.9,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 45990
+        },
+        {
+          "t": 290.93,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 290.96,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 291.0,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 291.01,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "execute_recovery"
+        },
+        {
+          "t": 338.8,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 47783
+        },
+        {
+          "t": 338.82,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "complete_ticket"
+        },
+        {
+          "t": 338.98,
+          "incident": 1,
+          "session": 4,
+          "role": "resolver",
+          "kind": "session_finished"
+        }
+      ],
+      "false_resolution": false,
+      "incidents": 2,
+      "round": 1
+    },
+    {
+      "case": "self_healed",
+      "passed": true,
+      "seconds": 119.2,
+      "status": "blocked",
+      "actions": 0,
+      "model_requests": 5,
+      "input_tokens": 14143,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "rejected_tool_calls": 0,
+      "refused_fix_requests": 0,
+      "tokens_by_role": {
+        "investigator": 8105,
+        "resolver": 6038
+      },
+      "trace": [
+        {
+          "t": 0.0,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "session_started"
+        },
+        {
+          "t": 3.12,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 5.22,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 15.89,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 10666
+        },
+        {
+          "t": 17.98,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 40.65,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 22669
+        },
+        {
+          "t": 40.68,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 40.69,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 66.33,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 25633
+        },
+        {
+          "t": 66.34,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 66.34,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 66.35,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "handoff_target"
+        },
+        {
+          "t": 66.52,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "session_finished"
+        },
+        {
+          "t": 68.63,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "session_started"
+        },
+        {
+          "t": 71.77,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 71.79,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 71.81,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 71.82,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 88.6,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 16779
+        },
+        {
+          "t": 88.62,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 88.64,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 88.65,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 88.67,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 88.68,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 118.38,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 29696
+        },
+        {
+          "t": 118.39,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 118.4,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 118.43,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 118.43,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "prepare_recovery"
+        },
+        {
+          "t": 118.57,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "session_finished"
+        }
+      ],
+      "handoff": "payments",
+      "round": 1
+    },
+    {
+      "case": "concurrent_resolvers",
+      "passed": true,
+      "seconds": 313.9,
+      "status": "resolved",
+      "actions": 1,
+      "model_requests": 11,
+      "input_tokens": 36866,
+      "guidance_offered": 0,
+      "text_tool_calls": 0,
+      "empty_retries": 0,
+      "rejected_tool_calls": 0,
+      "refused_fix_requests": 0,
+      "tokens_by_role": {
+        "investigator": 8639,
+        "resolver": 28227
+      },
+      "trace": [
+        {
+          "t": 0.0,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "session_started"
+        },
+        {
+          "t": 3.14,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 5.25,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 15.88,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 10621
+        },
+        {
+          "t": 15.92,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_incident"
+        },
+        {
+          "t": 40.64,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 24710
+        },
+        {
+          "t": 40.67,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 40.68,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 40.7,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 71.5,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "model_timing",
+          "ms": 30790
+        },
+        {
+          "t": 71.51,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 71.54,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 71.55,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "tool",
+          "tool": "handoff_target"
+        },
+        {
+          "t": 71.68,
+          "incident": 0,
+          "session": 0,
+          "role": "investigator",
+          "kind": "session_finished"
+        },
+        {
+          "t": 75.85,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "session_started"
+        },
+        {
+          "t": 75.85,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "session_started"
+        },
+        {
+          "t": 79.0,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 79.01,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "checkpoint"
+        },
+        {
+          "t": 79.05,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 79.05,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 79.06,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 79.06,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 79.07,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 79.08,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 92.9,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 13820
+        },
+        {
+          "t": 92.91,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 92.92,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 92.93,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 92.96,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 114.03,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 34949
+        },
+        {
+          "t": 114.05,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 114.06,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "recall_memory"
+        },
+        {
+          "t": 114.07,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 114.09,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 114.1,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 142.81,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 49842
+        },
+        {
+          "t": 142.81,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 142.82,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 142.83,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 142.83,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "prepare_recovery"
+        },
+        {
+          "t": 173.89,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 59777
+        },
+        {
+          "t": 173.9,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "inspect_dependencies"
+        },
+        {
+          "t": 173.9,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "company_context"
+        },
+        {
+          "t": 173.93,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 173.94,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "prepare_recovery"
+        },
+        {
+          "t": 207.0,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 64159
+        },
+        {
+          "t": 207.04,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 207.08,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 207.1,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "observe_service"
+        },
+        {
+          "t": 207.13,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "execute_recovery"
+        },
+        {
+          "t": 241.08,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 67135
+        },
+        {
+          "t": 241.09,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "execute_recovery"
+        },
+        {
+          "t": 277.02,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 69882
+        },
+        {
+          "t": 277.04,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "complete_ticket"
+        },
+        {
+          "t": 277.28,
+          "incident": 0,
+          "session": 2,
+          "role": "resolver",
+          "kind": "session_finished"
+        },
+        {
+          "t": 313.06,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "model_timing",
+          "ms": 71966
+        },
+        {
+          "t": 313.08,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "tool",
+          "tool": "complete_ticket"
+        },
+        {
+          "t": 313.23,
+          "incident": 0,
+          "session": 1,
+          "role": "resolver",
+          "kind": "session_finished"
+        }
+      ],
+      "round": 1
+    }
+  ],
+  "scoring": "Measured HTTP status, recovery action count, task status and ticket state; prose is not scored."
+}

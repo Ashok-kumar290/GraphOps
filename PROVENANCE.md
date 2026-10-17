@@ -149,3 +149,9 @@ Benchmark failures, provider quota stops and one reclassified hosted case are ke
 in `evidence/benchmarks/` with explanations. As with Codex, automated checks do not
 attest participant understanding; teammates must still record their own
 contributions and review the code.
+
+On October 17 the participant asked for data from real company tools. Claude Code
+added the Slack, Jira and GitHub connectors, synthetic Slack and Jira samples in
+those tools' real formats (as rule 6 requires), and the Connected tools panel. Live
+GitHub import used this public repository. Repeated benchmark runs (three per case)
+replaced single runs in the reported comparison.

@@ -9,6 +9,7 @@ import time
 from graphops import settings
 from graphops.agents.runner import Agent, StopRequested
 from graphops.agents.orchestrator import run_incident
+from graphops.connectors import run as connectors
 from graphops.actions.lab import Lab, request
 from graphops.core.synthetic import SERVICES, SCENARIOS
 from graphops.memory.navigator import Navigator
@@ -179,6 +180,7 @@ class Worker:
             return {'tasks':tasks,'next_cursor':tasks[-1]['created_at'] if len(tasks)==100 else None,'audits':self.store.audit.list()}
         if command=='report':return self.incident_report(body.get('task',''))
         if command == "model_status": return configuration()
+        if command=='connectors':return connectors.status(self.store)
         if command=='cancel':
             if self.active is None or self.active.done() or body.get('task')!=self.active_task_id:raise ConflictError('This run is not active')
             self.stop_requested.set();self.emit({'type':'progress','task':self.active_task_id,'stage':'stopping'})
@@ -190,6 +192,14 @@ class Worker:
             return result
         if command=='import_source':
             result=import_source(self.store,body);self.emit({'type':'progress','stage':'company_updated'});return result
+        if command=='connect':
+            # Slack and Jira import the bundled sample exports unless live credentials are configured and chosen.
+            tool,source=body.get('tool'),body.get('source','sample')
+            if source not in {'sample','live'}:raise ValueError('Choose the sample data or a live connection')
+            repository=body.get('repository') or None
+            result=await asyncio.to_thread(connectors.run,self.store,tool,source,None,repository)
+            self.store.audit.append('company_tool_connected',{k:result[k] for k in ('tool','source','records','imported')})
+            self.queries.invalidate();self.emit({'type':'progress','stage':'company_updated'});return result
         if command == "start":
             scenario, mode = body.get("scenario", "config"), body.get("mode", "llm")
             if not isinstance(scenario,str) or scenario not in SCENARIOS or not isinstance(mode,str) or mode not in {"llm", "scripted"}: raise ValueError("Invalid scenario or mode")

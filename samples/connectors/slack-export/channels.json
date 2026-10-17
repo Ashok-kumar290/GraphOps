@@ -1,0 +1,14 @@
+[
+ {
+  "id": "C01PAY",
+  "name": "payments-oncall"
+ },
+ {
+  "id": "C02ORD",
+  "name": "orders-team"
+ },
+ {
+  "id": "C03CHK",
+  "name": "checkout-incidents"
+ }
+]

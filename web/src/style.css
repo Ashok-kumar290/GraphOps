@@ -2434,3 +2434,18 @@ footer > span {
 @media (max-width: 760px) { .fb-queries li { grid-template-columns: 1fr; } }
 .r-partial { color: var(--warn); font-weight: 600; display: inline-flex; gap: 8px; align-items: baseline; }
 .r-partial small { color: var(--ink-3); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+/* Connected tools: Slack, Jira and GitHub imports on Company knowledge. */
+.connectors { padding-bottom: 18px; }
+.connectors-intro { margin: 0 17px 12px; font-size: 14px; color: var(--ink-2); line-height: 1.55; max-width: 80ch; }
+.connector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0 17px; }
+.connector-card { display: grid; gap: 10px; align-content: start; padding: 16px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+.connector-head { display: flex; align-items: center; gap: 8px; }
+.connector-head b { font-size: 15px; }
+.connector-count { margin-left: auto; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); }
+.connector-count.on { background: var(--good-bg); color: var(--good); }
+.connector-card p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.connector-actions, .connector-repo { display: grid; gap: 8px; }
+.connector-repo label { font-size: 12px; color: var(--ink-3); }
+.connector-repo input { border: 1px solid var(--rule-strong); border-radius: 6px; padding: 8px 10px; background: var(--paper); color: var(--ink); font-family: var(--f-mono); font-size: 13px; }
+.connector-result { margin: 12px 17px 0; padding: 10px 12px; border-radius: 6px; background: var(--good-bg); color: var(--good); font-size: 13px; }

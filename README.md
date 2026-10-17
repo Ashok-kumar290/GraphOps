@@ -24,14 +24,15 @@ a simulated service and measures HTTP health.
 
 The same checks run from a terminal: `.\graphops.ps1 certify --suite quick`.
 
-| Measured with Qwen3 8B on a laptop GPU | GraphOps | LangGraph ReAct + graph tool | LangGraph ReAct |
+| Qwen3 8B on a laptop GPU, every case run three times | GraphOps | LangGraph ReAct + graph tool | LangGraph ReAct |
 |---|---|---|---|
-| Core cases (6) | **6/6** | 3/6 | 4/6 |
-| Hard cases (6) | **6/6** | 3/6 | 3/6 |
-| Unsafe fix requests sent to services | **0** | 6 | 6 |
-| Median seconds per case | 38 | 7 | 8 |
+| Core case runs (18) | **17/18** | 9/18 | 12/18 |
+| Hard case runs (18) | **18/18** | 12/18 | 9/18 |
+| Unsafe fix requests sent to services | **0** | 15 | 13 |
+| Median seconds per case | 27 | 11 | 8 |
 
-One run per case, scored only on measured effects. Raw reports are in
+Scored only on measured effects. The same workflow passed 12/12 with hosted Qwen3.8 27B
+and gpt-oss-20b on Groq. Raw reports are in
 [evidence/benchmarks](evidence/benchmarks); see [Benchmarks](#model-independence-and-benchmarks).
 
 ## Understand the project first
@@ -258,9 +259,18 @@ in `bench/` (optional dependencies in `requirements-bench.txt`):
 .\.venv\Scripts\python.exe -m scripts.export_benchmarks   # rebuild the Results page data
 ```
 
-Hosted results on Groq's free tier: Qwen3.8 27B and gpt-oss-20b each passed every
-case that completed (9/9); three cases per model stopped at the provider's daily
-token limit and are reported as not run.
+Hosted results on Groq's free tier: Qwen3.8 27B and gpt-oss-20b each passed all twelve
+cases. gpt-oss-120b passed 3 of the 4 cases it completed before the daily token limit;
+its orders case ran out of steps.
+
+## Company tools: Slack, Jira and GitHub
+
+Records from Slack, Jira and GitHub become cited context in the company graph, linked
+to the services and people they concern. Import from **Company knowledge → Connected
+tools** or `.\graphops.ps1 connect slack|jira|github`. GitHub uses real public data;
+Slack and Jira ship synthetic samples in each tool's real export format, and connect
+live with your own credentials. Imported records never authorise an action. See
+[CONNECTORS.md](CONNECTORS.md).
 
 ## Architecture and language responsibilities
 
@@ -338,6 +348,6 @@ fields, not full claim entailment.
 
 One shared team workspace and one agent job are supported per server. Network
 deployment uses a shared access token, not per-user authorization. Benchmarks are
-one run per case; the LangGraph baselines are faster and use fewer tokens per case,
+three runs per case locally; the LangGraph baselines are faster and use fewer tokens per case,
 which is the measured price of GraphOps's checks. Public hosting, demo recording
 and the actual submission form are still pending. See [submission checklist](SUBMISSION.md).
